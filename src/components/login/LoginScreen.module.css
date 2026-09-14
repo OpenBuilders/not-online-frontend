@@ -1,0 +1,189 @@
+/* Ported from Tools.html:921-939 (.login/.login-clock/.login-card/...),
+   :1206 (.login-err, oddly split off in the original file), and the fade
+   keyframe at :443. EmailStep and OtpStep both import this module too —
+   the field/button/hint styling is identical between them, it's the
+   screen's own shared visual language, not something each step owns. */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-size: cover;
+  background-position: center;
+  color: var(--c-white);
+  animation: fade 0.3s ease;
+  /* the join-cards reveal can make this taller than the viewport — scroll
+     instead of clipping content or letting the fixed cancel link overlap it */
+  overflow-y: auto;
+  padding: 40px 0;
+}
+.screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.5);
+  backdrop-filter: blur(28px);
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.clock {
+  position: absolute;
+  top: 8%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 1;
+}
+.clockTime {
+  font-size: 76px;
+  font-weight: 200;
+  letter-spacing: -1px;
+  line-height: 1;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+.clockDate {
+  font-size: 15px;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: radial-gradient(130% 100% at 50% 0%, var(--c-surface-3), var(--c-surface-2));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar :global(.material-symbols-outlined) {
+  font-size: 56px;
+  color: var(--c-accent);
+}
+.name {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* wide enough to fit a real email address without clipping, but capped
+     so it doesn't stretch absurdly on a big desktop screen — the old fixed
+     220px cut off anything longer than a short handle */
+  width: min(300px, 84vw);
+}
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  color: var(--c-white);
+  font-family: inherit;
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+  padding: 0 18px;
+}
+/* Email is variable-length and can outgrow the field — left-align so
+   typing scrolls like a normal text field instead of re-centering the
+   visible slice on every keystroke. The OTP step's fixed 4-digit code
+   stays centered (its own default). */
+.emailInput {
+  text-align: left;
+}
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+.input:focus {
+  border-color: var(--c-accent);
+  background: rgba(255, 255, 255, 0.16);
+}
+.go {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--c-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.go:hover {
+  background: var(--c-accent);
+  color: var(--c-surface-0);
+  border-color: var(--c-accent);
+}
+.go:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.hint {
+  font-size: 12px;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+.err {
+  font-size: 12px;
+  color: var(--c-danger-tint);
+  min-height: 16px;
+}
+
+.cancel {
+  /* part of the centered flow, not pinned to the viewport bottom — so it
+     can never overlap the join-cards reveal when that makes the card
+     taller than the screen (see .screen's overflow-y) */
+  position: relative;
+  z-index: 1;
+  margin-top: 32px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.cancel:hover {
+  color: var(--c-white);
+}
+
+@media (max-width: 760px) {
+  .clock {
+    top: 4%;
+  }
+  .clockTime {
+    font-size: 46px;
+  }
+}

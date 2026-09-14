@@ -1,0 +1,91 @@
+/* Ported in spirit from .mk2-tabs/.mk2-body (Tools.html:1221-1227) using the
+   light-window palette that Tools.html applied via `.win.light`
+   (Tools.html:1473, 1478-1480) — this port's WindowFrame is light by
+   default, so those are just the base colors here, not an override. */
+
+.window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px 0;
+  background: var(--c-paper-3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--c-muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 9px 4px 8px;
+  margin-right: 14px;
+  cursor: pointer;
+}
+.tab:hover {
+  color: var(--c-near-black);
+}
+.tab.on {
+  color: var(--c-near-black);
+  border-bottom-color: var(--c-accent);
+}
+.spacer {
+  flex: 1;
+}
+.cartButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.cartButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--c-near-black);
+}
+.cartButton.on {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--c-accent-2);
+  color: var(--c-white);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.body {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background: var(--c-paper);
+  color: var(--c-ink);
+  position: relative;
+}

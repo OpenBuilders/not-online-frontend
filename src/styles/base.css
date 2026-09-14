@@ -1,0 +1,87 @@
+/*
+  Global reset + the outer desktop shell. Ported from Tools.html's
+  base rules (the ones before any single feature owns them).
+  Feature-specific CSS lives in each component's own .module.css.
+*/
+@import './tokens.css';
+
+:root {
+  /* BottomBar's rendered height on mobile (padding + line height) — shared
+     with HomeBar so its "clear the ticker" offset stays correct if the
+     ticker's own sizing ever changes, instead of a hardcoded guess in a
+     second file. */
+  --mobile-ticker-height: 30px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Custom cursor, applied to every element (including hover/drag targets)
+   so it never swaps mid-interaction — see the original Tools.html comment
+   this was lifted from. Missing file falls back to the normal arrow.
+   Image itself is 32x32 (halved from Tools.html's 64x64 — the original
+   was too big to land precisely on small targets like the window-close
+   dot), hotspot scaled down to match. */
+*,
+*::before,
+*::after {
+  cursor: url('/images/cursor.png') 1 1, auto !important;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--c-ink);
+  min-height: 100vh;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Text',
+    'SF Pro Display',
+    'Inter',
+    sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  user-select: none;
+}
+
+#root {
+  display: contents;
+}
+
+.desktop {
+  position: relative;
+  width: 96vw;
+  height: 92vh;
+  max-width: 1600px;
+  max-height: 1000px;
+  background: #2a2a2e;
+  border-radius: 28px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 0.6px, transparent 0.6px);
+  background-size: 6px 6px;
+  pointer-events: none;
+  z-index: 0;
+}

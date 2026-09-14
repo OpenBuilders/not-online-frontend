@@ -1,0 +1,43 @@
+/*
+  Design tokens, ported as-is from Tools.html's :root block.
+  Every value here is the exact hex it replaced — this file only
+  names what already existed, it doesn't restyle anything.
+*/
+:root {
+  --c-white: #fff;
+  --c-accent: #a8ff1a;
+  --c-ink: #1c1c1e;
+  --c-surface-1: #161618;
+  --c-surface-0: #0e0e10;
+  --c-muted: #6e6e72;
+  --c-faint: #8e8e92;
+  --c-danger: #ff5b4d;
+  --c-paper: #fafafc;
+  --c-surface-2: #141416;
+  --c-black: #000;
+  --c-dim: #4a4a4e;
+  --c-near-black: #111;
+  --c-surface-3: #2b2b2f;
+  --c-surface-4: #131315;
+  --c-paper-3: #f0f0f2;
+  --c-accent-2: #ff1a91;
+  --c-success: #5a8a10;
+  --c-warning: #ffb020;
+  --c-paper-2: #f5f5f7;
+  --c-select: #1aa3ff;
+  --c-danger-tint: #ff8079;
+  --c-line-light-3: #eee;
+  --c-line-light: #ececee;
+  --c-warning-2: #e8a30c;
+  --c-line-light-2: #e3e3e6;
+  --c-danger-2: #d94b3f;
+  --c-accent-tint: #c6ff5c;
+  --c-tl-red: #ff5f57;
+  --c-tl-yellow: #febc2e;
+  --c-accent-shade-1: #8fd814;
+  --c-accent-shade-2: #7fc400;
+  --c-success-2: #4d7a00;
+  --c-success-3: #2e7d1e;
+  --c-tl-green: #28c840;
+  --c-surface-5: #101012;
+}

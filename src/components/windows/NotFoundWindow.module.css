@@ -1,0 +1,54 @@
+/* Ported from Tools.html:573-586. */
+
+.nf {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 40px;
+  background:
+    radial-gradient(rgba(0, 0, 0, 0.05) 0.8px, transparent 0.8px) 0 0 / 14px 14px,
+    var(--c-paper);
+}
+.code {
+  font-size: 88px;
+  font-weight: 200;
+  letter-spacing: -3px;
+  color: var(--c-ink);
+  line-height: 1;
+}
+.code b {
+  color: var(--c-accent);
+  font-weight: 200;
+}
+.nf h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--c-ink);
+  letter-spacing: 3px;
+  text-transform: lowercase;
+}
+.nf p {
+  font-size: 13px;
+  color: var(--c-muted);
+  max-width: 340px;
+  line-height: 1.55;
+}
+.retry {
+  margin-top: 4px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: var(--c-white);
+  color: var(--c-ink);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.retry:hover {
+  border-color: var(--c-accent);
+}

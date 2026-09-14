@@ -1,0 +1,32 @@
+/* Ported from Tools.html:1157-1159 (.confetti / .confetti i / @keyframes fall). */
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti i {
+  position: absolute;
+  top: -20px;
+  width: 9px;
+  height: 14px;
+  opacity: 0.95;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes fall {
+  to {
+    transform: translateY(105vh) rotate(720deg);
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti i {
+    animation: none !important;
+    opacity: 0;
+  }
+}

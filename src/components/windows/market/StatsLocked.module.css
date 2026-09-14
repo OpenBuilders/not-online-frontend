@@ -1,0 +1,64 @@
+.wrap {
+  padding-top: 6px;
+}
+
+.teaser {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  /* .lockOverlay is `inset: 0` of this box, and its content (sticker + lock
+     + copy + button, centered in a column) needs real room — without a
+     floor here it only gets the blurred stat grid's own short height, and
+     most of the overlay spills out past it instead of being visible inside
+     the window. */
+  min-height: 320px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  filter: blur(3px);
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+.stat {
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+.v {
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--c-ink);
+}
+.k {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-muted);
+  margin-top: 4px;
+}
+
+.lockOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 20px;
+  color: var(--c-dim);
+}
+.sticker {
+  margin-bottom: 6px;
+}
+.lockOverlay p {
+  font-size: 12.5px;
+  color: var(--c-muted);
+  max-width: 220px;
+}

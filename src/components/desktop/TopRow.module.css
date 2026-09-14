@@ -1,0 +1,18 @@
+/* Ported from Tools.html:1581-1583. On desktop this wrapper has no layout
+   effect at all — AuthPill and StatBar position themselves independently
+   via their own absolute positioning. Below 760px it becomes the flex row
+   that merges them into one line (each child un-absolutes itself via its
+   own CSS module, see AuthPill.module.css / StatBar.module.css). */
+
+@media (max-width: 760px) {
+  .toprow {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    right: 8px;
+    z-index: 46;
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+}

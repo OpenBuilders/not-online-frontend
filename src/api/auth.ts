@@ -10,6 +10,7 @@ interface UserResponse {
 
 interface MessageResponse {
   message: string
+  expiresAt: string
 }
 
 interface ErrorResponse {

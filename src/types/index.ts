@@ -7,6 +7,7 @@ export type MarketItemStatus = 'queued' | 'live';
 export interface MarketItem {
   id: string;
   name: string;
+  contact?: string;
   price: number;
   amount: number;
   desc: string;

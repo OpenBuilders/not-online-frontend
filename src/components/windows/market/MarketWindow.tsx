@@ -52,7 +52,7 @@ export function MarketWindow() {
         </button>
       </div>
       <div className={styles.body}>
-        {tab === 'sell' && <SellWizard onPublished={() => setTab('browse')} />}
+        {tab === 'sell' && <SellWizard onSubmitted={() => setTab('browse')} />}
         {tab === 'browse' && <BrowseTab cartButtonRef={cartButtonRef} />}
         {tab === 'stats' && <StatsLocked />}
         {tab === 'cart' && <CartTab onBack={() => setTab('browse')} />}

@@ -29,6 +29,7 @@ export function ItemDetail({ item, onBack, onAddToCart }: ItemDetailProps) {
           <h3 className={styles.name}>{item.name}</h3>
           <div className={styles.price}>${item.price}</div>
           {item.desc && <div className={styles.desc}>{item.desc}</div>}
+          {item.contact && <div className={styles.contact}>Contact: {item.contact}</div>}
           <AeroButton
             variant="lime"
             className={styles.addButton}

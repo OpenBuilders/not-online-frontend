@@ -12,6 +12,8 @@ interface LoginScreenProps {
 
 type Step = 'email' | 'otp';
 
+const OTP_TTL_MILLISECONDS = 2 * 60 * 1_000;
+
 function errorMessage(error: unknown): string {
   if (error instanceof ApiError) return error.message;
   return error instanceof Error ? error.message : 'Something went wrong.';
@@ -36,6 +38,8 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [otpHint, setOtpHint] = useState('code sent, check your inbox');
+  const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
+  const [otpSecondsLeft, setOtpSecondsLeft] = useState(120);
   const [error, setError] = useState('');
 
   const [clock, setClock] = useState({ time: '00:00', date: '—' });
@@ -71,6 +75,19 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
     (step === 'otp' ? otpRef : emailRef).current?.focus();
   }, [step]);
 
+  useEffect(() => {
+    if (step !== 'otp' || otpExpiresAt === null) return;
+
+    const tick = () => {
+      setOtpSecondsLeft(
+        Math.max(0, Math.ceil((otpExpiresAt - Date.now()) / 1_000))
+      );
+    };
+    tick();
+    const id = window.setInterval(tick, 1_000);
+    return () => window.clearInterval(id);
+  }, [otpExpiresAt, step]);
+
   function sendCode() {
     const v = email.trim().toLowerCase();
     if (!v || !/.+@.+\..+/.test(v)) {
@@ -80,8 +97,17 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
     setError('');
     requestOtpMutation.mutate(v, {
       onSuccess: (response) => {
+        const responseExpiry = Date.parse(response.expiresAt);
+        const expiresAt = Number.isNaN(responseExpiry)
+          ? Date.now() + OTP_TTL_MILLISECONDS
+          : responseExpiry;
         setEmail(v);
+        setOtp('');
         setOtpHint(response.message || `code sent to ${v}`);
+        setOtpExpiresAt(expiresAt);
+        setOtpSecondsLeft(
+          Math.max(0, Math.ceil((expiresAt - Date.now()) / 1_000))
+        );
         setStep('otp');
       },
       onError: (err) => setError(errorMessage(err)),
@@ -89,6 +115,11 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
   }
 
   function verify() {
+    if (otpSecondsLeft <= 0) {
+      setError('Code expired. Request a new code.');
+      return;
+    }
+
     verifyOtpMutation.mutate(
       { email, code: otp },
       {
@@ -119,7 +150,16 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
         {step === 'email' ? (
           <EmailStep value={email} onChange={setEmail} onSubmit={sendCode} busy={busy} inputRef={emailRef} />
         ) : (
-          <OtpStep value={otp} onChange={setOtp} onSubmit={verify} hint={otpHint} busy={busy} inputRef={otpRef} />
+          <OtpStep
+            value={otp}
+            onChange={setOtp}
+            onSubmit={verify}
+            onRequestNewCode={sendCode}
+            hint={otpHint}
+            busy={busy}
+            secondsLeft={otpSecondsLeft}
+            inputRef={otpRef}
+          />
         )}
 
         <div className={styles.err}>{error}</div>

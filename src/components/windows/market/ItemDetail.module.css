@@ -43,6 +43,12 @@
   color: var(--c-dim);
   line-height: 1.55;
 }
+.contact {
+  font-size: 13px;
+  color: var(--c-dim);
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
 .addButton {
   margin-top: 18px;
   height: 42px;

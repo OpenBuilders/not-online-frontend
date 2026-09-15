@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { BottomBar } from '@/components/desktop/BottomBar';
 import { DesktopIconLayer } from '@/components/desktop/DesktopIconLayer';
 import { HomeBar } from '@/components/desktop/HomeBar';
+import { MySubmissions } from '@/components/desktop/MySubmissions';
 import { TopRow } from '@/components/desktop/TopRow';
 import { LoginScreen } from '@/components/login/LoginScreen';
 import { WindowManager } from '@/components/windows/WindowManager';
@@ -53,6 +54,7 @@ export function Desktop() {
       {/* Widgets (Radar/Toolbox/Orgs/SMM/Website Builder) are parked for
           this pass — Market, Settings, and the desktop shell only. */}
       <DesktopIconLayer desktopRef={desktopRef} />
+      <MySubmissions />
 
       <BottomBar />
 

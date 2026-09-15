@@ -12,11 +12,8 @@ interface BrowseTabProps {
 }
 
 /**
- * Browse grid: the always-present SEED_MARKET_ITEMS plus whatever the guest
- * has listed themselves — first time through that's exactly 3 cards, the
- * "your item plus 2 more" moment. A pink callout nudges toward one seed
- * item until the guest has actually put something in the cart, matching
- * "guide user to buy it" without pointing them at their own fresh listing.
+ * Browse shows only public catalogue items. New SellWizard submissions are
+ * moderation requests and are deliberately not inserted into this list.
  */
 export function BrowseTab({ cartButtonRef }: BrowseTabProps) {
   const { state, addToCart } = useAppState();

@@ -6,11 +6,11 @@ import { MySubmissions } from '@/components/desktop/MySubmissions';
 import { TopRow } from '@/components/desktop/TopRow';
 import { LoginScreen } from '@/components/login/LoginScreen';
 import { WindowManager } from '@/components/windows/WindowManager';
+import { BACKGROUND_OPTIONS } from '@/data/backgrounds';
 import { useAppState } from '@/state/AppStateContext';
 import { useAutoLayout } from '@/state/useAutoLayout';
 import { useSessionSync } from '@/state/useAuth';
 
-// TODO(stage 4/5): derive from state.wallpaper once Settings > Backgrounds is wired up.
 const DEFAULT_WALLPAPER = '/images/screen_1.jpg';
 
 /**
@@ -24,6 +24,7 @@ export function Desktop() {
   const { state } = useAppState();
   const [loginOpen, setLoginOpen] = useState(false);
   const { checkingSession } = useSessionSync();
+  const wallpaperSrc = BACKGROUND_OPTIONS.find((o) => o.id === state.wallpaper)?.src ?? DEFAULT_WALLPAPER;
 
   useAutoLayout(desktopRef, [state.logged, state.tours.size]);
 
@@ -46,7 +47,7 @@ export function Desktop() {
   }
 
   return (
-    <div className="desktop" id="desktop" ref={desktopRef} style={{ backgroundImage: `url('${DEFAULT_WALLPAPER}')` }}>
+    <div className="desktop" id="desktop" ref={desktopRef} style={{ backgroundImage: `url('${wallpaperSrc}')` }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
 
       <TopRow onRequestLogin={() => setLoginOpen(true)} />

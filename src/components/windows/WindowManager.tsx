@@ -1,7 +1,6 @@
 import { ArtistApplyWindow } from '@/components/windows/ArtistApplyWindow';
 import { BlankWindow } from '@/components/windows/BlankWindow';
 import { NotFoundWindow } from '@/components/windows/NotFoundWindow';
-import { PatronWindow } from '@/components/windows/PatronWindow';
 import { WindowFrame } from '@/components/windows/WindowFrame';
 import { MarketWindow } from '@/components/windows/market/MarketWindow';
 import { SettingsWindow } from '@/components/windows/settings/SettingsWindow';
@@ -11,10 +10,11 @@ import type { JSX } from 'react';
 
 // Widget-backed windows (radar/tools/orgs/smm/websiteBuilder) are parked
 // with the widgets themselves — add their entries back here when they do.
+// "Become a partner" everywhere now opens https://probablynothing.xyz/patrons
+// in a new tab instead of an in-app window — see src/data/links.ts.
 const CONTENT_BY_KIND: Record<WindowKind, () => JSX.Element> = {
   market: MarketWindow,
   settings: SettingsWindow,
-  patron: PatronWindow,
   artistApply: ArtistApplyWindow,
   notFound: NotFoundWindow,
   blank: BlankWindow,

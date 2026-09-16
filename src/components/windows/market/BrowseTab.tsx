@@ -1,55 +1,39 @@
-import { useState, type RefObject } from 'react';
 import { SEED_MARKET_ITEMS } from '@/data/marketItems';
 import { useAppState } from '@/state/AppStateContext';
-import type { MarketItem } from '@/types';
+import { AddItemTile } from './AddItemTile';
 import { ItemCard } from './ItemCard';
-import { ItemDetail } from './ItemDetail';
 import styles from './BrowseTab.module.css';
-import { useFlyToCart } from './useFlyToCart';
 
 interface BrowseTabProps {
-  cartButtonRef: RefObject<HTMLButtonElement | null>;
+  onPublish: () => void;
 }
 
 /**
- * Browse shows only public catalogue items. New SellWizard submissions are
- * moderation requests and are deliberately not inserted into this list.
+ * Browse shows only the two fixed catalogue items — clicking either opens
+ * the live site (this desktop doesn't handle checkout), not an in-app
+ * detail/cart flow. A real listing goes through the moderation queue (see
+ * src/api/marketSubmissions.ts) and shows up in the always-on MySubmissions
+ * desktop panel instead of here, matching the actual moderation model: a
+ * submission may be rejected, so it's deliberately not inserted into this
+ * public-facing grid.
  */
-export function BrowseTab({ cartButtonRef }: BrowseTabProps) {
-  const { state, addToCart } = useAppState();
-  const [selected, setSelected] = useState<MarketItem | null>(null);
-  const { start, flyingNode } = useFlyToCart();
-
-  const items = [...SEED_MARKET_ITEMS, ...state.myItems];
-  const showGuide = state.cart.length === 0;
-  const guideItemId = SEED_MARKET_ITEMS[0]?.id;
+export function BrowseTab({ onPublish }: BrowseTabProps) {
+  const { markExploredCatalog } = useAppState();
 
   return (
-    <>
-      {selected ? (
-        <ItemDetail
-          item={selected}
-          onBack={() => setSelected(null)}
-          onAddToCart={(sourceEl) => {
-            const cartEl = cartButtonRef.current;
-            if (!cartEl) return;
-            addToCart(selected);
-            start(sourceEl, cartEl, selected.img, selected.icon, () => setSelected(null));
+    <div className={styles.grid}>
+      {SEED_MARKET_ITEMS.map((item) => (
+        <ItemCard
+          key={item.id}
+          item={item}
+          onClick={() => {
+            if (!item.externalUrl) return;
+            markExploredCatalog();
+            window.open(item.externalUrl, '_blank', 'noopener');
           }}
         />
-      ) : (
-        <div className={styles.grid}>
-          {items.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onClick={() => setSelected(item)}
-              callout={showGuide && item.id === guideItemId ? 'Try buying this' : undefined}
-            />
-          ))}
-        </div>
-      )}
-      {flyingNode}
-    </>
+      ))}
+      <AddItemTile onClick={onPublish} />
+    </div>
   );
 }

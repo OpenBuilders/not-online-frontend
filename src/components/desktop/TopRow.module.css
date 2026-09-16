@@ -14,5 +14,15 @@
     display: flex;
     gap: 8px;
     align-items: stretch;
+    /* This row's own box spans edge-to-edge at a z-index (46) higher than most of the rest of
+       the desktop — including MySubmissions' trigger pill, which centers itself in that same
+       vertical band. AuthPill/StatBar only ever fill part of that box, but the empty rest of it
+       was still a real (if invisible) element sitting on top of anything positioned underneath,
+       silently eating taps meant for whatever was actually there. `pointer-events: none` here +
+       `auto` on the real children (below) makes only the buttons themselves catch clicks. */
+    pointer-events: none;
+  }
+  .toprow > * {
+    pointer-events: auto;
   }
 }

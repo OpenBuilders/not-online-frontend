@@ -18,6 +18,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
+}
+.blurred {
   filter: blur(3px);
   opacity: 0.6;
   pointer-events: none;
@@ -61,4 +63,72 @@
   font-size: 12.5px;
   color: var(--c-muted);
   max-width: 220px;
+}
+
+.moreSoon {
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-faint);
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 9px;
+  margin-top: 12px;
+}
+
+.railHead {
+  font-size: 15px;
+  color: var(--c-ink);
+  font-weight: 500;
+  margin: 20px 0 10px;
+}
+.empty {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 11px 13px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.rowMain {
+  flex: 1;
+  min-width: 0;
+}
+.rowName {
+  font-size: 13px;
+  color: var(--c-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rowSub {
+  font-size: 10.5px;
+  color: var(--c-muted);
+  margin-top: 2px;
+}
+.rowBadge {
+  flex-shrink: 0;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(255, 176, 32, 0.16);
+  color: var(--c-warning-2);
+}
+.rowBadgeLive {
+  background: rgba(168, 255, 26, 0.16);
+  color: var(--c-accent-shade-2);
 }

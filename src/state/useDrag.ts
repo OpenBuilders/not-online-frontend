@@ -1,5 +1,8 @@
 import { useEffect, useRef, type RefObject } from 'react';
 
+// Minimum pointer travel, in px, before a pointerdown counts as a drag rather than a click.
+const DRAG_THRESHOLD = 4;
+
 export type DragBounds = 'viewport' | RefObject<HTMLElement | null>;
 
 export interface UseDragOptions {
@@ -55,6 +58,13 @@ export function useDrag({
   // rest of the drag; a ref doesn't.
   const draggingRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
+  // Where the gesture actually started — a real click's pointerdown/pointerup pair almost
+  // never lands on the exact same pixel (hand tremor, trackpad jitter), so without a minimum
+  // distance every plain click registered as a 1px "drag": the icon would nudge visibly and
+  // hasMovedRef would flip true, making DesktopIcon's click handler swallow the click as a
+  // drag-end instead of opening the app — the user had to click several times before one
+  // pointerdown/pointerup pair happened to move zero pixels.
+  const startPointRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (disabled) return;
@@ -77,6 +87,7 @@ export function useDrag({
 
       draggingRef.current = true;
       hasMovedRef.current = false;
+      startPointRef.current = { x: e.clientX, y: e.clientY };
       const rect = element.getBoundingClientRect();
       offsetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       if (disableTextSelection) document.body.style.userSelect = 'none';
@@ -86,7 +97,12 @@ export function useDrag({
 
     function onPointerMove(e: PointerEvent) {
       if (!draggingRef.current || !element) return;
-      hasMovedRef.current = true;
+      if (!hasMovedRef.current) {
+        const dx = e.clientX - startPointRef.current.x;
+        const dy = e.clientY - startPointRef.current.y;
+        if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+        hasMovedRef.current = true;
+      }
       const b = getBoundsRect();
       const { x: offsetX, y: offsetY } = offsetRef.current;
       const maxX = b.width - element.offsetWidth - margin;

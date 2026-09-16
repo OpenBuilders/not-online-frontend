@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { useGuestGating } from '@/state/useGuestGating';
 import { useWindowManager } from '@/state/WindowManagerContext';
 import styles from './HomeBar.module.css';
 
@@ -13,12 +12,12 @@ import styles from './HomeBar.module.css';
  * panel above it.
  */
 export function HomeBar() {
-  const { guestUnlocked } = useGuestGating();
   const { openWindow, closeAllWindows } = useWindowManager();
   const [launcherOpen, setLauncherOpen] = useState(false);
 
   // Widget-backed apps (Radar/Toolbox/Orgs/SMM/Your page) are parked for
-  // this pass — only Market and Settings actually exist right now.
+  // this pass — only Market and Settings actually exist right now. Both
+  // are available from the start (see DesktopIconLayer).
   const apps = [
     {
       name: 'Market',
@@ -29,7 +28,7 @@ export function HomeBar() {
     {
       name: 'Settings',
       icon: 'settings',
-      on: guestUnlocked('settings'),
+      on: true,
       open: () => openWindow({ kind: 'settings', title: 'Settings', width: 700, height: 520, singleton: true }),
     },
   ];

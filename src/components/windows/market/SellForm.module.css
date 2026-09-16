@@ -1,0 +1,183 @@
+/* Two columns — photo left, fields right — instead of one stacked column:
+   fills the window's width instead of leaving dead space beside a narrow
+   form, and keeps the whole thing short enough to fit without scrolling. */
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+  height: 100%;
+}
+
+.drop {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(120, 190, 0, 0.5);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  background: rgba(168, 255, 26, 0.12);
+  cursor: pointer;
+}
+.drop:hover {
+  background: rgba(168, 255, 26, 0.18);
+}
+.dropTitle {
+  font-size: 14px;
+  color: var(--c-ink);
+  margin-top: 10px;
+}
+.dropSub {
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-top: 3px;
+}
+.drop img,
+.drop video {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.formLabel {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-muted);
+  margin: 14px 0 5px;
+}
+.fields > .formLabel:first-child {
+  margin-top: 0;
+}
+.input,
+.textarea {
+  width: 100%;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--c-ink);
+  outline: none;
+}
+.input:focus,
+.textarea:focus {
+  border-color: var(--c-accent-shade-2);
+}
+.input:disabled {
+  background: var(--c-paper-3);
+  color: var(--c-muted);
+  cursor: not-allowed;
+}
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.row2 {
+  display: flex;
+  gap: 12px;
+}
+.row2 > div {
+  flex: 1;
+}
+
+.priceWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.priceSign {
+  position: absolute;
+  left: 14px;
+  font-size: 14px;
+  color: var(--c-muted);
+  pointer-events: none;
+}
+.priceInput {
+  width: 100%;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  padding: 12px 14px 12px 26px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--c-ink);
+  outline: none;
+  /* Hide the native number-input spinner — Firefox */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.priceInput:focus {
+  border-color: var(--c-accent-shade-2);
+}
+/* Hide the native number-input spinner — Chrome/Safari/Edge */
+.priceInput::-webkit-outer-spin-button,
+.priceInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.publishButton {
+  margin-top: 22px;
+}
+
+.formError,
+.submitError {
+  font-size: 12px;
+  color: var(--c-danger-2);
+  margin-top: 6px;
+}
+
+.quota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--c-muted);
+  margin-top: 12px;
+}
+
+.limit {
+  text-align: center;
+  padding: 44px 16px;
+  color: var(--c-warning-2);
+}
+.limit h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--c-ink);
+  margin-top: 10px;
+}
+.limit p {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin-top: 6px;
+}
+.limitCount {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-muted);
+  margin-top: 6px;
+}
+
+@media (max-width: 620px) {
+  .form {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .drop {
+    min-height: 160px;
+  }
+}

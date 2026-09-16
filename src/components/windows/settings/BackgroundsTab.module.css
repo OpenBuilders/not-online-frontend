@@ -1,0 +1,107 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  padding-top: 6px;
+}
+
+.option {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background-color: var(--c-paper-3);
+  padding: 0;
+  display: flex;
+  align-items: flex-end;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.option.selected {
+  border-color: var(--c-accent);
+}
+.option.locked {
+  cursor: default;
+}
+.option.patronLocked {
+  cursor: pointer;
+}
+
+/* The dimming lives on this photo layer only — `.lockBadge`/`.callout`/`.name` are siblings,
+   not descendants, of `.photo`, so they're never touched by its opacity and always render at
+   full strength (the lock icon and "Patrons" sticker need to stay legible precisely when the
+   tile itself is dimmed). */
+.photo {
+  position: absolute;
+  inset: 0;
+  /* Own corner rounding instead of relying on `.option`'s `overflow: hidden` — that clipped the
+     "Patrons" sticker too, since `.callout` (below) is deliberately positioned to overhang past
+     the card's edge. A border-radius clips an element's own background paint without needing
+     overflow to be hidden at all, so this rounds the photo without touching the sticker. */
+  border-radius: inherit;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.option:hover .photo {
+  opacity: 1;
+}
+.option.selected .photo {
+  opacity: 1;
+}
+.option.locked .photo {
+  opacity: 0.45;
+}
+.option.locked:hover .photo {
+  opacity: 0.45;
+}
+.option.patronLocked:hover .photo {
+  opacity: 0.65;
+}
+
+.name {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.lockBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.callout {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  z-index: 2;
+}
+
+@media (max-width: 760px) {
+  .photo,
+  .option.locked .photo,
+  .option:hover .photo,
+  .option.locked:hover .photo,
+  .option.patronLocked:hover .photo {
+    opacity: 1;
+  }
+}

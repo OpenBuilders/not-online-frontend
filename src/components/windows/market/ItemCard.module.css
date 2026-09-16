@@ -26,7 +26,7 @@
 }
 
 .preview {
-  height: 108px;
+  aspect-ratio: 1 / 1;
   border-radius: 14px 14px 0 0;
   overflow: hidden;
   display: flex;

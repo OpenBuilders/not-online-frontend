@@ -1,13 +1,75 @@
-.panel {
+/* Two independent containers, not one nested column — the trigger needs to squeeze onto
+   AuthPill's row on mobile (narrow, left-aligned, stopping short of its circle), while the
+   dropdown wants to stay a wide, centered panel below the whole top row regardless of where
+   that narrow trigger sits. `width: 100%` + `pointer-events: none` (opted back in per-child)
+   gives each one a real full-width containing block to size/center against, without either
+   invisible strip swallowing clicks meant for whatever's underneath it. */
+.triggerWrap {
   position: absolute;
-  top: 92px;
-  right: 24px;
-  z-index: 5;
-  width: min(380px, calc(100% - 220px));
-  max-height: calc(100% - 158px);
-  overflow: hidden;
+  top: 16px; /* same row as AuthPill's "Guest" pill, TopRow.module.css */
+  left: 0;
+  width: 100%;
+  z-index: 6;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.trigger {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px; /* matches AuthPill's .authbtn exactly */
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(18, 18, 20, 0.66);
   color: var(--c-white);
-  background: rgba(14, 14, 16, 0.76);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.trigger:hover {
+  background: rgba(30, 30, 34, 0.8);
+  border-color: rgba(168, 255, 26, 0.4);
+}
+
+.headingIcon {
+  display: flex;
+  color: var(--c-accent);
+}
+
+.triggerText {
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+.dropdownAnchor {
+  position: absolute;
+  top: 70px; /* trigger's own top (16px) + its height (44px) + a 10px gap */
+  left: 0;
+  width: 100%;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dropdown {
+  pointer-events: auto;
+  width: min(380px, calc(100vw - 40px));
+  max-height: calc(100vh - 200px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--c-white);
+  background: rgba(14, 14, 16, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 18px;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
@@ -20,11 +82,7 @@
   gap: 10px;
   padding: 13px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-}
-
-.headingIcon {
-  display: flex;
-  color: var(--c-accent);
+  flex-shrink: 0;
 }
 
 .header h2 {
@@ -54,7 +112,6 @@
 }
 
 .list {
-  max-height: calc(100vh - 235px);
   padding: 8px;
   overflow-y: auto;
 }
@@ -152,15 +209,15 @@
 }
 
 @media (max-width: 760px) {
-  .panel {
-    top: 234px;
-    right: 10px;
-    left: 10px;
-    width: auto;
-    max-height: calc(100% - 300px);
-  }
-
-  .list {
-    max-height: 210px;
+  /* Trigger stays exactly as it is on desktop (centered, shrink-to-fit, same top offset) —
+     squeezing it onto AuthPill's own row made it a narrow flex-basis box that ended up
+     unclickable. `.dropdownAnchor`'s own top offset already matches (both sizes use the same
+     trigger position now), so only the dropdown's width needs a mobile-specific override. */
+  .dropdown {
+    /* 90% of the desktop screen itself (`.dropdownAnchor` is 100% of it), not the raw viewport —
+       `.desktop` sits inset from the true viewport, so vw-based widths here used to run past
+       its edge. */
+    width: 90%;
+    max-height: calc(100vh - 320px);
   }
 }

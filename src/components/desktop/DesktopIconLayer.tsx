@@ -2,7 +2,6 @@ import type { RefObject } from 'react';
 import { DesktopIcon } from '@/components/desktop/DesktopIcon';
 import { MarketCta } from '@/components/desktop/MarketCta';
 import { APP_ICON_PATHS } from '@/data/iconOverrides';
-import { useGuestGating } from '@/state/useGuestGating';
 import { useWindowManager } from '@/state/WindowManagerContext';
 
 interface DesktopIconLayerProps {
@@ -15,11 +14,12 @@ interface DesktopIconLayerProps {
  * `DesktopIcon` itself is generic (folder/file/app) so more can be added
  * here later without touching that component.
  *
- * Settings only renders once the guest has finished the Market tour
- * (guestUnlocked) — Market itself is never gated.
+ * Both are visible from the start — Settings used to only render once a
+ * guest finished the Market tour, but a guest peeking into it early (and
+ * seeing what's still locked) is the point now; the per-option unlock
+ * progression still lives inside Settings > Backgrounds itself.
  */
 export function DesktopIconLayer({ desktopRef }: DesktopIconLayerProps) {
-  const { guestUnlocked } = useGuestGating();
   const { openWindow } = useWindowManager();
 
   return (
@@ -39,18 +39,16 @@ export function DesktopIconLayer({ desktopRef }: DesktopIconLayerProps) {
           />
         }
       />
-      {guestUnlocked('settings') && (
-        <DesktopIcon
-          type="app"
-          app="settings"
-          name="Settings"
-          imageSrc={APP_ICON_PATHS.settings}
-          x={44}
-          y={280}
-          desktopRef={desktopRef}
-          onOpen={() => openWindow({ kind: 'settings', title: 'Settings', width: 700, height: 520, singleton: true })}
-        />
-      )}
+      <DesktopIcon
+        type="app"
+        app="settings"
+        name="Settings"
+        imageSrc={APP_ICON_PATHS.settings}
+        x={44}
+        y={280}
+        desktopRef={desktopRef}
+        onOpen={() => openWindow({ kind: 'settings', title: 'Settings', width: 700, height: 520, singleton: true })}
+      />
     </>
   );
 }

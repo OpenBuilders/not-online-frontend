@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'react';
+import { forwardRef, type ButtonHTMLAttributes } from 'react';
 import { cx } from '@/lib/cx';
 import styles from './AeroButton.module.css';
 
@@ -14,22 +14,16 @@ type AeroButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   soon?: boolean;
 };
 
-export function AeroButton({
-  variant = 'silver',
-  theme = 'dark',
-  size = 'md',
-  wide = false,
-  soon = false,
-  className,
-  children,
-  disabled,
-  ...props
-}: AeroButtonProps) {
+export const AeroButton = forwardRef<HTMLButtonElement, AeroButtonProps>(function AeroButton(
+  { variant = 'silver', theme = 'dark', size = 'md', wide = false, soon = false, className, children, disabled, ...props },
+  ref
+) {
   const variantClass =
     variant === 'ghost' && theme === 'light' ? styles.ghostLight : variant === 'silver' ? undefined : styles[variant];
 
   const button = (
     <button
+      ref={ref}
       className={cx(styles.aero, variantClass, size === 'sm' && styles.sm, wide && styles.wide, className)}
       disabled={disabled || soon}
       {...props}
@@ -49,4 +43,4 @@ export function AeroButton({
       <span className={styles.soonBubble}>Soon</span>
     </span>
   );
-}
+});

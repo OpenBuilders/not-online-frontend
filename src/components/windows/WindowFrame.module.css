@@ -129,24 +129,45 @@
 
 @media (max-width: 760px) {
   .win {
-    position: fixed !important;
-    left: 2vw !important;
-    width: 96vw !important;
-    max-width: 96vw;
+    /* `.desktop` (base.css) is itself inset from the real viewport — it's `96vw`/`92vh`, not
+       `100vw`/`100vh` — so sizing a window in `vw` put it flush with the true viewport edges,
+       which ran past `.desktop`'s own edges instead of sitting inside them. `.win` is rendered
+       as a direct child of `.desktop` (position: relative, base.css), so switching to
+       `position: absolute` here makes every value below resolve against `.desktop`'s own box
+       instead — 90% width, centered with a 5% gutter on each side ("10% narrower than the
+       desktop screen"). Dragging is already inert at this breakpoint (every `!important` below
+       overrides whatever inline `left`/`top` useDrag would otherwise set), so this doesn't
+       touch drag behavior. */
+    position: absolute !important;
+    left: 5% !important;
+    width: 90% !important;
+    max-width: 90%;
     border-radius: 14px;
   }
+  /* Bottom clearance: HomeBar (HomeBar.module.css) floats above the running-line ticker at
+     `bottom: 30px (--mobile-ticker-height) + safe-area + 14px`, and is itself ~56px tall (42px
+     circle + 7px top/bottom padding) — so its own top edge sits ~100px above `.desktop`'s
+     bottom edge. A window needs to stop above that, with a real gap.
+     Sized in `%` here, not `92vh` — `.desktop` (base.css) is `92vh` but also `max-height: 1000px`,
+     and on any viewport taller than ~1087px (e.g. a desktop browser just narrowed in width, a
+     common way to "test mobile" without a real device) that cap wins, so `.desktop`'s actual
+     rendered height stops growing with `vh` while a `92vh`-based formula here kept scaling past
+     it — the window could end up taller than `.desktop` itself regardless of any pixel constant
+     subtracted from it. `.win` is `position: absolute` inside `.desktop` (`position: relative`),
+     so a plain `%` height always resolves against `.desktop`'s real, already-clamped height —
+     correct in every case instead of only when the `max-height` cap isn't in play. */
   /* one window open: fills the usable area. two: stacked top/bottom. */
   :global(body.win1) .win {
     top: 104px !important;
-    height: calc(100vh - 176px) !important;
+    height: calc(100% - 224px) !important;
   }
   :global(body.win2) .win.stackTop {
     top: 100px !important;
-    height: calc(50vh - 74px) !important;
+    height: calc(50% - 114px) !important;
   }
   :global(body.win2) .win.stackBot {
-    top: calc(50vh + 32px) !important;
-    height: calc(50vh - 106px) !important;
+    top: 50% !important;
+    height: calc(50% - 120px) !important;
   }
   .content {
     overflow: auto;

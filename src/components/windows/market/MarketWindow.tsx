@@ -3,59 +3,53 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
 import { BrowseTab } from './BrowseTab';
-import { CartTab } from './CartTab';
 import styles from './MarketWindow.module.css';
-import { SellWizard } from './SellWizard';
+import { SellForm } from './SellForm';
 import { StatsLocked } from './StatsLocked';
 
-type Tab = 'sell' | 'browse' | 'stats' | 'cart';
+type Tab = 'sell' | 'browse' | 'stats';
 
 /**
  * Tab shell for Market. Ported in spirit from openMarket() (Tools.html:3186-
- * 3348) — browse/apply/stats — plus a real Cart panel and a first-run Sell
- * step the original didn't have. A guest who hasn't finished the market
- * onboarding yet always lands on Sell first; everyone else lands on Browse.
- * Cart is a persistent header button (with a count badge) rather than one
- * of the equal tabs, since it's a destination you jump to from anywhere.
+ * 3348) — browse/apply/stats. There's no in-app buy flow (every Browse item
+ * either redirects out to the live site or is the "+ Publish" tile), so
+ * there's no Cart tab either — real listings go through the moderation
+ * queue (src/api/marketSubmissions.ts) and surface in the desktop's
+ * MySubmissions panel, not here. A guest who hasn't finished the market
+ * onboarding yet always lands on Sell first; everyone else lands on
+ * Browse.
+ *
+ * Tabs live in a left rail (`.set-rail`'s original Finder-style treatment,
+ * Tools.html:1174) rather than a top bar.
  */
 export function MarketWindow() {
   const { state } = useAppState();
   const isFirstRun = !state.logged && !state.tours.has('market');
   const [tab, setTab] = useState<Tab>(isFirstRun ? 'sell' : 'browse');
-  const cartButtonRef = useRef<HTMLButtonElement>(null);
+  // Passed down to SellForm so its FocusTour can darken the whole window
+  // (rail included) instead of just its own tab content — see FocusTour.tsx.
+  const windowRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className={styles.window}>
-      <div className={styles.tabs}>
-        <button type="button" className={cx(styles.tab, tab === 'sell' && styles.on)} onClick={() => setTab('sell')}>
-          <MaterialIcon name="add_box" size={16} />
+    <div className={styles.window} ref={windowRef}>
+      <div className={styles.rail}>
+        <button type="button" className={cx(styles.railItem, tab === 'sell' && styles.on)} onClick={() => setTab('sell')}>
+          <MaterialIcon name="add_box" size={17} />
           Sell
         </button>
-        <button type="button" className={cx(styles.tab, tab === 'browse' && styles.on)} onClick={() => setTab('browse')}>
-          <MaterialIcon name="storefront" size={16} />
+        <button type="button" className={cx(styles.railItem, tab === 'browse' && styles.on)} onClick={() => setTab('browse')}>
+          <MaterialIcon name="storefront" size={17} />
           Browse
         </button>
-        <button type="button" className={cx(styles.tab, tab === 'stats' && styles.on)} onClick={() => setTab('stats')}>
-          <MaterialIcon name="bar_chart" size={16} />
+        <button type="button" className={cx(styles.railItem, tab === 'stats' && styles.on)} onClick={() => setTab('stats')}>
+          <MaterialIcon name="bar_chart" size={17} />
           Stats
-        </button>
-        <div className={styles.spacer} />
-        <button
-          ref={cartButtonRef}
-          type="button"
-          className={cx(styles.cartButton, tab === 'cart' && styles.on)}
-          onClick={() => setTab('cart')}
-          aria-label="Cart"
-        >
-          <MaterialIcon name="shopping_cart" size={18} />
-          {state.cart.length > 0 && <span className={styles.badge}>{state.cart.length}</span>}
         </button>
       </div>
       <div className={styles.body}>
-        {tab === 'sell' && <SellWizard onSubmitted={() => setTab('browse')} />}
-        {tab === 'browse' && <BrowseTab cartButtonRef={cartButtonRef} />}
+        {tab === 'sell' && <SellForm onSubmitted={() => setTab('browse')} windowRef={windowRef} />}
+        {tab === 'browse' && <BrowseTab onPublish={() => setTab('sell')} />}
         {tab === 'stats' && <StatsLocked />}
-        {tab === 'cart' && <CartTab onBack={() => setTab('browse')} />}
       </div>
     </div>
   );

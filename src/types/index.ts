@@ -4,11 +4,16 @@
 
 export type MarketItemStatus = 'queued' | 'live';
 
+/** The one callout sticker a Browse-grid card can wear. At most one per item. */
+export type MarketItemBadge = 'buyMe' | 'patronsOnly';
+
 export interface MarketItem {
   id: string;
   name: string;
   contact?: string;
   price: number;
+  /** Overrides the `$price` display, e.g. "Priceless" — the fixed catalogue's Nothing cap uses this. */
+  priceLabel?: string;
   amount: number;
   desc: string;
   img: string | null;
@@ -17,6 +22,9 @@ export interface MarketItem {
   icon: string;
   status: MarketItemStatus;
   views: number;
+  badge?: MarketItemBadge;
+  /** Set on the fixed catalogue items — clicking the card opens this instead of anything in-app (this desktop doesn't handle checkout; real listings go through the moderation queue). */
+  externalUrl?: string;
 }
 
 export type SiteTemplateId = 'stack' | 'grid' | 'stick' | 'web1';
@@ -61,12 +69,13 @@ export interface AppState {
   email: string | null;
   invited: boolean;
   tours: Set<TourId>;
-  myItems: MarketItem[];
-  cart: MarketItem[];
   site: SiteConfig | null;
   cursor: string;
+  /** Selected background's id (see `src/data/backgrounds.ts`) — null means the default. */
   wallpaper: string | null;
   appIcons: Record<string, string>;
+  /** A guest has clicked out to a live catalogue item at least once — unlocks the 3rd background option. */
+  exploredCatalog: boolean;
 }
 
 // ---- window manager ----
@@ -74,7 +83,7 @@ export interface AppState {
 /** One entry per openable app/window. Widget-backed windows (radar/tools/
  *  orgs/smm/websiteBuilder) are parked with the widgets themselves — add
  *  them back here when they come back. */
-export type WindowKind = 'market' | 'settings' | 'patron' | 'artistApply' | 'notFound' | 'blank';
+export type WindowKind = 'market' | 'settings' | 'artistApply' | 'notFound' | 'blank';
 
 export interface WindowInstance {
   id: string;

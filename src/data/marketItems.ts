@@ -1,36 +1,48 @@
 import type { MarketItem } from '@/types';
+import { PATRON_URL } from './links';
 
 /**
- * The always-present public marketplace catalogue.
- *
- * Clips live at public/assets/market/seed-1.webm and seed-2.webm, rendered
- * via ItemMedia as short looping previews instead of static photos.
- * ItemMedia falls back to the `icon` below (same onError pattern as
- * DesktopIcon) if a file is missing or fails to load.
+ * The always-present marketplace catalogue: two real Nothing products that
+ * redirect out to the live site instead of opening anything in-app — this
+ * desktop doesn't handle checkout, and a real listing now goes through the
+ * moderation queue (see src/api/marketSubmissions.ts), not this list.
+ * Rendered via ItemMedia as short looping previews; clips live at
+ * public/assets/market/seed-1.webm and seed-2.webm.
  */
 export const SEED_MARKET_ITEMS: MarketItem[] = [
   {
     id: 'seed-1',
-    name: 'Riso Print A2',
-    price: 38,
-    amount: 12,
-    desc: 'Two-colour risograph print, edition of 50, signed.',
+    name: 'longsleeve not blank',
+    price: 80,
+    amount: 1,
+    desc: '',
     img: null,
     video: '/assets/market/seed-1.webm',
-    icon: 'imagesmode',
+    icon: 'checkroom',
     status: 'live',
-    views: 128,
+    views: 0,
+    badge: 'buyMe',
+    externalUrl: 'https://probablynothing.xyz/item/longsleeve-not-blank',
   },
   {
     id: 'seed-2',
-    name: 'Ceramic Mug',
-    price: 28,
-    amount: 6,
-    desc: 'Wheel-thrown stoneware, matte glaze, slightly wrong on purpose.',
+    name: 'Nothing cap',
+    price: 0,
+    priceLabel: 'Priceless',
+    amount: 1,
+    desc: '',
     img: null,
     video: '/assets/market/seed-2.webm',
-    icon: 'coffee',
+    icon: 'checkroom',
     status: 'live',
-    views: 64,
+    views: 0,
+    badge: 'patronsOnly',
+    externalUrl: PATRON_URL,
   },
 ];
+
+/** Pending-review cap for a logged-in seller — matches the backend's own MAX_AUTHENTICATED_SUBMISSIONS. */
+export const MAX_ITEMS = 3;
+/** A guest's one-time demo run (see SellForm's `submit()`) never touches the backend and doesn't
+ *  count against this — a guest still only gets 1 *real* application. */
+export const GUEST_MAX_ITEMS = 1;

@@ -36,3 +36,9 @@
   background: var(--c-white);
   color: #111;
 }
+
+.withIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

@@ -1,0 +1,81 @@
+/* Page shell + the backdrop layer. Every backdrop is drawn from the palette
+   variables set on `.page`, so picking a new palette re-colours the pattern
+   too instead of leaving a grey graticule on a lime page. */
+
+.page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--pg-bg);
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  isolation: isolate;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.backdrop[data-kind='grid'] {
+  background-image:
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--pg-ink);
+  opacity: 0.14;
+}
+
+.backdrop[data-kind='dots'] {
+  background-image: radial-gradient(currentColor 1.6px, transparent 1.7px);
+  background-size: 18px 18px;
+  color: var(--pg-ink);
+  opacity: 0.22;
+}
+
+.backdrop[data-kind='rays'] {
+  background: repeating-conic-gradient(from 0deg at 50% 32%, var(--pg-accent) 0deg 9deg, transparent 9deg 18deg);
+  opacity: 0.22;
+}
+
+.backdrop[data-kind='checker'] {
+  background-image:
+    linear-gradient(45deg, currentColor 25%, transparent 25% 75%, currentColor 75%),
+    linear-gradient(45deg, currentColor 25%, transparent 25% 75%, currentColor 75%);
+  background-size: 56px 56px;
+  background-position:
+    0 0,
+    28px 28px;
+  color: var(--pg-ink);
+  opacity: 0.1;
+}
+
+.backdrop[data-kind='stripes'] {
+  background: repeating-linear-gradient(-45deg, var(--pg-accent) 0 14px, transparent 14px 34px);
+  opacity: 0.2;
+}
+
+.backdrop[data-kind='photo'] {
+  background-size: cover;
+  background-position: center;
+}
+/* A photo backdrop has no idea what the type colour is, so it gets a scrim
+   in the page's own ground colour to keep the copy on top readable. */
+.backdrop[data-kind='photo']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--pg-bg);
+  opacity: 0.55;
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}

@@ -3,9 +3,9 @@ import { useAppState } from './AppStateContext';
 import type { TourId } from '@/types';
 
 /** Order the desktop reveals itself in for a guest (Tools.html:3628).
- *  Trimmed to what's actually built right now — 'radar'/'page' come back
- *  once those widgets do. */
-export const GUEST_CHAIN: TourId[] = ['market', 'settings'];
+ *  Trimmed to what's actually built right now — 'radar' comes back once
+ *  that widget does. */
+export const GUEST_CHAIN: TourId[] = ['market', 'settings', 'page'];
 
 /**
  * Guest progressive-unlock gating (ported from guestUnlocked/applyGating,

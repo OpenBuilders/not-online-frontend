@@ -68,13 +68,19 @@ export function useAutoLayout(desktopRef: RefObject<HTMLElement | null>, deps: D
         // style — clearing it doesn't guarantee React repaints the value,
         // since nothing forces a re-render just because this effect mutated
         // the DOM directly.
-        [...icons, ...widgets].forEach((el) => {
-          if (el.dataset.x) el.style.left = `${el.dataset.x}px`;
-          if (el.dataset.y) el.style.top = `${el.dataset.y}px`;
-        });
         widgets.forEach((el) => {
           el.style.width = '';
           el.style.height = '';
+        });
+        [...icons, ...widgets].forEach((el) => {
+          if (el.dataset.y) el.style.top = `${el.dataset.y}px`;
+          if (!el.dataset.x) return;
+          // Seed positions are authored against a wide desktop. Clamping to
+          // the container keeps a widget whole on a narrow-but-not-mobile
+          // window instead of letting it run off the right edge, where its
+          // action button is unreachable.
+          const maxLeft = desk.clientWidth - el.offsetWidth - 16;
+          el.style.left = `${Math.max(16, Math.min(Number(el.dataset.x), maxLeft))}px`;
         });
         desk.style.overflowY = '';
       }

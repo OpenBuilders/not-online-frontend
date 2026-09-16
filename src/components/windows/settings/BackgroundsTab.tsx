@@ -16,7 +16,7 @@ import styles from './BackgroundsTab.module.css';
  * instead, since there's nothing to click your way past there.
  */
 export function BackgroundsTab() {
-  const { state, setWallpaper } = useAppState();
+  const { state, setWallpaper, completeTour } = useAppState();
   const current = state.wallpaper ?? 'default';
 
   return (
@@ -42,6 +42,10 @@ export function BackgroundsTab() {
                 return;
               }
               setWallpaper(opt.id);
+              // Actually changing the wallpaper is what finishes the
+              // Settings step of the guest chain — and so reveals the
+              // links-page builder on the desktop.
+              completeTour('settings');
             }}
           >
             {/* The dimming for a locked/unselected option lives on this photo layer alone, not

@@ -30,39 +30,33 @@ export interface MarketItem {
 export type SiteTemplateId = 'stack' | 'grid' | 'stick' | 'web1';
 
 export interface SiteLink {
+  id: string;
   icon: string;
   title: string;
   url: string;
 }
 
-export interface Sticker {
-  id: string;
-  shape: 'sq' | 'rd' | 'ci' | 'st' | 'bl';
-  x: number;
-  y: number;
-  size: number;
-  rot: number;
-  color: string;
-  img: string | null;
-  title: string;
-  fs: number;
-}
-
 export interface SiteConfig {
   handle: string;
   name: string;
+  bio: string;
+  /** Data URL from an upload, a path under /assets/, or null for the initials fallback. */
+  avatar: string | null;
   template: SiteTemplateId;
-  combo: string;
+  palette: string;
+  backdrop: string;
+  /** Only read when `backdrop` is 'photo'. */
+  backdropImage: string | null;
   links: SiteLink[];
-  stickers: Sticker[] | null;
+  /** Shuffles the sticker template's scatter — the layout is derived, not hand-placed. */
+  seed: number;
   views: number;
   clicks: number;
 }
 
-/** The guest onboarding chain unlocks these one at a time. Widgets (and the
- *  'radar'/'page' steps that used to gate them) are parked for now — see
- *  useGuestGating.ts. */
-export type TourId = 'market' | 'settings';
+/** The guest onboarding chain unlocks these one at a time. The widget-backed
+ *  'radar' step is still parked — see useGuestGating.ts. */
+export type TourId = 'market' | 'settings' | 'page';
 
 export interface AppState {
   logged: boolean;
@@ -80,10 +74,10 @@ export interface AppState {
 
 // ---- window manager ----
 
-/** One entry per openable app/window. Widget-backed windows (radar/tools/
- *  orgs/smm/websiteBuilder) are parked with the widgets themselves — add
- *  them back here when they come back. */
-export type WindowKind = 'market' | 'settings' | 'artistApply' | 'notFound' | 'blank';
+/** One entry per openable app/window. The remaining widget-backed windows
+ *  (radar/tools/orgs/smm) are parked with the widgets themselves — add them
+ *  back here when they come back. */
+export type WindowKind = 'market' | 'settings' | 'websiteBuilder' | 'artistApply' | 'notFound' | 'blank';
 
 export interface WindowInstance {
   id: string;

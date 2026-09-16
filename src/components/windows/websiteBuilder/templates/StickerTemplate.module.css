@@ -1,0 +1,212 @@
+.root {
+  height: 100%;
+  overflow: auto;
+  padding: 32px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ---- head ---- */
+
+.head {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar {
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: var(--pg-accent);
+  color: var(--pg-accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 6px #fff,
+    7px 8px 0 6px rgba(0, 0, 0, 0.5);
+  transform: rotate(-4deg);
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.initials {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.ribbon {
+  margin-top: 22px;
+  background: #101010;
+  color: #fff;
+  border: 3px solid #fff;
+  padding: 9px 22px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.45);
+  transform: rotate(1.5deg);
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bio {
+  margin: 18px 0 0;
+  max-width: 34ch;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  opacity: 0.82;
+}
+
+/* ---- the board ---- */
+
+.board {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px 30px;
+  width: 100%;
+  max-width: 560px;
+}
+
+/*
+  The white cut-line is a padded outer layer rather than a box-shadow ring,
+  because two of the four shapes are clip-paths and a box-shadow ignores
+  clip-path entirely — it would draw a rectangle's ring around a star.
+*/
+.sticker {
+  --tilt: 0deg;
+  --nudge-x: 0px;
+  --nudge-y: 0px;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  padding: 6px;
+  background: #fff;
+  text-decoration: none;
+  transform: translate(var(--nudge-x), var(--nudge-y)) rotate(var(--tilt));
+  filter: drop-shadow(6px 7px 0 rgba(0, 0, 0, 0.5));
+  transition:
+    transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    filter 0.16s;
+}
+.sticker:hover {
+  transform: translate(var(--nudge-x), calc(var(--nudge-y) - 5px)) rotate(0deg) scale(1.04);
+  filter: drop-shadow(9px 11px 0 rgba(0, 0, 0, 0.5));
+}
+.sticker:focus-visible {
+  outline: 3px solid var(--pg-accent-2);
+  outline-offset: 4px;
+}
+
+.face {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shapes — applied to both layers so the white edge follows the die-cut */
+.sticker[data-shape='circle'],
+.sticker[data-shape='circle'] .face {
+  border-radius: 50%;
+}
+.sticker[data-shape='rounded'],
+.sticker[data-shape='rounded'] .face {
+  border-radius: 28px;
+}
+.sticker[data-shape='squircle'],
+.sticker[data-shape='squircle'] .face {
+  border-radius: 46% 54% 52% 48% / 50% 46% 54% 50%;
+}
+.sticker[data-shape='burst'],
+.sticker[data-shape='burst'] .face {
+  clip-path: polygon(
+    50% 0%,
+    62% 9%,
+    77% 5%,
+    83% 19%,
+    97% 25%,
+    94% 40%,
+    100% 52%,
+    91% 63%,
+    93% 78%,
+    79% 83%,
+    70% 96%,
+    56% 92%,
+    43% 100%,
+    33% 89%,
+    18% 90%,
+    15% 75%,
+    3% 66%,
+    10% 53%,
+    2% 41%,
+    13% 31%,
+    11% 16%,
+    26% 14%,
+    35% 2%
+  );
+}
+/* A star's points leave no room for a label, so its type sits tighter in. */
+.sticker[data-shape='burst'] .face {
+  padding: 26px;
+}
+
+/* tones */
+.sticker[data-tone='a'] .face {
+  background: var(--pg-accent);
+  color: var(--pg-accent-ink);
+}
+.sticker[data-tone='b'] .face {
+  background: var(--pg-accent-2);
+  color: #101010;
+}
+.sticker[data-tone='c'] .face {
+  background: #101010;
+  color: #fff;
+}
+
+.foot {
+  margin-top: auto;
+  padding-top: 28px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker {
+    transition: none;
+  }
+}

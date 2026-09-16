@@ -1,0 +1,239 @@
+.root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- ticker strips ---- */
+
+.strip {
+  flex-shrink: 0;
+  height: 34px;
+  overflow: hidden;
+  background: var(--pg-accent);
+  color: var(--pg-accent-ink);
+  border-block: 3px solid var(--pg-ink);
+  display: flex;
+  align-items: center;
+}
+.strip[data-reverse='true'] {
+  background: var(--pg-ink);
+  color: var(--pg-bg);
+}
+
+.stripTrack {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  animation: slide 22s linear infinite;
+}
+.strip[data-reverse='true'] .stripTrack {
+  animation-direction: reverse;
+}
+.stripTrack span {
+  display: inline-flex;
+  align-items: center;
+}
+.stripDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  margin: 0 14px;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stripTrack {
+    animation: none;
+  }
+}
+
+/* ---- stage ---- */
+
+/* The strips stay full-bleed; the collage itself keeps to a column, so the
+   tiles don't stretch into letterboxes on a wide window. */
+.stage {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 30px max(30px, calc((100% - 660px) / 2)) 34px;
+  position: relative;
+}
+
+.starA,
+.starB {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  color: var(--pg-accent-2);
+  pointer-events: none;
+}
+.starA {
+  top: 18px;
+  right: 40px;
+  transform: rotate(12deg);
+}
+.starB {
+  bottom: 56px;
+  left: 26px;
+  width: 30px;
+  height: 30px;
+  color: var(--pg-accent);
+  transform: rotate(-14deg);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  gap: 26px;
+}
+
+/* ---- taped photo ---- */
+
+.polaroid {
+  position: relative;
+  flex-shrink: 0;
+  width: 168px;
+  background: #fff;
+  padding: 11px 11px 0;
+  border: 2px solid var(--pg-ink);
+  box-shadow: 7px 8px 0 rgba(0, 0, 0, 0.3);
+  transform: rotate(-4deg);
+}
+.tape {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  width: 76px;
+  height: 25px;
+  transform: translateX(-50%) rotate(-5deg);
+  background: var(--pg-accent-2);
+  opacity: 0.75;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+}
+.photo {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--pg-accent);
+  color: var(--pg-accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.initials {
+  font-size: 46px;
+  font-weight: 800;
+}
+.caption {
+  padding: 9px 2px 11px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #101010;
+  letter-spacing: 0.5px;
+}
+
+.intro {
+  flex: 1;
+  min-width: 0;
+  padding-top: 6px;
+}
+.name {
+  margin: 0;
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -1.6px;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--pg-accent-2);
+  -webkit-text-stroke: 2px var(--pg-ink);
+  paint-order: stroke fill;
+}
+.note {
+  margin-top: 16px;
+  background: #fff;
+  color: #101010;
+  border: 2px solid var(--pg-ink);
+  box-shadow: 5px 5px 0 var(--pg-ink);
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  transform: rotate(1.4deg);
+}
+
+/* ---- link tiles ---- */
+
+.tiles {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.tile {
+  --tilt: 0deg;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px;
+  border: 3px solid var(--pg-ink);
+  box-shadow: 6px 6px 0 var(--pg-ink);
+  text-decoration: none;
+  transform: rotate(var(--tilt));
+  transition:
+    transform 0.14s,
+    box-shadow 0.14s;
+}
+.tile[data-tone='0'] {
+  background: var(--pg-accent);
+  color: var(--pg-accent-ink);
+}
+.tile[data-tone='1'] {
+  background: var(--pg-accent-2);
+  color: var(--pg-ink);
+}
+.tile[data-tone='2'] {
+  background: #fff;
+  color: #101010;
+}
+.tile:hover {
+  transform: rotate(0deg) translate(3px, 3px);
+  box-shadow: 3px 3px 0 var(--pg-ink);
+}
+.tile:focus-visible {
+  outline: 3px solid var(--pg-ink);
+  outline-offset: 3px;
+}
+
+.tileLabel {
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

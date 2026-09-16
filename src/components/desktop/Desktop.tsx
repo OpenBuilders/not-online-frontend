@@ -5,6 +5,7 @@ import { HomeBar } from '@/components/desktop/HomeBar';
 import { MySubmissions } from '@/components/desktop/MySubmissions';
 import { TopRow } from '@/components/desktop/TopRow';
 import { LoginScreen } from '@/components/login/LoginScreen';
+import { WebsiteBuilderWidget } from '@/components/widgets/WebsiteBuilderWidget';
 import { WindowManager } from '@/components/windows/WindowManager';
 import { BACKGROUND_OPTIONS } from '@/data/backgrounds';
 import { useAppState } from '@/state/AppStateContext';
@@ -52,8 +53,10 @@ export function Desktop() {
 
       <TopRow onRequestLogin={() => setLoginOpen(true)} />
 
-      {/* Widgets (Radar/Toolbox/Orgs/SMM/Website Builder) are parked for
-          this pass — Market, Settings, and the desktop shell only. */}
+      {/* The Radar/Toolbox/Orgs/SMM widgets are still parked — their tools
+          don't exist here yet. The links page does, so its widget is live. */}
+      <WebsiteBuilderWidget desktopRef={desktopRef} />
+
       <DesktopIconLayer desktopRef={desktopRef} />
       <MySubmissions />
 

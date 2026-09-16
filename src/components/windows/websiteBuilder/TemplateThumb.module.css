@@ -1,0 +1,148 @@
+.thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--t-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 7px;
+  gap: 4px;
+}
+
+/* ---- poster ---- */
+.stackTitle {
+  height: 13px;
+  width: 78%;
+  background: var(--t-ink);
+  border-radius: 1px;
+}
+.stackHl {
+  height: 6px;
+  width: 54%;
+  background: var(--t-accent);
+  border-radius: 1px;
+}
+.slab {
+  height: 9px;
+  width: 100%;
+  border: 1.5px solid var(--t-ink);
+  border-radius: 1px;
+  margin-top: 2px;
+}
+
+/* ---- collage ---- */
+.thumb[data-template='grid'] {
+  padding: 0;
+  gap: 0;
+}
+.stripTop,
+.stripBottom {
+  height: 7px;
+  flex-shrink: 0;
+  background: var(--t-accent);
+}
+.stripBottom {
+  background: var(--t-ink);
+  margin-top: auto;
+}
+.collagePhoto {
+  width: 26px;
+  height: 26px;
+  margin: 7px 0 0 8px;
+  background: var(--t-accent-2);
+  border: 1.5px solid var(--t-ink);
+  transform: rotate(-6deg);
+}
+.collageTiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 6px 8px 0;
+}
+.collageTiles i {
+  height: 11px;
+  border: 1.5px solid var(--t-ink);
+}
+.collageTiles i:nth-child(odd) {
+  background: var(--t-accent);
+}
+.collageTiles i:nth-child(even) {
+  background: var(--t-accent-2);
+}
+
+/* ---- stickers ---- */
+.thumb[data-template='stick'] {
+  padding: 0;
+}
+.stkA,
+.stkB,
+.stkC {
+  position: absolute;
+  box-shadow:
+    0 0 0 2.5px #fff,
+    2px 3px 0 2.5px rgba(0, 0, 0, 0.45);
+}
+.stkA {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--t-accent);
+  top: 11px;
+  left: 14px;
+  transform: rotate(-8deg);
+}
+.stkB {
+  width: 27px;
+  height: 27px;
+  border-radius: 6px;
+  background: var(--t-accent-2);
+  top: 30px;
+  right: 16px;
+  transform: rotate(10deg);
+}
+.stkC {
+  width: 24px;
+  height: 24px;
+  border-radius: 50% 42% 55% 45%;
+  background: #101010;
+  bottom: 9px;
+  left: 30px;
+  transform: rotate(-4deg);
+}
+
+/* ---- web 1.0 ---- */
+.thumb[data-template='web1'] {
+  background: #7a7a86;
+  padding: 9px;
+  justify-content: center;
+}
+.winBar {
+  height: 8px;
+  background: linear-gradient(90deg, #12128c, #4b4be0);
+  border: 1.5px solid #0a0a0a;
+  border-bottom: none;
+}
+.winBody {
+  flex: 1;
+  background: #fff;
+  border: 1.5px solid #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+}
+.winH {
+  height: 7px;
+  width: 70%;
+  background: var(--t-accent-2);
+}
+.winLine {
+  height: 3px;
+  width: 100%;
+  background: #1414d0;
+}
+.winLine:last-child {
+  width: 62%;
+}

@@ -1,0 +1,43 @@
+/* One window, two halves: settings left, the real page right. `position:
+   relative` is load-bearing — FocusTour and the publish overlay both anchor
+   to this element so they can cover both halves. */
+
+.window {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.left {
+  width: 372px;
+  flex-shrink: 0;
+  min-height: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.right {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 860px) {
+  .window {
+    flex-direction: column;
+  }
+  /* Preview first on a phone: it is the thing being built, and a settings
+     column that pushed it below the fold would hide every change as it
+     happened. */
+  .right {
+    order: -1;
+    flex: 0 0 44%;
+    min-height: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  .left {
+    width: auto;
+    flex: 1;
+    border-right: none;
+  }
+}

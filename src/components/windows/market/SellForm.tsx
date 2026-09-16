@@ -3,11 +3,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '@/api/auth';
 import { createMarketSubmission, MARKET_SUBMISSIONS_QUERY_KEY, saveGuestMarketSubmission } from '@/api/marketSubmissions';
 import { AeroButton } from '@/components/shared/AeroButton';
+import { FocusTour, type FocusTourStep } from '@/components/shared/FocusTour';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { GUEST_MAX_ITEMS, MAX_ITEMS } from '@/data/marketItems';
 import { useAppState } from '@/state/AppStateContext';
 import { useMyMarketSubmissions } from '@/state/useMarketSubmissions';
-import { FocusTour, type FocusTourStep } from './FocusTour';
 import { PublishCelebration } from './PublishCelebration';
 import styles from './SellForm.module.css';
 

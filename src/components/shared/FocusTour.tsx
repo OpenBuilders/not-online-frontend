@@ -32,12 +32,6 @@ const BUBBLE_HEIGHT_EST = 64;
 const GAP = 12;
 const PAD = 6;
 const HOLE_RADIUS = 12; // matches .ring's own border-radius, so the glow and the cutout agree
-// The window this tour lives in pops in with a `transform: scale()` animation (WindowFrame.module.css's
-// `.win { animation: pop 0.26s ... }`) — getBoundingClientRect() reports the container's *animated*
-// (still-scaling) size on every frame during that window, so measuring immediately makes the whole
-// spotlight (and bubble) visibly grow/slide into place instead of appearing settled. Waiting this out
-// before the first measurement is simpler and more robust than trying to key off the animation itself.
-const SETTLE_DELAY_MS = 300;
 
 /** An SVG path for a rounded rect, for use inside `clip-path: path(...)`. */
 function roundedRectPath(x: number, y: number, w: number, h: number, r: number): string {
@@ -54,7 +48,7 @@ function roundedRectPath(x: number, y: number, w: number, h: number, r: number):
  * FocusTour attach its own native `addEventListener` per target to
  * auto-advance, which raced with React's own synthetic onClick/onChange on
  * the exact same element — the target's real handler (e.g. "upload the demo
- * photo") could lose that race, so the tour would visibly advance while the
+ * clip") could lose that race, so the tour would visibly advance while the
  * actual action silently didn't happen. Explicit beats implicit here.
  *
  * The dark layer is a single element with a `clip-path: path(evenodd, ...)`
@@ -79,16 +73,17 @@ export function FocusTour({ containerRef, steps, activeIndex }: FocusTourProps) 
   // effects/handlers, not render, since a render-time read can silently
   // desync from what actually got committed.
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-  const [settled, setSettled] = useState(false);
   const step = steps[activeIndex];
 
+  // A target can sit below the fold of a scrolling panel (the page builder's
+  // setup column is taller than the window), where a spotlight on it would
+  // point at nothing.
   useEffect(() => {
-    const id = setTimeout(() => setSettled(true), SETTLE_DELAY_MS);
-    return () => clearTimeout(id);
-  }, []);
+    step?.ref.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [activeIndex, step]);
 
   useLayoutEffect(() => {
-    if (!step || !settled) return;
+    if (!step) return;
     let frame: number;
     function measure() {
       const container = containerRef.current;
@@ -110,9 +105,9 @@ export function FocusTour({ containerRef, steps, activeIndex }: FocusTourProps) 
     // re-measures every frame while a step is active — cheap (a couple of getBoundingClientRect
     // calls) and keeps the cutout glued to its target through the step's own layout transitions
     // without needing a ResizeObserver per target.
-  }, [activeIndex, containerRef, step, settled]);
+  }, [activeIndex, containerRef, step]);
 
-  if (!step || !settled || !rect || !portalTarget) return null;
+  if (!step || !rect || !portalTarget) return null;
 
   const hole = {
     top: Math.max(0, rect.top - PAD),

@@ -5,6 +5,14 @@ import type { AppState, SiteConfig, TourId } from '@/types';
 // the picked background survive a reload here — for a guest and a logged-in seller alike, since
 // neither is part of the real backend session (that's cookie + `/auth/me`, see useAuth.ts).
 const PROGRESS_STORAGE_KEY = 'notportal:app-progress:v1';
+// The links page has no backend yet, so a published page lives entirely in
+// this browser. It gets its own key rather than riding along in the progress
+// blob: an uploaded avatar or background is a data URL, which is big enough
+// to blow the storage quota, and a failed write there must not also cost the
+// user their onboarding progress.
+const SITE_STORAGE_KEY = 'notportal:site:v1';
+
+const TOUR_IDS: TourId[] = ['market', 'settings', 'page'];
 
 interface PersistedProgress {
   tours: TourId[];
@@ -18,7 +26,7 @@ function loadPersistedProgress(): PersistedProgress {
     if (!raw) return { tours: [], exploredCatalog: false, wallpaper: null };
     const parsed = JSON.parse(raw) as Partial<PersistedProgress> | null;
     const tours = Array.isArray(parsed?.tours)
-      ? parsed.tours.filter((t): t is TourId => t === 'market' || t === 'settings')
+      ? parsed.tours.filter((t): t is TourId => TOUR_IDS.includes(t as TourId))
       : [];
     return {
       tours,
@@ -30,6 +38,21 @@ function loadPersistedProgress(): PersistedProgress {
   }
 }
 
+function loadPersistedSite(): SiteConfig | null {
+  try {
+    const raw = localStorage.getItem(SITE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as SiteConfig | null;
+    // Anything without a handle and a link array is from an older shape (or
+    // hand-edited) — treat it as "no page built yet" rather than rendering
+    // a half-shaped config.
+    if (!parsed || typeof parsed.handle !== 'string' || !Array.isArray(parsed.links)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 function buildInitialState(): AppState {
   const persisted = loadPersistedProgress();
   return {
@@ -37,7 +60,7 @@ function buildInitialState(): AppState {
     email: null,
     invited: new URLSearchParams(window.location.search).has('invite'),
     tours: new Set(persisted.tours),
-    site: null,
+    site: loadPersistedSite(),
     cursor: 'nothing',
     wallpaper: persisted.wallpaper,
     appIcons: {},
@@ -114,6 +137,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       // is better than breaking the app over it.
     }
   }, [state.tours, state.exploredCatalog, state.wallpaper]);
+
+  useEffect(() => {
+    if (!state.site) return;
+    try {
+      localStorage.setItem(SITE_STORAGE_KEY, JSON.stringify(state.site));
+    } catch {
+      // Same deal as above — an uploaded image can exceed the quota, and a
+      // page that stops surviving reloads beats a page that throws.
+    }
+  }, [state.site]);
 
   const login = useCallback((email: string) => dispatch({ type: 'LOGIN', email }), []);
   const logout = useCallback(() => dispatch({ type: 'LOGOUT' }), []);

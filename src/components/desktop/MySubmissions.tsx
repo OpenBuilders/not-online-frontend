@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import type { MarketSubmission, MarketSubmissionStatus } from '@/api/marketSubmissions';
 import { useAppState } from '@/state/AppStateContext';
+import { useGuestGating } from '@/state/useGuestGating';
 import { useMyMarketSubmissions } from '@/state/useMarketSubmissions';
+import { useWindowManager } from '@/state/WindowManagerContext';
 import styles from './MySubmissions.module.css';
 
 const STATUS_LABELS: Record<MarketSubmissionStatus, string> = {
@@ -11,16 +13,16 @@ const STATUS_LABELS: Record<MarketSubmissionStatus, string> = {
   REJECTED: 'Rejected',
 };
 
-/** "1 in queue", "2 in queue · 1 approved" — a glance at the compact trigger without opening it. */
-function summarize(items: MarketSubmission[]): string {
-  if (items.length === 0) return 'No applications yet';
+/** "Page live · 1 in queue" — a glance at the compact trigger without opening it. */
+function summarize(items: MarketSubmission[], pageLive: boolean): string {
   const counts: Record<MarketSubmissionStatus, number> = { PENDING_REVIEW: 0, APPROVED: 0, REJECTED: 0 };
   for (const item of items) counts[item.status]++;
   const parts: string[] = [];
+  if (pageLive) parts.push('Page live');
   if (counts.PENDING_REVIEW) parts.push(`${counts.PENDING_REVIEW} in queue`);
   if (counts.APPROVED) parts.push(`${counts.APPROVED} approved`);
   if (counts.REJECTED) parts.push(`${counts.REJECTED} rejected`);
-  return parts.join(' · ');
+  return parts.length ? parts.join(' · ') : 'Nothing here yet';
 }
 
 /**
@@ -39,9 +41,13 @@ function summarize(items: MarketSubmission[]): string {
  */
 export function MySubmissions() {
   const { state } = useAppState();
+  const { guestUnlocked } = useGuestGating();
+  const { openWindow } = useWindowManager();
   const submissions = useMyMarketSubmissions();
   const items = submissions.data ?? [];
   const [open, setOpen] = useState(false);
+  const site = state.site;
+  const builderUnlocked = guestUnlocked('page');
   const triggerWrapRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -71,21 +77,79 @@ export function MySubmissions() {
           <span className={styles.headingIcon}>
             <MaterialIcon name="inventory_2" size={15} />
           </span>
-          <span className={styles.triggerText}>{summarize(items)}</span>
+          <span className={styles.triggerText}>{summarize(items, site !== null)}</span>
           <MaterialIcon name={open ? 'expand_less' : 'expand_more'} size={16} />
         </button>
       </div>
 
       {open && (
         <div className={styles.dropdownAnchor}>
-          <div ref={dropdownRef} className={styles.dropdown} aria-label="My market applications">
+          <div ref={dropdownRef} className={styles.dropdown} aria-label="Your page and market applications">
             <header className={styles.header}>
               <div>
-                <h2>My applications</h2>
+                <h2>Your desk</h2>
                 <p>{state.logged ? 'Synced with your account' : 'Saved in this browser'}</p>
               </div>
-              <span className={styles.count}>{items.length}</span>
             </header>
+
+            <section className={styles.pageCard}>
+              <div className={styles.pageTop}>
+                <span className={styles.pageIcon}>
+                  <MaterialIcon name="public" size={15} />
+                </span>
+                <strong className={styles.pageUrl}>
+                  {site ? `${site.handle}.not.online` : 'Your links page'}
+                </strong>
+                <span className={styles.status} data-status={site ? 'APPROVED' : 'DRAFT'}>
+                  {site ? 'Live' : 'Not built'}
+                </span>
+              </div>
+
+              {site ? (
+                <div className={styles.pageStats}>
+                  <span>
+                    <b>{site.views}</b> views
+                  </span>
+                  <span>
+                    <b>{site.clicks}</b> clicks
+                  </span>
+                  <span>
+                    <b>{site.links.filter((l) => l.title.trim()).length}</b> links
+                  </span>
+                </div>
+              ) : (
+                <p className={styles.pageHint}>
+                  {builderUnlocked
+                    ? 'One page for every link you have. Takes about a minute.'
+                    : 'Unlocks once you have listed something and picked a background.'}
+                </p>
+              )}
+
+              {builderUnlocked && (
+                <button
+                  type="button"
+                  className={styles.pageAction}
+                  onClick={() => {
+                    setOpen(false);
+                    openWindow({
+                      kind: 'websiteBuilder',
+                      title: 'Your links page',
+                      width: 1040,
+                      height: 660,
+                      singleton: true,
+                    });
+                  }}
+                >
+                  {site ? 'Edit your page' : 'Build your page'}
+                  <MaterialIcon name="arrow_forward" size={14} />
+                </button>
+              )}
+            </section>
+
+            <div className={styles.sectionHead}>
+              <span>Market applications</span>
+              <span className={styles.count}>{items.length}</span>
+            </div>
 
             {submissions.isPending && <div className={styles.message}>Loading…</div>}
             {submissions.isError && <div className={styles.message}>Could not load applications.</div>}

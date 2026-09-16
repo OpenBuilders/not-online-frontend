@@ -63,6 +63,17 @@ export function StatsLocked() {
           <div className={styles.rows}>
             {items.map((item) => (
               <div key={item.id} className={styles.row}>
+                <div className={styles.rowImage}>
+                  <MaterialIcon name="image" size={22} />
+                  <img
+                    src={item.imageUrl}
+                    alt=""
+                    loading="lazy"
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
                 <div className={styles.rowMain}>
                   <div className={styles.rowName}>{item.title}</div>
                   <div className={styles.rowSub}>

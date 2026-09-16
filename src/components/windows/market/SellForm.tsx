@@ -13,8 +13,13 @@ import styles from './SellForm.module.css';
 
 const MAX_IMAGE_BYTES = 1_000_000;
 const SUPPORTED_IMAGE_TYPES = new Set(['image/avif', 'image/jpeg', 'image/png', 'image/webp']);
-// Same shape the backend itself validates against (createMarketSubmission's price field).
-const PRICE_PATTERN = /^\d{1,8}(?:\.\d{1,2})?$/;
+const MAX_PRICE = 99_999;
+const PRICE_PATTERN = /^\d{1,5}(?:\.\d{1,2})?$/;
+
+function isValidPrice(rawPrice: string): boolean {
+  const normalized = rawPrice.trim();
+  return PRICE_PATTERN.test(normalized) && Number(normalized) <= MAX_PRICE;
+}
 // Stand-in for "I have nothing to photograph yet" — this is a mock, not a real listing, so it
 // never touches the backend (see `submit()`): nobody needs a human moderator reviewing a joke
 // placeholder built from a stock clip.
@@ -95,7 +100,7 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
     advanceTour(2);
   }
   function completePrice() {
-    if (PRICE_PATTERN.test(price.trim())) advanceTour(3);
+    if (isValidPrice(price)) advanceTour(3);
   }
   function completeContact() {
     if (contact.trim()) advanceTour(4);
@@ -235,7 +240,7 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
   const canPublish =
     (image !== null || demoVideo !== null) &&
     title.trim().length > 0 &&
-    PRICE_PATTERN.test(price.trim()) &&
+    isValidPrice(price) &&
     (state.logged || contact.trim().length > 0);
 
   return (
@@ -307,7 +312,7 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
                 className={styles.priceInput}
                 type="number"
                 min={0}
-                max={99999999.99}
+                max={MAX_PRICE}
                 step="0.01"
                 placeholder="0"
                 value={price}

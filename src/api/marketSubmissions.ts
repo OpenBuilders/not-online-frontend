@@ -6,7 +6,6 @@ export interface CreateMarketSubmissionInput {
   contact?: string;
   title: string;
   description: string;
-  quantity: string;
   price: string;
   image: File;
 }
@@ -15,7 +14,6 @@ export interface CreatedMarketSubmission {
   id: string;
   title: string;
   description: string;
-  quantity: number;
   price: string;
   status: MarketSubmissionStatus;
   imageUrl: string;
@@ -38,7 +36,6 @@ export async function createMarketSubmission(
   if (input.contact !== undefined) body.set('contact', input.contact);
   body.set('title', input.title);
   body.set('description', input.description);
-  body.set('quantity', input.quantity);
   body.set('price', input.price);
   body.set('image', input.image);
 
@@ -109,7 +106,6 @@ function isMarketSubmission(value: unknown): value is MarketSubmission {
     typeof item.id === 'string' &&
     typeof item.title === 'string' &&
     typeof item.description === 'string' &&
-    typeof item.quantity === 'number' &&
     typeof item.price === 'string' &&
     (item.status === 'PENDING_REVIEW' || item.status === 'APPROVED' || item.status === 'REJECTED') &&
     typeof item.imageUrl === 'string'

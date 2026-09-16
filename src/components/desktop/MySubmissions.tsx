@@ -118,7 +118,6 @@ export function MySubmissions() {
                       </div>
                       <div className={styles.meta}>
                         <span>${item.price}</span>
-                        <span>qty {item.quantity}</span>
                       </div>
                     </div>
                   </article>

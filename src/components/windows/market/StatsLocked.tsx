@@ -35,7 +35,7 @@ export function StatsLocked() {
     const items = submissions.data ?? [];
     const approved = items.filter((i) => i.status === 'APPROVED').length;
     const pending = items.filter((i) => i.status === 'PENDING_REVIEW').length;
-    const stockValue = items.reduce((sum, i) => sum + (Number(i.price) || 0) * i.quantity, 0);
+    const stockValue = items.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
     const stats = [
       { v: items.length, k: 'items listed' },
       { v: approved, k: 'approved' },
@@ -66,7 +66,7 @@ export function StatsLocked() {
                 <div className={styles.rowMain}>
                   <div className={styles.rowName}>{item.title}</div>
                   <div className={styles.rowSub}>
-                    ${item.price} · qty {item.quantity}
+                    ${item.price}
                   </div>
                 </div>
                 <span className={cx(styles.rowBadge, item.status === 'APPROVED' && styles.rowBadgeLive)}>

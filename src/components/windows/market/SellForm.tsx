@@ -173,7 +173,6 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
         ...(state.logged ? {} : { contact: contact.trim() }),
         title,
         description: desc,
-        quantity: '1',
         price,
         image,
       });
@@ -291,7 +290,7 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
           ref={descRef}
           className={styles.textarea}
           placeholder="Materials, size, edition…"
-          maxLength={10000}
+          maxLength={255}
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
           // No Enter-to-advance here on purpose — Enter in a textarea should still just add a

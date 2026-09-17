@@ -59,6 +59,7 @@
 /* Content typography. Colors inherit from the face so each colourway stays
    legible without a per-colour override. */
 .title {
+  position: relative;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.6px;
@@ -67,7 +68,13 @@
   flex-shrink: 0;
   padding-right: 54px;
 }
+/* No icon disc in the corner means nothing to clear. */
+.face:not(:has(.iconBadge)):not(:has(.art)) .title,
+.face:not(:has(.iconBadge)):not(:has(.art)) .lead {
+  padding-right: 0;
+}
 .lead {
+  position: relative;
   font-size: 26px;
   font-weight: 800;
   line-height: 0.98;
@@ -94,6 +101,13 @@
   background: var(--c-accent);
   color: #0d1a00;
 }
+/* Fills the space `.sub` would have taken so the button stays pinned to the
+   bottom edge on a widget that has no supporting line. */
+.spacer {
+  flex: 1;
+  min-height: 0;
+}
+
 .sub {
   font-size: 10.5px;
   font-weight: 600;
@@ -106,6 +120,50 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+
+/* Artwork hangs in from above and is clipped by the sticker's own rounded
+   face — the top of it is cut off by the die-cut, which is the point. The
+   PNGs carry their own alpha, so no blend mode is involved. */
+.art {
+  position: absolute;
+  top: -28%;
+  right: -14%;
+  height: 94%;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+/* Copy keeps clear of the art instead of running under it. */
+.face:has(.art) .title,
+.face:has(.art) .lead {
+  padding-right: 72px;
+}
+
+/* A peel-off label stuck over the corner — it overhangs the cut-line, so it
+   lives outside `.face` (which clips) on the shell itself. */
+.badge {
+  position: absolute;
+  top: -10px;
+  left: -12px;
+  z-index: 2;
+  transform: rotate(-11deg);
+  background: var(--c-accent);
+  color: #0d1a00;
+  border: 3px solid var(--c-white);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 3px 4px 7px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+.lime .badge {
+  background: var(--c-accent-2);
+  color: var(--c-white);
 }
 
 /* Icon rides in a knocked-out disc pinned to the top-right corner, the way
@@ -130,6 +188,7 @@
 }
 
 .button {
+  position: relative;
   margin-top: 10px;
   flex-shrink: 0;
   width: 100%;

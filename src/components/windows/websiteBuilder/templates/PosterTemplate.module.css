@@ -129,6 +129,17 @@
   background: var(--pg-bg);
   color: var(--pg-ink);
 }
+/* An illustration is already a picture — the chip's border and fill would
+   frame it like a symbol and shrink it to a symbol's size. It gets the
+   whole slot instead, at its own scale. */
+.linkIcon[data-image='true'],
+.link:hover .linkIcon[data-image='true'] {
+  width: 46px;
+  height: 46px;
+  background: none;
+  border: none;
+  object-fit: contain;
+}
 
 .linkLabel {
   flex: 1;

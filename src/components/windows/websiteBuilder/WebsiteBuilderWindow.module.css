@@ -22,22 +22,68 @@
   min-height: 0;
 }
 
-@media (max-width: 860px) {
-  .window {
-    flex-direction: column;
-  }
-  /* Preview first on a phone: it is the thing being built, and a settings
-     column that pushed it below the fold would hide every change as it
-     happened. */
-  .right {
-    order: -1;
-    flex: 0 0 44%;
-    min-height: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-  .left {
-    width: auto;
-    flex: 1;
-    border-right: none;
-  }
+/*
+  Narrow: one view at a time behind a switch, rather than two half-height
+  rows. Stacking gave the preview a third of the window at about a third
+  scale — too small to read your own page, which is the only reason the
+  preview exists.
+*/
+.narrow {
+  flex-direction: column;
+}
+
+.viewSwitch {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--c-paper-3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+}
+.viewBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--c-dim);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.13s,
+    color 0.13s;
+}
+.viewBtn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--c-ink);
+}
+.viewBtn.on {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.viewBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.viewBtn:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+.narrow .left,
+.narrow .right {
+  width: auto;
+  flex: 1;
+  min-height: 0;
+  border-right: none;
+}
+.narrow[data-view='setup'] .right,
+.narrow[data-view='preview'] .left {
+  display: none;
 }

@@ -8,7 +8,7 @@ interface WidgetCardProps {
   id: string;
   title: ReactNode;
   lead: ReactNode;
-  sub: ReactNode;
+  sub?: ReactNode;
   buttonLabel: string;
   buttonIcon: string;
   onOpen: () => void;
@@ -18,6 +18,10 @@ interface WidgetCardProps {
   desktopRef: RefObject<HTMLElement | null>;
   color: StickerColor;
   rotate?: number;
+  /** Illustration behind the content, cropped to the sticker's shape. */
+  art?: string;
+  /** Peel-off label stuck over the top-left corner, e.g. "TRY ME". */
+  badge?: string;
 }
 
 /**
@@ -46,6 +50,8 @@ export function WidgetCard({
   desktopRef,
   color,
   rotate,
+  art,
+  badge,
 }: WidgetCardProps) {
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +73,8 @@ export function WidgetCard({
         sub={sub}
         actionLabel={buttonLabel}
         rotate={rotate}
+        art={art}
+        badge={badge}
         onOpen={() => {
           // Same click-vs-drag disambiguation DesktopIcon uses — a drag that
           // happens to end on the button shouldn't also open the window.

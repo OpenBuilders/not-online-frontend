@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import type { MarketSubmission, MarketSubmissionStatus } from '@/api/marketSubmissions';
 import { useAppState } from '@/state/AppStateContext';
-import { useGuestGating } from '@/state/useGuestGating';
 import { useMyMarketSubmissions } from '@/state/useMarketSubmissions';
 import { useWindowManager } from '@/state/WindowManagerContext';
 import styles from './MySubmissions.module.css';
@@ -41,13 +40,11 @@ function summarize(items: MarketSubmission[], pageLive: boolean): string {
  */
 export function MySubmissions() {
   const { state } = useAppState();
-  const { guestUnlocked } = useGuestGating();
   const { openWindow } = useWindowManager();
   const submissions = useMyMarketSubmissions();
   const items = submissions.data ?? [];
   const [open, setOpen] = useState(false);
   const site = state.site;
-  const builderUnlocked = guestUnlocked('page');
   const triggerWrapRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -118,32 +115,26 @@ export function MySubmissions() {
                   </span>
                 </div>
               ) : (
-                <p className={styles.pageHint}>
-                  {builderUnlocked
-                    ? 'One page for every link you have. Takes about a minute.'
-                    : 'Unlocks once you have listed something and picked a background.'}
-                </p>
+                <p className={styles.pageHint}>One page for every link you have. Takes about a minute.</p>
               )}
 
-              {builderUnlocked && (
-                <button
-                  type="button"
-                  className={styles.pageAction}
-                  onClick={() => {
-                    setOpen(false);
-                    openWindow({
-                      kind: 'websiteBuilder',
-                      title: 'Your links page',
-                      width: 1040,
-                      height: 660,
-                      singleton: true,
-                    });
-                  }}
-                >
-                  {site ? 'Edit your page' : 'Build your page'}
-                  <MaterialIcon name="arrow_forward" size={14} />
-                </button>
-              )}
+              <button
+                type="button"
+                className={styles.pageAction}
+                onClick={() => {
+                  setOpen(false);
+                  openWindow({
+                    kind: 'websiteBuilder',
+                    title: 'Your links page',
+                    width: 1040,
+                    height: 660,
+                    singleton: true,
+                  });
+                }}
+              >
+                {site ? 'Edit your page' : 'Build your page'}
+                <MaterialIcon name="arrow_forward" size={14} />
+              </button>
             </section>
 
             <div className={styles.sectionHead}>

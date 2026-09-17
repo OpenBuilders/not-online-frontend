@@ -12,12 +12,16 @@ interface StickerWidgetProps {
   title: ReactNode;
   /** The big display line. */
   lead: ReactNode;
-  /** Supporting line under the headline. */
-  sub: ReactNode;
+  /** Supporting line under the headline. Omit it when the art says enough. */
+  sub?: ReactNode;
   actionLabel: string;
   onOpen: () => void;
   /** Resting tilt, so it reads as stuck on rather than laid out. */
   rotate?: number;
+  /** Illustration behind the content, cropped to the sticker's shape. */
+  art?: string;
+  /** Peel-off label stuck to the top-left corner, e.g. "TRY ME". */
+  badge?: string;
 }
 
 interface StickerFrameProps {
@@ -49,23 +53,46 @@ export function StickerFrame({ color, rotate = 0, children }: StickerFrameProps)
  * sticker carries its mark. No front/back layers and no peel-to-open
  * mechanic — that read as a puzzle to solve rather than a thing to look at.
  */
-export function StickerWidget({ color, icon, title, lead, sub, actionLabel, onOpen, rotate = 0 }: StickerWidgetProps) {
+export function StickerWidget({
+  color,
+  icon,
+  title,
+  lead,
+  sub,
+  actionLabel,
+  onOpen,
+  rotate = 0,
+  art,
+  badge,
+}: StickerWidgetProps) {
   return (
     <div className={cx(styles.shell, styles[color])} style={{ '--rest-rotate': `${rotate}deg` } as CSSProperties}>
       <div className={styles.face}>
-        <span className={styles.iconBadge} aria-hidden="true">
-          <MaterialIcon name={icon} size={26} />
-        </span>
+        {/* Behind the content and clipped by `.face`'s own radius — the
+            illustration runs off the top edge rather than sitting politely
+            inside it. */}
+        {art && <img className={styles.art} src={art} alt="" aria-hidden="true" />}
+
+        {/* An icon disc and a corner badge would fight over the same
+            corner, so a widget carries one or the other. */}
+        {!badge && (
+          <span className={styles.iconBadge} aria-hidden="true">
+            <MaterialIcon name={icon} size={26} />
+          </span>
+        )}
 
         <div className={styles.title}>{title}</div>
         <div className={styles.lead}>{lead}</div>
-        <div className={styles.sub}>{sub}</div>
+        {sub && <div className={styles.sub}>{sub}</div>}
+        {!sub && <div className={styles.spacer} />}
 
         <button type="button" className={styles.button} onClick={onOpen}>
           <MaterialIcon name={icon} size={14} />
           {actionLabel}
         </button>
       </div>
+
+      {badge && <span className={styles.badge}>{badge}</span>}
     </div>
   );
 }

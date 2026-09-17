@@ -1,9 +1,11 @@
 import type { CSSProperties } from 'react';
 import { getPalette } from '@/data/siteTemplates';
 import type { SiteConfig } from '@/types';
-import { GridTemplate } from './GridTemplate';
+import { BoldTemplate } from './BoldTemplate';
+import { ButtonTemplate } from './ButtonTemplate';
+import { FoldersTemplate } from './FoldersTemplate';
+import { PosterTemplate } from './PosterTemplate';
 import styles from './SitePage.module.css';
-import { StackTemplate } from './StackTemplate';
 import { StickerTemplate } from './StickerTemplate';
 import { Web1Template } from './Web1Template';
 import { pageContent } from './pageContent';
@@ -14,10 +16,12 @@ export interface TemplateProps {
 }
 
 const TEMPLATE_COMPONENTS = {
-  stack: StackTemplate,
-  grid: GridTemplate,
-  stick: StickerTemplate,
+  poster: PosterTemplate,
+  stickers: StickerTemplate,
+  bold: BoldTemplate,
+  folders: FoldersTemplate,
   web1: Web1Template,
+  button: ButtonTemplate,
 };
 
 /**
@@ -29,7 +33,7 @@ const TEMPLATE_COMPONENTS = {
 export function SitePage({ cfg }: { cfg: SiteConfig }) {
   const p = getPalette(cfg.palette);
   const content = pageContent(cfg);
-  const Template = TEMPLATE_COMPONENTS[cfg.template];
+  const Template = TEMPLATE_COMPONENTS[cfg.template] ?? PosterTemplate;
 
   const vars = {
     '--pg-bg': p.bg,
@@ -48,9 +52,12 @@ export function SitePage({ cfg }: { cfg: SiteConfig }) {
         data-kind={usePhoto ? 'photo' : cfg.backdrop === 'photo' ? 'flat' : cfg.backdrop}
         style={usePhoto ? { backgroundImage: `url(${cfg.backdropImage})` } : undefined}
       />
+
       <div className={styles.body}>
         <Template cfg={cfg} content={content} />
       </div>
+
+      <span className={styles.mark}>cultofnot</span>
     </div>
   );
 }

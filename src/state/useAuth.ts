@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError, getCurrentUser, logout as apiLogout, requestOtp, verifyOtp, type AuthUser } from '@/api/auth';
 import { useAppState } from '@/state/AppStateContext';
@@ -16,12 +16,21 @@ const CURRENT_USER_KEY = ['auth', 'current-user'] as const;
 export function useSessionSync() {
   const { state, login } = useAppState();
   const sessionQuery = useQuery({ queryKey: CURRENT_USER_KEY, queryFn: getCurrentUser });
+  const [booted, setBooted] = useState(false);
 
   useEffect(() => {
     if (sessionQuery.data && !state.logged) login(sessionQuery.data.email);
   }, [sessionQuery.data, state.logged, login]);
 
-  return { checkingSession: sessionQuery.isPending };
+  useEffect(() => {
+    if (!sessionQuery.isPending) setBooted(true);
+  }, [sessionQuery.isPending]);
+
+  // Latched to the *first* answer. Desktop swaps itself for a placeholder
+  // while this is true, so reporting a later refetch as "checking" would
+  // unmount the whole desktop mid-session and take every open window's
+  // state with it — a half-built links page included.
+  return { checkingSession: sessionQuery.isPending && !booted };
 }
 
 /** Step 1 of LoginScreen: send the OTP email. */

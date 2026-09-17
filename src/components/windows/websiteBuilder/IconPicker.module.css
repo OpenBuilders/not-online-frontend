@@ -1,0 +1,125 @@
+.root {
+  position: relative;
+  min-width: 0;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 36px;
+  padding: 0 5px;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  color: var(--c-dim);
+  cursor: pointer;
+  font-family: inherit;
+}
+.trigger img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+.trigger:hover {
+  border-color: var(--c-accent-shade-2);
+}
+.trigger[aria-expanded='true'] {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.3);
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+.none {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+.popover {
+  position: fixed;
+  z-index: 6000;
+  width: 264px;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 13px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 3px;
+  padding: 7px 7px 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+.tab {
+  flex: 1;
+  height: 25px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--c-muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--c-ink);
+}
+.tab.on {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.tab:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: -2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+  padding: 7px;
+  max-height: 212px;
+  overflow-y: auto;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-dim);
+  cursor: pointer;
+  padding: 3px;
+}
+.cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cell:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+.cell.picked {
+  border-color: var(--c-accent-shade-2);
+  background: rgba(168, 255, 26, 0.2);
+}
+.cell:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: -2px;
+}
+.noneCell {
+  color: var(--c-muted);
+}

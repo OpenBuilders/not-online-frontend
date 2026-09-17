@@ -1,13 +1,14 @@
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
+import { LinkIcon, hasIcon } from './LinkIcon';
 import type { TemplateProps } from './SitePage';
-import styles from './StackTemplate.module.css';
+import styles from './PosterTemplate.module.css';
 
 /**
  * "Poster" — the brutalist one: oversized stacked display type, the bio set
  * as knocked-out highlight blocks, and links as full-width slabs with a
  * hard offset shadow.
  */
-export function StackTemplate({ content }: TemplateProps) {
+export function PosterTemplate({ content }: TemplateProps) {
   const { name, handle, bio, links, initials, avatar } = content;
 
   return (
@@ -16,7 +17,7 @@ export function StackTemplate({ content }: TemplateProps) {
         <div className={styles.avatar}>
           {avatar ? <img src={avatar} alt="" /> : <span className={styles.initials}>{initials}</span>}
         </div>
-        <div className={styles.handleChip}>{handle}.not.online</div>
+        <div className={styles.handleChip}>not.online/{handle}</div>
       </div>
 
       <h1 className={styles.name}>{name}</h1>
@@ -27,9 +28,11 @@ export function StackTemplate({ content }: TemplateProps) {
       <div className={styles.links}>
         {links.map((l) => (
           <a key={l.id} className={styles.link} href={l.url || '#'} target="_blank" rel="noreferrer">
-            <span className={styles.linkIcon}>
-              <MaterialIcon name={l.icon} size={20} />
-            </span>
+            {hasIcon(l.icon) && (
+              <span className={styles.linkIcon}>
+                <LinkIcon icon={l.icon} size={20} />
+              </span>
+            )}
             <span className={styles.linkLabel}>{l.title}</span>
             <MaterialIcon name="arrow_outward" size={20} />
           </a>

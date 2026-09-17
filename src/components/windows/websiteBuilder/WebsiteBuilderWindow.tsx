@@ -1,6 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FocusTour, type FocusTourStep } from '@/components/shared/FocusTour';
+import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { blankSite } from '@/data/siteTemplates';
+import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
 import type { SiteConfig } from '@/types';
 import { BuilderPanel, type BuilderTourHooks, type TourTarget } from './BuilderPanel';
@@ -11,12 +13,22 @@ import styles from './WebsiteBuilderWindow.module.css';
 /** Which builder control each tour step spotlights, in order. */
 const TOUR_ORDER: TourTarget[] = ['handle', 'avatar', 'template', 'palette', 'links'];
 
+/** Below this the two halves can't sit side by side — see the note on `narrow`. */
+const SPLIT_MIN_WIDTH = 860;
+
+type MobileView = 'setup' | 'preview';
+
 /**
  * The links-page builder. One window, two halves: every setting on the
  * left, a real render of the page on the right that updates as you type.
  * Replaces the original's tab-switching between a form and a preview
  * (Tools.html:3349-3593), where you could never see what a choice did
  * without leaving the choice behind.
+ *
+ * On a phone the two halves become two views behind a switch instead of a
+ * split. Stacking them gave the preview under half the window, scaled to
+ * roughly a third — small enough that you couldn't read your own page,
+ * which is the one thing the preview exists for.
  *
  * A guest who hasn't built a page yet gets the same guided walkthrough
  * Market uses — FocusTour spotlighting one control at a time — then the
@@ -31,6 +43,20 @@ export function WebsiteBuilderWindow() {
   const [dirty, setDirty] = useState(false);
   const [device, setDevice] = useState<PreviewDevice>('desktop');
   const [celebrating, setCelebrating] = useState(false);
+  const [mobileView, setMobileView] = useState<MobileView>('setup');
+  const [narrow, setNarrow] = useState(() => window.innerWidth < SPLIT_MIN_WIDTH);
+
+  useEffect(() => {
+    const onResize = () => setNarrow(window.innerWidth < SPLIT_MIN_WIDTH);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // A phone is small enough that the desktop frame would scale to nothing;
+  // default that preview to the phone viewport instead.
+  useEffect(() => {
+    if (narrow) setDevice('phone');
+  }, [narrow]);
 
   const isGuest = !state.logged;
   const isFirstRun = isGuest && !state.tours.has('page');
@@ -44,6 +70,10 @@ export function WebsiteBuilderWindow() {
   const publishRef = useRef<HTMLButtonElement>(null);
 
   function patch(p: Partial<SiteConfig>) {
+    // "Just a button" shows only the first link — both the editor and the
+    // template slice it themselves. The others stay in state untouched, so
+    // trying that template out and switching back doesn't cost you the
+    // links you had already typed.
     setCfg((c) => ({ ...c, ...p }));
     setDirty(true);
   }
@@ -62,15 +92,21 @@ export function WebsiteBuilderWindow() {
       text: 'Claim an address. Short, lowercase, yours.',
       onNext: () => cfg.handle.trim() && onPicked('handle'),
     },
-    { ref: avatarRef, text: 'Put a face on it. Borrow one of ours if you have none.' },
-    { ref: templateRef, text: 'Pick a look. All four are equally unserious.' },
+    { ref: avatarRef, text: 'Put a face on it. Borrow ours if you have none.' },
+    { ref: templateRef, text: 'Pick a look. All six are equally unserious.' },
     { ref: paletteRef, text: "Colours come pre-mixed so you can't make it ugly." },
     { ref: linksRef, text: 'Where should people actually find you?', onNext: () => onPicked('links') },
-    { ref: publishRef, text: 'That page on the right is yours. Ship it.' },
+    { ref: publishRef, text: 'That page is yours. Ship it.' },
   ];
   const tourActive = isFirstRun && tourIndex < tourSteps.length;
 
   const tour: BuilderTourHooks = { handleRef, avatarRef, templateRef, paletteRef, linksRef, publishRef, onPicked };
+
+  // The tour spotlights controls in the setup column, so it can't run while
+  // the preview is the visible view.
+  useEffect(() => {
+    if (tourActive && narrow) setMobileView('setup');
+  }, [tourActive, narrow, tourIndex]);
 
   function publish() {
     if (tourActive && tourIndex === TOUR_ORDER.length) setTourIndex((i) => i + 1);
@@ -92,7 +128,31 @@ export function WebsiteBuilderWindow() {
   }
 
   return (
-    <div className={styles.window} ref={windowRef}>
+    <div className={cx(styles.window, narrow && styles.narrow)} ref={windowRef} data-view={mobileView}>
+      {narrow && (
+        <div className={styles.viewSwitch}>
+          <button
+            type="button"
+            className={cx(styles.viewBtn, mobileView === 'setup' && styles.on)}
+            onClick={() => setMobileView('setup')}
+            aria-pressed={mobileView === 'setup'}
+          >
+            <MaterialIcon name="tune" size={16} />
+            Edit
+          </button>
+          <button
+            type="button"
+            className={cx(styles.viewBtn, mobileView === 'preview' && styles.on)}
+            onClick={() => setMobileView('preview')}
+            aria-pressed={mobileView === 'preview'}
+            disabled={tourActive}
+          >
+            <MaterialIcon name="visibility" size={16} />
+            Preview
+          </button>
+        </div>
+      )}
+
       <div className={styles.left}>
         <BuilderPanel
           cfg={cfg}
@@ -109,9 +169,7 @@ export function WebsiteBuilderWindow() {
       </div>
 
       {tourActive && <FocusTour containerRef={windowRef} steps={tourSteps} activeIndex={tourIndex} />}
-      {celebrating && (
-        <PagePublished handle={cfg.handle} isGuest={isGuest} onDone={() => setCelebrating(false)} />
-      )}
+      {celebrating && <PagePublished handle={cfg.handle} isGuest={isGuest} onDone={() => setCelebrating(false)} />}
     </div>
   );
 }

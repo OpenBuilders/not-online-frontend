@@ -1,30 +1,22 @@
 import type { RefObject } from 'react';
 import { WidgetCard } from '@/components/widgets/WidgetCard';
-import { useGuestGating } from '@/state/useGuestGating';
 import { useWindowManager } from '@/state/WindowManagerContext';
 
 interface WebsiteBuilderWidgetProps {
   desktopRef: RefObject<HTMLElement | null>;
 }
 
-/**
- * Ported from Tools.html:1688-1694. Part of the guest progressive-unlock
- * chain (key 'page') rather than login-only, so it appears on the desktop
- * once a guest has listed something and picked a background.
- */
+/** Ported from Tools.html:1688-1694. Part of the guest progressive-unlock chain (`.gated`, key 'page') rather than login-only. */
 export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) {
-  const { guestUnlocked } = useGuestGating();
   const { openWindow } = useWindowManager();
-
-  if (!guestUnlocked('page')) return null;
 
   return (
     <WidgetCard
       id="widgetWeb"
       desktopRef={desktopRef}
-      x={980}
-      y={150}
-      title="◇ your .not.online"
+      x={1140}
+      y={360}
+      title="◇ not.online / you"
       lead={
         <>
           a page for
@@ -32,7 +24,8 @@ export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) 
           your <b>links</b>
         </>
       }
-      sub="like linktree, but nothing"
+      art="/assets/builder/cran.png"
+      badge="Try me"
       buttonIcon="public"
       buttonLabel="Build page"
       onOpen={() =>

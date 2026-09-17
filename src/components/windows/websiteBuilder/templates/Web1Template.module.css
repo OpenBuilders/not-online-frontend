@@ -1,367 +1,131 @@
-/* 1998 chrome. The greys here are deliberately literal system colours
-   rather than palette tokens — that beige-grey IS the reference — while the
-   page inside takes its accents from the chosen palette. */
+/*
+  1996. The type is Times and Arial — the two fonts every machine already
+  had, which is what pages of this era were actually set in.
+
+  There are no boxes here on purpose: no borders, no fills, no cards. A
+  GeoCities page was centred text sitting straight on a tiled background,
+  and every bit of its character came from type, colour and <hr>. Adding
+  containers is what made the earlier version look like a modern page
+  wearing a costume.
+*/
 
 .root {
   height: 100%;
   overflow: auto;
-  padding: 26px 26px 30px;
-  font-family: 'Silkscreen', 'Courier New', monospace;
+  padding: 34px 22px 40px;
+  font-family: 'Times New Roman', Times, serif;
+  text-align: center;
 }
 
-/* Holds the browser window and the little one peeking out behind it; capped
-   so the composition stays a window on a desktop, not a full-bleed page. */
-.stack {
-  position: relative;
-  max-width: 640px;
+.sheet {
+  max-width: 560px;
   margin: 0 auto;
 }
 
-.window,
-.behind {
-  background: #c8c8c0;
-  border: 2px solid #0a0a0a;
-  box-shadow:
-    inset 2px 2px 0 #f2f2ee,
-    inset -2px -2px 0 #75756e,
-    8px 9px 0 rgba(0, 0, 0, 0.45);
+.welcome {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--pg-accent);
 }
 
-/* the little window peeking out behind — the reference's stacked composition */
-/* Peeks out past the main window's top-right corner — the stacked-windows
-   composition from the reference. */
-.behind {
-  position: absolute;
-  top: -20px;
-  right: -26px;
-  width: 190px;
-  transform: rotate(4deg);
-  pointer-events: none;
-}
-.behindBody {
-  padding: 10px;
-  font-size: 9px;
-  color: #101010;
-  line-height: 1.6;
-}
-.behindBody p {
-  margin: 0 0 8px;
-}
-.fakeField {
-  height: 15px;
-  background: #fff;
-  border: 1px solid #75756e;
-  box-shadow: inset 1px 1px 0 #75756e;
-  margin-bottom: 6px;
-}
-.fakeBtn {
-  display: inline-block;
-  padding: 3px 10px;
-  font-size: 9px;
-  background: #c8c8c0;
-  border: 1px solid #0a0a0a;
-  box-shadow:
-    inset 1px 1px 0 #f2f2ee,
-    inset -1px -1px 0 #75756e;
+.h1 {
+  margin: 10px 0 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+  text-wrap: balance;
+  /* Ink on ground, not accent-2 on ground: half the palettes have a white
+     secondary accent, which vanishes on the light ones. The accent does the
+     era's drop-shadow trick instead, where contrast doesn't depend on it. */
+  color: var(--pg-ink);
+  text-shadow: 3px 3px 0 var(--pg-accent);
 }
 
-.window {
-  position: relative;
-  z-index: 1;
-}
-
-.titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 4px 4px 4px 7px;
-  background: linear-gradient(90deg, #12128c, #4b4be0);
-  color: #fff;
-}
-.titleText {
-  font-size: 10px;
-  letter-spacing: 0.3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.controls {
-  display: flex;
-  gap: 3px;
-  flex-shrink: 0;
-}
-.controls i {
-  width: 15px;
-  height: 14px;
-  background: #c8c8c0;
-  border: 1px solid #0a0a0a;
-  box-shadow:
-    inset 1px 1px 0 #f2f2ee,
-    inset -1px -1px 0 #75756e;
-}
-
-.menubar {
-  display: flex;
-  gap: 14px;
-  padding: 4px 9px;
-  font-size: 10px;
-  color: #101010;
-  border-bottom: 1px solid #9a9a93;
-}
-
-.addressbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px 7px;
-  font-size: 9px;
-  color: #101010;
-}
-.addressLabel {
-  flex-shrink: 0;
-  opacity: 0.75;
-}
-.addressField {
-  flex: 1;
-  min-width: 0;
-  background: #fff;
-  border: 1px solid #75756e;
-  box-shadow: inset 1px 1px 0 #9a9a93;
-  padding: 3px 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ---- the page itself ---- */
-
-.paper {
-  background: #fff;
-  color: #101010;
-  border-top: 1px solid #75756e;
-  padding: 0 0 18px;
-}
-
-.marquee {
-  overflow: hidden;
-  background: var(--pg-accent);
-  color: var(--pg-accent-ink);
-  border-bottom: 2px solid #101010;
-  font-size: 10px;
-  padding: 5px 0;
-}
-.marqueeTrack {
-  display: flex;
-  width: max-content;
-  min-width: 100%;
-  animation: crawl 16s linear infinite;
-}
-.marqueeTrack span {
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-/* Two identical copies, shifted by exactly half the track — the seam lands
-   where the second copy starts, so the crawl reads as continuous. */
-@keyframes crawl {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marqueeTrack {
-    animation: none;
-  }
-}
-
-.masthead {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 20px 22px 0;
+.rule {
+  height: 0;
+  margin: 22px 0;
+  border: none;
+  border-top: 2px solid var(--pg-ink);
+  opacity: 0.45;
 }
 
 .portrait {
-  width: 96px;
-  height: 96px;
-  flex-shrink: 0;
-  background: var(--pg-accent);
-  color: var(--pg-accent-ink);
-  border: 3px double #101010;
-  padding: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* the deliberate low-fi of a scanned 1998 jpeg */
-  image-rendering: pixelated;
-  filter: saturate(1.25) contrast(1.1);
-}
-.initials {
-  font-size: 30px;
+  display: block;
+  width: 116px;
+  height: auto;
+  margin: 4px auto 0;
 }
 
-/* Set as a knocked-out banner rather than coloured type: the paper under it
-   is always white, and half the palettes have a white secondary accent —
-   which would have put white type on a white page. */
-.h1 {
-  margin: 0;
-  display: inline-block;
-  font-size: 25px;
-  line-height: 1.3;
-  background: var(--pg-accent);
-  color: var(--pg-accent-ink);
-  border: 2px solid #101010;
-  box-shadow: 3px 3px 0 #101010;
-  padding: 6px 10px;
-  text-wrap: balance;
-}
-.rule {
-  height: 4px;
-  margin: 12px 0;
-  background: repeating-linear-gradient(90deg, #101010 0 6px, transparent 6px 12px);
-}
 .intro {
-  margin: 0;
-  font-family: 'VT323', 'Courier New', monospace;
-  font-size: 16px;
-  line-height: 1.5;
+  margin: 18px 0 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--pg-ink);
 }
 
-.blink {
-  display: inline-block;
-  background: #e01010;
-  color: #fff;
-  padding: 1px 5px;
-  font-family: 'Silkscreen', monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  animation: blink 1.1s steps(1) infinite;
-}
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .blink {
-    animation: none;
-  }
-}
-
-.sectionLabel {
-  margin: 22px 22px 0;
-  display: inline-block;
-  background: #101010;
-  color: #fff;
-  padding: 4px 9px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.dingbat {
+  margin: 22px 0 0;
+  font-size: 15px;
+  letter-spacing: 8px;
+  color: var(--pg-accent);
 }
 
 .list {
-  margin: 12px 22px 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
-  font-family: 'VT323', 'Courier New', monospace;
 }
-.list li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 4px 0;
-}
-.bullet {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  background: var(--pg-accent);
-  color: var(--pg-accent-ink);
-  border: 1px solid #101010;
+.list li + li {
+  margin-top: 4px;
 }
 .list a {
-  font-size: 19px;
-  color: #1414d0;
-  text-decoration: underline;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.list a:visited {
-  color: #7a1ad0;
-}
-.list a:hover {
-  color: #e01010;
-  background: var(--pg-accent);
-}
-
-.footRow {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin: 26px 22px 0;
-  padding-top: 14px;
-  border-top: 2px dotted #9a9a93;
-}
-
-.counter {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.counterLabel {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.65;
-}
-.counterDigits {
-  display: flex;
-  gap: 2px;
-}
-.counterDigits i {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 17px;
-  height: 23px;
-  background: #101010;
-  color: #2bff5a;
-  font-style: normal;
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
+  gap: 8px;
+  padding: 2px 6px;
+  font-size: 21px;
+  color: var(--pg-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.icon {
+  flex-shrink: 0;
+}
+.icon[data-image='true'] {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
-.badges {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 5px;
-}
-.badge {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding: 4px 8px;
-  border: 1px solid #101010;
-  background: #e8e8e2;
-  color: #101010;
-}
-.badge[data-tone='accent'] {
+/* The selection highlight — a link going inverse-video the moment the
+   pointer touches it. The only interaction this page has. */
+.list a:hover,
+.list a:focus-visible {
   background: var(--pg-accent);
   color: var(--pg-accent-ink);
+  outline: none;
+}
+
+.signoff {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--pg-ink);
+  opacity: 0.55;
+}
+
+@media (max-width: 520px) {
+  .h1 {
+    font-size: 30px;
+  }
+  .list a {
+    font-size: 18px;
+  }
 }

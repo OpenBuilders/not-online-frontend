@@ -27,7 +27,11 @@ export function Desktop() {
   const { checkingSession } = useSessionSync();
   const wallpaperSrc = BACKGROUND_OPTIONS.find((o) => o.id === state.wallpaper)?.src ?? DEFAULT_WALLPAPER;
 
-  useAutoLayout(desktopRef, [state.logged, state.tours.size]);
+  // `checkingSession` is a dependency because this component returns a
+  // placeholder while it's true — the desktop isn't in the DOM yet, so the
+  // first layout pass has nothing to measure and every icon and widget
+  // would keep the seed position React rendered, unclamped.
+  useAutoLayout(desktopRef, [state.logged, state.tours.size, checkingSession]);
 
   if (checkingSession) {
     return (

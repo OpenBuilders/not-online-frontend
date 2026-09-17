@@ -69,12 +69,51 @@
   line-height: 1.5;
 }
 
-.note {
+/* The patron pitch, guests only — stated plainly rather than shouted. */
+.pitch {
+  text-align: left;
+  background: var(--c-paper-3);
+  border-radius: 12px;
+  padding: 11px 13px;
+  margin: 0 0 14px;
+}
+.pitchHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+.pitch p {
+  margin: 6px 0 0;
   font-size: 11.5px;
   line-height: 1.5;
   color: var(--c-dim);
-  background: var(--c-paper-3);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin: 0 0 16px;
+}
+
+.cta {
+  height: 46px;
+}
+
+.later {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.later:hover {
+  color: var(--c-ink);
+}
+.later:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+  border-radius: 6px;
 }

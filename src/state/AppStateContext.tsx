@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react';
-import type { AppState, SiteConfig, TourId } from '@/types';
+import { blankSite } from '@/data/siteTemplates';
+import type { AppState, SiteConfig, SiteTemplateId, TourId } from '@/types';
 
 // Onboarding progress (which tours are done, whether a guest has explored the catalogue) and
 // the picked background survive a reload here — for a guest and a logged-in seller alike, since
@@ -38,16 +39,25 @@ function loadPersistedProgress(): PersistedProgress {
   }
 }
 
+const TEMPLATE_IDS: SiteTemplateId[] = ['poster', 'stickers', 'web1', 'button', 'bold', 'folders'];
+
+/**
+ * Reads a page saved by an older build without throwing any of it away.
+ * The template set has been renamed and re-cut since pages started being
+ * stored here, so anything unrecognised falls back to a default while the
+ * parts people actually wrote — handle, name, bio, links — survive.
+ */
 function loadPersistedSite(): SiteConfig | null {
   try {
     const raw = localStorage.getItem(SITE_STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as SiteConfig | null;
-    // Anything without a handle and a link array is from an older shape (or
-    // hand-edited) — treat it as "no page built yet" rather than rendering
-    // a half-shaped config.
+    const parsed = JSON.parse(raw) as Partial<SiteConfig> | null;
+    // Without a handle and a link array there's no page here worth keeping.
     if (!parsed || typeof parsed.handle !== 'string' || !Array.isArray(parsed.links)) return null;
-    return parsed;
+    const template = TEMPLATE_IDS.includes(parsed.template as SiteTemplateId)
+      ? (parsed.template as SiteTemplateId)
+      : 'poster';
+    return { ...blankSite(), ...parsed, template };
   } catch {
     return null;
   }

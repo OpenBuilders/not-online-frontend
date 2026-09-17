@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { PLACEHOLDER } from '@/data/siteTemplates';
+import { siteUrl } from '@/data/siteTemplates';
 import { cx } from '@/lib/cx';
 import { useElementSize } from '@/state/useElementSize';
 import type { SiteConfig } from '@/types';
@@ -39,8 +39,6 @@ export function SitePreview({ cfg, device, onDeviceChange, live }: SitePreviewPr
       // flashing a full-size page that then jumps to its real scale.
       0.5;
 
-  const handle = cfg.handle.trim() || PLACEHOLDER.handle;
-
   return (
     <div className={styles.preview}>
       <div className={styles.bar}>
@@ -51,7 +49,7 @@ export function SitePreview({ cfg, device, onDeviceChange, live }: SitePreviewPr
         </div>
         <div className={styles.url}>
           <MaterialIcon name={live ? 'lock' : 'edit'} size={13} />
-          <span>{handle}.not.online</span>
+          <span>{siteUrl(cfg.handle)}</span>
           {live && <span className={styles.liveTag}>live</span>}
         </div>
         <div className={styles.devices}>

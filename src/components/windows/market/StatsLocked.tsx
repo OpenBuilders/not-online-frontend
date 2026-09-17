@@ -103,11 +103,11 @@ export function StatsLocked() {
           ))}
         </div>
         <div className={styles.lockOverlay}>
-          <Sticker text="Become a partner to unlock" color="pink" rotate={-4} className={styles.sticker} />
+          <Sticker text="For patrons" icon="lock" color="pink" rotate={-4} className={styles.sticker} />
           <MaterialIcon name="lock" size={30} />
-          <p>Real-time stats are a partner perk.</p>
-          <AeroButton variant="pink" size="sm" onClick={() => window.open(PATRON_URL, '_blank', 'noopener')}>
-            Become a partner
+          <p>Real-time stats are a patron perk.</p>
+          <AeroButton variant="lime" size="sm" onClick={() => window.open(PATRON_URL, '_blank', 'noopener')}>
+            Become a patron
           </AeroButton>
         </div>
       </div>

@@ -85,7 +85,7 @@
   background: var(--c-white);
   border: 1px solid rgba(0, 0, 0, 0.14);
   border-radius: 9px;
-  padding-right: 11px;
+  padding-left: 11px;
 }
 .handleField:focus-within {
   border-color: var(--c-accent-shade-2);
@@ -96,14 +96,14 @@
   min-width: 0;
   border: none;
   background: transparent;
-  padding: 9px 11px;
+  padding: 9px 11px 9px 0;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   color: var(--c-ink);
   outline: none;
 }
-.suffix {
+.prefix {
   flex-shrink: 0;
   font-size: 12.5px;
   color: var(--c-muted);
@@ -167,6 +167,7 @@
   gap: 10px;
 }
 .template {
+  position: relative;
   border: 2px solid rgba(0, 0, 0, 0.12);
   border-radius: 12px;
   background: var(--c-white);
@@ -190,6 +191,31 @@
   outline: 2px solid var(--c-select);
   outline-offset: 2px;
 }
+/* Locked: visible, legible, and plainly not available yet. */
+.template.locked {
+  cursor: default;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.template.locked:hover {
+  transform: none;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+/* The dimming sits on the thumbnail alone — the sticker and the name are
+   siblings, so they stay at full strength. */
+.template.locked > div:first-child {
+  opacity: 0.45;
+}
+.template.locked .templateName {
+  color: var(--c-muted);
+}
+
+.lockSticker {
+  position: absolute;
+  top: 2px;
+  right: -6px;
+  z-index: 2;
+}
+
 .templateName {
   display: block;
   padding: 8px 2px;
@@ -257,13 +283,101 @@
   color: var(--c-ink);
 }
 
-/* ---- chips ---- */
+/* Two settings that belong together read better side by side than stacked. */
+.pickerRow {
+  display: flex;
+  gap: 10px;
+}
+.pickerRow > div {
+  flex: 1;
+  min-width: 0;
+}
 
+/* ---- backgrounds ---- */
+
+/*
+  Same three-column grid the palettes use, so "Background" reads as a
+  heading for a row of swatches rather than a stray label floating between
+  two differently-shaped grids.
+*/
 .backdrops {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.backdropOption {
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: var(--c-white);
+  padding: 6px 6px 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.backdropOption:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.backdropOption.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.backdropOption:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.backdropName {
+  display: block;
+  padding: 6px 1px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+/* ---- folder colours ---- */
+
+.folderRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
+.folderSwatch {
+  width: 58px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 11px;
+  background: var(--c-white);
+  cursor: pointer;
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.folderSwatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.folderSwatch:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.folderSwatch.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.folderSwatch:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* ---- chips ---- */
 .chip {
   display: inline-flex;
   align-items: center;
@@ -305,13 +419,22 @@
 }
 .linkRow {
   display: grid;
-  grid-template-columns: 96px 1fr 1fr 28px;
+  grid-template-columns: 62px 1fr 1fr 28px;
   gap: 6px;
   align-items: center;
 }
-.linkRow .select {
-  padding: 8px 6px;
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  background: rgba(168, 255, 26, 0.16);
+  color: var(--c-success);
   font-size: 11.5px;
+  line-height: 1.45;
 }
 .linkRow .input {
   padding: 8px 9px;
@@ -338,12 +461,6 @@
   outline-offset: 1px;
 }
 
-.linkActions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-
 .ghostBtn {
   display: inline-flex;
   align-items: center;
@@ -358,9 +475,6 @@
   color: var(--c-dim);
   cursor: pointer;
   margin-top: 10px;
-}
-.linkActions .ghostBtn {
-  margin-top: 0;
 }
 .ghostBtn:hover:not(:disabled) {
   border-color: var(--c-accent-shade-2);
@@ -436,11 +550,18 @@
 
 @media (max-width: 860px) {
   .templates,
-  .palettes {
+  .palettes,
+  .backdrops {
     grid-template-columns: repeat(2, 1fr);
   }
   .linkRow {
-    grid-template-columns: 1fr 1fr 28px;
+    grid-template-columns: 62px 1fr 28px;
+  }
+  .linkRow input:last-of-type {
+    grid-column: 1 / -1;
+  }
+  .templates {
+    grid-template-columns: repeat(2, 1fr);
   }
   .linkRow .select {
     grid-column: 1 / -1;

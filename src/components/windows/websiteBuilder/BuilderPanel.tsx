@@ -1,10 +1,24 @@
 import { useRef, type ChangeEvent, type RefObject } from 'react';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { AVATAR_PRESETS, BACKDROPS, LINK_ICONS, PALETTES, TEMPLATES, getPalette, newLink } from '@/data/siteTemplates';
+import { Sticker } from '@/components/shared/Sticker';
+import { AVATAR_PRESETS, FOLDER_COLORS } from '@/data/siteAssets';
+import {
+  BACKDROPS,
+  BUTTON_COLORS,
+  BUTTON_STYLES,
+  PALETTES,
+  TEMPLATES,
+  getPalette,
+  getTemplate,
+  newLink,
+  siteUrl,
+} from '@/data/siteTemplates';
 import { cx } from '@/lib/cx';
 import type { SiteConfig, SiteLink } from '@/types';
 import styles from './BuilderPanel.module.css';
+import { BackdropSwatch } from './BackdropSwatch';
+import { IconPicker } from './IconPicker';
 import { TemplateThumb } from './TemplateThumb';
 
 export type TourTarget = 'handle' | 'template' | 'palette' | 'avatar' | 'links';
@@ -42,6 +56,12 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
   const avatarFileRef = useRef<HTMLInputElement>(null);
   const backdropFileRef = useRef<HTMLInputElement>(null);
   const palette = getPalette(cfg.palette);
+  const template = getTemplate(cfg.template);
+
+  // "Just a button" is one link by definition, so the editor shows exactly
+  // one row and no way to add another.
+  const visibleLinks = template.singleLink ? cfg.links.slice(0, 1) : cfg.links;
+  const showAvatar = cfg.template !== 'button';
 
   const setLink = (id: string, p: Partial<SiteLink>) =>
     patch({ links: cfg.links.map((l) => (l.id === id ? { ...l, ...p } : l)) });
@@ -68,6 +88,7 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           Address
         </label>
         <div className={styles.handleField}>
+          <span className={styles.prefix}>not.online/</span>
           <input
             id="pb-handle"
             ref={tour.handleRef}
@@ -80,7 +101,6 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
               if (e.key === 'Enter') tour.onPicked('handle');
             }}
           />
-          <span className={styles.suffix}>.not.online</span>
         </div>
 
         <label className={styles.label} htmlFor="pb-name">
@@ -111,44 +131,48 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
         <h3 className={styles.head}>
           <span className={styles.step}>2</span> Avatar
         </h3>
-        <div className={styles.avatarRow}>
-          <button
-            type="button"
-            className={cx(styles.avatarOption, styles.avatarNone, cfg.avatar === null && styles.on)}
-            onClick={() => {
-              patch({ avatar: null });
-              tour.onPicked('avatar');
-            }}
-            aria-pressed={cfg.avatar === null}
-          >
-            <MaterialIcon name="text_fields" size={18} />
-            <span>Initials</span>
-          </button>
-          {AVATAR_PRESETS.map((src) => (
+        {showAvatar ? (
+          <div className={styles.avatarRow}>
             <button
-              key={src}
               type="button"
-              className={cx(styles.avatarOption, cfg.avatar === src && styles.on)}
+              className={cx(styles.avatarOption, styles.avatarNone, cfg.avatar === null && styles.on)}
               onClick={() => {
-                patch({ avatar: src });
+                patch({ avatar: null });
                 tour.onPicked('avatar');
               }}
-              aria-pressed={cfg.avatar === src}
-              aria-label="Use this avatar"
+              aria-pressed={cfg.avatar === null}
             >
-              <img src={src} alt="" />
+              <MaterialIcon name="text_fields" size={18} />
+              <span>Initials</span>
             </button>
-          ))}
-          <button
-            type="button"
-            className={cx(styles.avatarOption, styles.avatarUpload)}
-            onClick={() => avatarFileRef.current?.click()}
-          >
-            <MaterialIcon name="add_photo_alternate" size={18} />
-            <span>Upload</span>
-          </button>
-          <input ref={avatarFileRef} type="file" accept="image/*" hidden onChange={onAvatarFile} />
-        </div>
+            {AVATAR_PRESETS.map((src) => (
+              <button
+                key={src}
+                type="button"
+                className={cx(styles.avatarOption, cfg.avatar === src && styles.on)}
+                onClick={() => {
+                  patch({ avatar: src });
+                  tour.onPicked('avatar');
+                }}
+                aria-pressed={cfg.avatar === src}
+                aria-label="Use this avatar"
+              >
+                <img src={src} alt="" />
+              </button>
+            ))}
+            <button
+              type="button"
+              className={cx(styles.avatarOption, styles.avatarUpload)}
+              onClick={() => avatarFileRef.current?.click()}
+            >
+              <MaterialIcon name="add_photo_alternate" size={18} />
+              <span>Upload</span>
+            </button>
+            <input ref={avatarFileRef} type="file" accept="image/*" hidden onChange={onAvatarFile} />
+          </div>
+        ) : (
+          <p className={styles.blurb}>Just a button doesn&apos;t show an avatar — that&apos;s rather the point.</p>
+        )}
       </section>
 
       <section className={styles.section} ref={tour.templateRef}>
@@ -156,28 +180,96 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           <span className={styles.step}>3</span> Template
         </h3>
         <div className={styles.templates}>
-          {TEMPLATES.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              className={cx(styles.template, cfg.template === t.id && styles.on)}
-              onClick={() => {
-                patch({ template: t.id });
-                tour.onPicked('template');
-              }}
-              aria-pressed={cfg.template === t.id}
-            >
-              <TemplateThumb template={t.id} palette={palette} />
-              <span className={styles.templateName}>{t.name}</span>
-            </button>
-          ))}
+          {TEMPLATES.map((t) => {
+            // Locked templates stay on the shelf rather than disappearing:
+            // a guest should be able to see what an account is for.
+            const locked = isGuest && !t.guest;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                className={cx(styles.template, cfg.template === t.id && styles.on, locked && styles.locked)}
+                disabled={locked}
+                onClick={() => {
+                  patch({ template: t.id });
+                  tour.onPicked('template');
+                }}
+                aria-pressed={cfg.template === t.id}
+              >
+                <TemplateThumb template={t.id} palette={palette} />
+                {locked && <Sticker text="For patrons" icon="lock" color="pink" rotate={-7} className={styles.lockSticker} />}
+                <span className={styles.templateName}>{t.name}</span>
+              </button>
+            );
+          })}
         </div>
-        <p className={styles.blurb}>{TEMPLATES.find((t) => t.id === cfg.template)?.blurb}</p>
-        {cfg.template === 'stick' && (
+        <p className={styles.blurb}>{template.blurb}</p>
+
+        {cfg.template === 'stickers' && (
           <button type="button" className={styles.ghostBtn} onClick={() => patch({ seed: cfg.seed + 1 })}>
             <MaterialIcon name="shuffle" size={15} />
-            Shuffle the scatter
+            Shuffle the shapes
           </button>
+        )}
+
+        {cfg.template === 'button' && (
+          <div className={styles.pickerRow}>
+            <div>
+              <label className={styles.label} htmlFor="pb-btn-style">
+                Button style
+              </label>
+              <select
+                id="pb-btn-style"
+                className={styles.select}
+                value={cfg.buttonStyle}
+                onChange={(e) => patch({ buttonStyle: e.target.value })}
+              >
+                {BUTTON_STYLES.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={styles.label} htmlFor="pb-btn-color">
+                Button colour
+              </label>
+              <select
+                id="pb-btn-color"
+                className={styles.select}
+                value={cfg.buttonColor}
+                onChange={(e) => patch({ buttonColor: e.target.value })}
+              >
+                {BUTTON_COLORS.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {cfg.template === 'folders' && (
+          <>
+            <label className={styles.label}>Folder colour</label>
+            <div className={styles.folderRow}>
+              {FOLDER_COLORS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={cx(styles.folderSwatch, cfg.folderColor === f.id && styles.on)}
+                  onClick={() => patch({ folderColor: f.id })}
+                  aria-pressed={cfg.folderColor === f.id}
+                  title={f.name}
+                  aria-label={f.name}
+                >
+                  <img src={f.src} alt="" />
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
@@ -213,50 +305,48 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
             <button
               key={b.id}
               type="button"
-              className={cx(styles.chip, cfg.backdrop === b.id && styles.on)}
+              className={cx(styles.backdropOption, cfg.backdrop === b.id && styles.on)}
               onClick={() => patch({ backdrop: b.id })}
               aria-pressed={cfg.backdrop === b.id}
             >
-              {b.name}
+              <BackdropSwatch kind={b.id} palette={palette} />
+              <span className={styles.backdropName}>{b.name}</span>
             </button>
           ))}
           <button
             type="button"
-            className={cx(styles.chip, cfg.backdrop === 'photo' && styles.on)}
+            className={cx(styles.backdropOption, cfg.backdrop === 'photo' && styles.on)}
             onClick={() => (cfg.backdropImage ? patch({ backdrop: 'photo' }) : backdropFileRef.current?.click())}
             aria-pressed={cfg.backdrop === 'photo'}
           >
-            <MaterialIcon name="image" size={14} />
-            Photo
+            <BackdropSwatch kind="photo" palette={palette} image={cfg.backdropImage} />
+            <span className={styles.backdropName}>Photo</span>
           </button>
-          {cfg.backdropImage && (
-            <button type="button" className={styles.chip} onClick={() => backdropFileRef.current?.click()}>
-              Replace
-            </button>
-          )}
           <input ref={backdropFileRef} type="file" accept="image/*" hidden onChange={onBackdropFile} />
         </div>
+        {cfg.backdropImage && (
+          <button type="button" className={styles.ghostBtn} onClick={() => backdropFileRef.current?.click()}>
+            <MaterialIcon name="image" size={15} />
+            Replace photo
+          </button>
+        )}
       </section>
 
       <section className={styles.section} ref={tour.linksRef}>
         <h3 className={styles.head}>
-          <span className={styles.step}>5</span> Links
+          <span className={styles.step}>5</span> {template.singleLink ? 'Your link' : 'Links'}
         </h3>
+        {template.singleLink && (
+          <p className={styles.notice}>
+            <MaterialIcon name="info" size={15} />
+            This template holds one link — that&apos;s the whole idea. Your other links are kept and come back if you
+            switch template.
+          </p>
+        )}
         <div className={styles.links}>
-          {cfg.links.map((l) => (
+          {visibleLinks.map((l) => (
             <div key={l.id} className={styles.linkRow}>
-              <select
-                className={styles.select}
-                value={l.icon}
-                onChange={(e) => setLink(l.id, { icon: e.target.value })}
-                aria-label="Link type"
-              >
-                {LINK_ICONS.map((ic) => (
-                  <option key={ic.value} value={ic.value}>
-                    {ic.label}
-                  </option>
-                ))}
-              </select>
+              <IconPicker value={l.icon} onChange={(icon) => setLink(l.id, { icon })} />
               <input
                 className={styles.input}
                 placeholder="Label"
@@ -269,18 +359,20 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
                 value={l.url}
                 onChange={(e) => setLink(l.id, { url: e.target.value })}
               />
-              <button
-                type="button"
-                className={styles.removeLink}
-                aria-label={`Remove ${l.title || 'link'}`}
-                onClick={() => patch({ links: cfg.links.filter((x) => x.id !== l.id) })}
-              >
-                <MaterialIcon name="close" size={15} />
-              </button>
+              {!template.singleLink && (
+                <button
+                  type="button"
+                  className={styles.removeLink}
+                  aria-label={`Remove ${l.title || 'link'}`}
+                  onClick={() => patch({ links: cfg.links.filter((x) => x.id !== l.id) })}
+                >
+                  <MaterialIcon name="close" size={15} />
+                </button>
+              )}
             </div>
           ))}
         </div>
-        <div className={styles.linkActions}>
+        {!template.singleLink && (
           <button
             type="button"
             className={styles.ghostBtn}
@@ -290,10 +382,7 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
             <MaterialIcon name="add" size={15} />
             New link
           </button>
-          <button type="button" className={styles.ghostBtn} onClick={() => tour.onPicked('links')}>
-            Done with links
-          </button>
-        </div>
+        )}
       </section>
 
       <section className={styles.section}>
@@ -301,7 +390,7 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           <div className={styles.liveCard}>
             <div className={styles.liveHead}>
               <span className={styles.liveDot} />
-              {cfg.handle || 'yourname'}.not.online is live
+              {siteUrl(cfg.handle)} is live
             </div>
             <div className={styles.stats}>
               <div>
@@ -329,11 +418,7 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
         >
           {live ? (dirty ? 'Save changes' : 'All changes saved') : 'Publish my page'}
         </AeroButton>
-        <p className={styles.fine}>
-          {isGuest
-            ? 'Guest demo — your page lives in this browser only. Log in to keep it.'
-            : 'Custom domains are coming. For now everyone gets a .not.online.'}
-        </p>
+        {isGuest && <p className={styles.fine}>Guest demo — your page lives in this browser only. Log in to keep it.</p>}
       </section>
     </div>
   );

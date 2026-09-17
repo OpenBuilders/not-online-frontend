@@ -2,10 +2,9 @@ import type { SiteConfig, SiteLink, SiteTemplateId } from '@/types';
 
 /**
  * Everything the links-page builder offers as a choice. Ported from
- * Tools.html's TEMPLATES/COMBOS/WB_ICONS (3330-3346) and widened: the four
- * templates survive, but each is a real designed layout now rather than
- * three grey bars, and "combo" became a named palette that also drives a
- * separate backdrop layer.
+ * Tools.html's TEMPLATES/COMBOS/WB_ICONS (3330-3346) and widened: each
+ * template is a real designed layout now rather than three grey bars, and
+ * "combo" became a named palette that also drives a separate backdrop layer.
  */
 
 export interface SitePalette {
@@ -34,14 +33,23 @@ export interface SiteTemplate {
   id: SiteTemplateId;
   name: string;
   blurb: string;
+  /** Templates that carry exactly one link (and hide the rest of the link editor). */
+  singleLink?: boolean;
+  /** Open to a logged-out visitor. The rest are a reason to sign in. */
+  guest?: boolean;
 }
 
 export const TEMPLATES: SiteTemplate[] = [
-  { id: 'stack', name: 'Poster', blurb: 'Huge type, highlight blocks, links as full-width slabs' },
-  { id: 'grid', name: 'Collage', blurb: 'Y2K scrapbook — taped photo, scrolling strips, tilted tiles' },
-  { id: 'stick', name: 'Stickers', blurb: 'Every link is a die-cut sticker scattered on the page' },
-  { id: 'web1', name: 'Web 1.0', blurb: 'A window from 1998, pixel type and a hit counter included' },
+  { id: 'poster', name: 'Poster', blurb: 'Huge type, highlight blocks, links as full-width slabs', guest: true },
+  { id: 'folders', name: 'Folders', blurb: 'Links as desktop folders, in the colour of your choosing', guest: true },
+  { id: 'stickers', name: 'Stickers', blurb: 'Every link is a die-cut sticker with its own shape and tilt' },
+  { id: 'bold', name: 'Bold', blurb: 'A numbered index in wide mono — the whole page is the list' },
+  { id: 'web1', name: 'Web 1.0', blurb: 'A homepage from 1996. No chrome, no borders, no restraint.' },
+  { id: 'button', name: 'Just a button', blurb: 'One link, one enormous button. Pick its era and its colour.', singleLink: true },
 ];
+
+export const getTemplate = (id: SiteTemplateId): SiteTemplate => TEMPLATES.find((t) => t.id === id) ?? TEMPLATES[0];
+
 
 export interface SiteBackdrop {
   id: string;
@@ -59,8 +67,50 @@ export const BACKDROPS: SiteBackdrop[] = [
   { id: 'photo', name: 'Photo' },
 ];
 
-/** One house avatar for people with nothing to upload — not a gallery to browse. */
-export const AVATAR_PRESETS = ['/assets/icons/apps/ava_1.png'];
+/**
+ * "Just a button" is two independent choices: the face (what era of
+ * interface it came from) and the colourway (what it's painted in). Keeping
+ * them apart means five faces and six colours give thirty buttons rather
+ * than five, and adding either side costs one line.
+ */
+export interface ButtonStyle {
+  id: string;
+  name: string;
+}
+
+export const BUTTON_STYLES: ButtonStyle[] = [
+  { id: 'win95', name: 'Windows 95' },
+  { id: 'aqua', name: 'Mac OS X Aqua' },
+  { id: 'aero', name: 'Frutiger Aero' },
+  { id: 'brutal', name: 'Brutalist' },
+  { id: 'pill', name: 'Modern pill' },
+  { id: 'terminal', name: 'Terminal' },
+];
+
+/** Each colourway supplies the four values every face is built from. */
+export interface ButtonColor {
+  id: string;
+  name: string;
+  /** Main fill. */
+  base: string;
+  /** Lighter edge / top of a gradient. */
+  hi: string;
+  /** Darker edge / bottom of a gradient. */
+  lo: string;
+  /** Text that stays legible on `base`. */
+  ink: string;
+}
+
+export const BUTTON_COLORS: ButtonColor[] = [
+  { id: 'silver', name: 'Silver', base: '#dcdce2', hi: '#ffffff', lo: '#9b9ba4', ink: '#16161a' },
+  { id: 'lime', name: 'Lime', base: '#a8ff1a', hi: '#dcff9b', lo: '#6fa800', ink: '#0d1a00' },
+  { id: 'pink', name: 'Pink', base: '#ff1a91', hi: '#ff86c4', lo: '#b00061', ink: '#ffffff' },
+  { id: 'blue', name: 'Blue', base: '#2f7ff0', hi: '#a8cdff', lo: '#12489c', ink: '#ffffff' },
+  { id: 'graphite', name: 'Graphite', base: '#2b2b30', hi: '#5c5c66', lo: '#0a0a0c', ink: '#ffffff' },
+  { id: 'bone', name: 'Bone', base: '#f6f4ee', hi: '#ffffff', lo: '#c7c2b4', ink: '#16161a' },
+];
+
+export const getButtonColor = (id: string): ButtonColor => BUTTON_COLORS.find((c) => c.id === id) ?? BUTTON_COLORS[0];
 
 export const LINK_ICONS: { value: string; label: string }[] = [
   { value: 'link', label: 'Website' },
@@ -94,10 +144,13 @@ export function blankSite(): SiteConfig {
     name: '',
     bio: '',
     avatar: null,
-    template: 'stack',
+    template: 'poster',
     palette: 'acid',
     backdrop: 'grid',
     backdropImage: null,
+    buttonStyle: 'aqua',
+    buttonColor: 'lime',
+    folderColor: 'blue',
     links: [newLink({ icon: 'photo_camera', title: 'Instagram', url: '' }), newLink({ icon: 'mail', title: 'Email', url: '' })],
     seed: 1,
     views: 0,
@@ -111,3 +164,6 @@ export const PLACEHOLDER = {
   name: 'Your Name',
   bio: 'I make things that are probably nothing.',
 };
+
+/** Every page lives at not.online/<handle>. */
+export const siteUrl = (handle: string) => `not.online/${handle.trim() || PLACEHOLDER.handle}`;

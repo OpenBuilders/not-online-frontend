@@ -27,7 +27,7 @@ export interface MarketItem {
   externalUrl?: string;
 }
 
-export type SiteTemplateId = 'stack' | 'grid' | 'stick' | 'web1';
+export type SiteTemplateId = 'poster' | 'stickers' | 'web1' | 'button' | 'bold' | 'folders';
 
 export interface SiteLink {
   id: string;
@@ -47,6 +47,12 @@ export interface SiteConfig {
   backdrop: string;
   /** Only read when `backdrop` is 'photo'. */
   backdropImage: string | null;
+  /** Which face the 'button' template wears — see BUTTON_STYLES. */
+  buttonStyle: string;
+  /** Which colourway that face is painted in — see BUTTON_COLORS. */
+  buttonColor: string;
+  /** Which folder image the 'folders' template draws — see FOLDER_COLORS. */
+  folderColor: string;
   links: SiteLink[];
   /** Shuffles the sticker template's scatter — the layout is derived, not hand-placed. */
   seed: number;

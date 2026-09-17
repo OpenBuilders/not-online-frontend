@@ -11,6 +11,21 @@
   color: var(--pg-ink);
   font-family: 'Archivo', sans-serif;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A published page is still scrollable, it just never draws a bar. Inside
+   the preview the page is scaled down, so a real scrollbar rendered at full
+   browser width and cut straight down the middle of the render. Applied to
+   the whole subtree because several templates scroll a different element
+   (the page body, the sticker board, Bold's list). */
+.page *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.page * {
+  scrollbar-width: none;
 }
 
 .backdrop {
@@ -75,7 +90,26 @@
 .body {
   position: relative;
   z-index: 1;
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  height: 100%;
   overflow: hidden;
+}
+
+/* The one thing every page carries. Barely there on purpose — it signs the
+   page without being part of anyone's design. */
+.mark {
+  position: absolute;
+  z-index: 3;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  font-family: 'Archivo', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2.4px;
+  text-transform: lowercase;
+  color: var(--pg-ink);
+  opacity: 0.22;
 }

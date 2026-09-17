@@ -2,9 +2,14 @@ import { useCallback, useEffect } from 'react';
 import { useAppState } from './AppStateContext';
 import type { TourId } from '@/types';
 
-/** Order the desktop reveals itself in for a guest (Tools.html:3628).
- *  Trimmed to what's actually built right now — 'radar' comes back once
- *  that widget does. */
+/**
+ * Order a guest works through the demos (Tools.html:3628). Nothing on the
+ * desktop is hidden behind it any more — Market, Settings and the links
+ * page are all there from the first frame, because hiding a tool you are
+ * trying to demo mostly teaches people it isn't there. What the chain still
+ * does is record which demos are finished, which is what the background
+ * unlocks read (see data/backgrounds.ts).
+ */
 export const GUEST_CHAIN: TourId[] = ['market', 'settings', 'page'];
 
 /**

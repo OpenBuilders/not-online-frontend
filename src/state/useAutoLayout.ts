@@ -1,30 +1,24 @@
 import { useLayoutEffect, type DependencyList, type RefObject } from 'react';
 
-const MOBILE_BREAKPOINT = 760;
-
 /**
- * Mobile layout for the desktop icons and widgets: below 760px, icons lay
- * out into a grid and the widgets stack full-width beneath them; above it,
- * everything reverts to its own absolute x/y. Ported from autoLayout()/
- * isMobile() (Tools.html:3670-3695) — this specific behavior was verified
- * correct earlier this session (it was wrongly flagged as broken in an
- * earlier audit pass, which turned out to be a test-methodology bug, not a
- * real one; see the redesign-audit history for that).
+ * Positions the desktop icons and widgets, and keeps them inside the
+ * desktop when it is narrower than the layout they were authored for.
  *
- * One real bug in that original function *is* fixed here: its desktop
- * branch only ever reset `width`, never `left`/`top`, so resizing from
- * mobile back to desktop left icons and widgets stuck at their mobile grid
- * position. Caught by actually resizing a live instance of this port,
- * fixed by clearing the inline overrides so each element falls back to its
- * own x/y prop.
+ * There used to be a separate mobile branch that re-flowed the icons into a
+ * grid and the widgets into resized square cells. It's gone: the same left
+ * column of icons with the widget pulled against the right edge reads
+ * correctly at every width, and one layout means the widget is one size, so
+ * its type doesn't have to work at two.
  *
- * This stays a DOM-measuring effect rather than a computed style, on
- * purpose: the widget stack's row height depends on each widget's actual
- * rendered height, which isn't known until after layout — that's true in
- * any framework, not a shortcut specific to this port. Icons and widgets
- * only need the CSS classes `.desktop-icon` and `.widget-radar`/`.widget-card`
- * respectively; gated ones should simply not be rendered rather than
- * rendered-and-hidden, so this hook never needs to know about gating itself.
+ * This stays a DOM-measuring effect rather than computed styles because
+ * clamping needs each element's real rendered width, which isn't known
+ * until after layout.
+ *
+ * Icons and widgets only need the CSS classes `.desktop-icon` and
+ * `.widget-radar`/`.widget-card`; gated ones should simply not be rendered
+ * rather than rendered-and-hidden, so this hook never needs to know about
+ * gating itself. A draggable element also carries `data-x`/`data-y` so its
+ * authored position can be restored after a resize.
  */
 export function useAutoLayout(desktopRef: RefObject<HTMLElement | null>, deps: DependencyList) {
   useLayoutEffect(() => {
@@ -33,57 +27,20 @@ export function useAutoLayout(desktopRef: RefObject<HTMLElement | null>, deps: D
 
     function layout() {
       if (!desk) return;
-      const icons = Array.from(desk.querySelectorAll<HTMLElement>('.desktop-icon'));
-      const widgets = Array.from(desk.querySelectorAll<HTMLElement>('.widget-radar, .widget-card'));
-      const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+      const items = Array.from(desk.querySelectorAll<HTMLElement>('.desktop-icon, .widget-radar, .widget-card'));
 
-      if (isMobile) {
-        const W = desk.clientWidth;
-        const cols = Math.max(2, Math.floor((W - 24) / 104));
-        icons.forEach((el, i) => {
-          el.style.left = `${14 + (i % cols) * ((W - 28) / cols)}px`;
-          el.style.top = `${104 + Math.floor(i / cols) * 132}px`;
-        });
-        const rows = Math.ceil(icons.length / cols);
-        let y = 104 + rows * 132 + 6;
-        // Widgets show as a 2-column grid of square cells rather than a
-        // full-width single-column stack.
-        const widgetGap = 12;
-        const widgetCols = 2;
-        const cellSize = (W - 28 - widgetGap * (widgetCols - 1)) / widgetCols;
-        widgets.forEach((el, i) => {
-          const col = i % widgetCols;
-          const row = Math.floor(i / widgetCols);
-          el.style.left = `${14 + col * (cellSize + widgetGap)}px`;
-          el.style.top = `${y + row * (cellSize + widgetGap)}px`;
-          el.style.width = `${cellSize}px`;
-          el.style.height = `${cellSize}px`;
-        });
-        const widgetRows = Math.ceil(widgets.length / widgetCols);
-        y += widgetRows * (cellSize + widgetGap);
-        desk.style.overflowY = 'auto';
-      } else {
-        // Restore each element's own desktop position from its data-x/data-y
-        // (set by the component itself) rather than clearing the inline
-        // style — clearing it doesn't guarantee React repaints the value,
-        // since nothing forces a re-render just because this effect mutated
-        // the DOM directly.
-        widgets.forEach((el) => {
-          el.style.width = '';
-          el.style.height = '';
-        });
-        [...icons, ...widgets].forEach((el) => {
-          if (el.dataset.y) el.style.top = `${el.dataset.y}px`;
-          if (!el.dataset.x) return;
-          // Seed positions are authored against a wide desktop. Clamping to
-          // the container keeps a widget whole on a narrow-but-not-mobile
-          // window instead of letting it run off the right edge, where its
-          // action button is unreachable.
-          const maxLeft = desk.clientWidth - el.offsetWidth - 16;
-          el.style.left = `${Math.max(16, Math.min(Number(el.dataset.x), maxLeft))}px`;
-        });
-        desk.style.overflowY = '';
-      }
+      items.forEach((el) => {
+        if (el.dataset.y) el.style.top = `${el.dataset.y}px`;
+        if (!el.dataset.x) return;
+        // Seed positions are authored against a wide desktop. Clamping to
+        // the container keeps everything whole on a narrow one instead of
+        // letting it run off the right edge, where a widget's action button
+        // would be unreachable — and on a phone it produces exactly the
+        // arrangement we want anyway: the icons stay in their left column,
+        // and the widget pulls in against the right edge.
+        const maxLeft = desk.clientWidth - el.offsetWidth - 14;
+        el.style.left = `${Math.max(14, Math.min(Number(el.dataset.x), maxLeft))}px`;
+      });
     }
 
     layout();

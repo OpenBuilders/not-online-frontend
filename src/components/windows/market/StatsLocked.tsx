@@ -1,18 +1,9 @@
-import { AeroButton } from '@/components/shared/AeroButton';
+import { CircleStage } from '@/components/cta/CircleStage';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { Sticker } from '@/components/shared/Sticker';
-import { PATRON_URL } from '@/data/links';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
 import { useMyMarketSubmissions } from '@/state/useMarketSubmissions';
 import styles from './StatsLocked.module.css';
-
-const FAKE_STATS = [
-  { v: '—', k: 'items listed' },
-  { v: '—', k: 'approved' },
-  { v: '—', k: 'in queue' },
-  { v: '—', k: 'stock value' },
-];
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING_REVIEW: 'in queue',
@@ -21,10 +12,15 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 /**
- * Stats is locked behind "become a partner" for a guest — but a logged-in
- * user already is a partner, so they see the real numbers instead, driven
- * by the same `useMyMarketSubmissions()` the MySubmissions desktop panel
- * uses, not a client-only mock.
+ * Stats belongs to patrons, so a guest gets the join CTA here instead —
+ * the interactive one, in the window itself rather than behind a lock
+ * icon over four blurred dashes. A teaser of numbers that are all em-dashes
+ * promises nothing and asks the visitor to imagine the payoff; the ring is
+ * the actual thing being offered, so it is what the tab shows.
+ *
+ * A logged-in user already is a patron, so they see the real numbers,
+ * driven by the same `useMyMarketSubmissions()` the MySubmissions desktop
+ * panel uses, not a client-only mock.
  */
 export function StatsLocked() {
   const { state } = useAppState();
@@ -92,25 +88,11 @@ export function StatsLocked() {
   }
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.teaser}>
-        <div className={cx(styles.grid, styles.blurred)}>
-          {FAKE_STATS.map((s) => (
-            <div key={s.k} className={styles.stat}>
-              <div className={styles.v}>{s.v}</div>
-              <div className={styles.k}>{s.k}</div>
-            </div>
-          ))}
-        </div>
-        <div className={styles.lockOverlay}>
-          <Sticker text="For patrons" icon="lock" color="pink" rotate={-4} className={styles.sticker} />
-          <MaterialIcon name="lock" size={30} />
-          <p>Real-time stats are a patron perk.</p>
-          <AeroButton variant="lime" size="sm" onClick={() => window.open(PATRON_URL, '_blank', 'noopener')}>
-            Become a patron
-          </AeroButton>
-        </div>
-      </div>
+    <div className={cx(styles.wrap, styles.joinWrap)}>
+      <h3 className={styles.joinTitle}>Join the circle</h3>
+      <p className={styles.joinSub}>Move the light. Pick your role</p>
+      <CircleStage size={250} className={styles.joinStage} />
+      <p className={styles.joinFoot}>Stats turn on the moment you&apos;re in.</p>
     </div>
   );
 }

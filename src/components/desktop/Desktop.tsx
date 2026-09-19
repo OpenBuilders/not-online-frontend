@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { BottomBar } from '@/components/desktop/BottomBar';
 import { DesktopIconLayer } from '@/components/desktop/DesktopIconLayer';
 import { HomeBar } from '@/components/desktop/HomeBar';
 import { MySubmissions } from '@/components/desktop/MySubmissions';
@@ -63,8 +62,8 @@ export function Desktop() {
 
       <DesktopIconLayer desktopRef={desktopRef} />
       <MySubmissions />
-
-      <BottomBar />
+      {/* BottomBar (the running line) is kept in the tree but not rendered —
+          the component stays available for when it's wanted back. */}
 
       <WindowManager />
       <HomeBar />

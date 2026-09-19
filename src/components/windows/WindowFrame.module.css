@@ -15,20 +15,29 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: pop 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  /* Fade only, no scale. FocusTour measures its target with
+     getBoundingClientRect on every frame, and that reports the *animated*
+     size — so a scaling window made the spotlight and its bubble fly across
+     the screen for the length of the animation. Opacity doesn't touch
+     layout, so the tour is correctly placed from the first frame. */
+  animation: fadeIn 0.2s ease-out;
   /* windows never exceed the viewport, at any screen size */
   max-width: 96vw;
   max-height: 90vh;
 }
 
-@keyframes pop {
+@keyframes fadeIn {
   from {
-    transform: scale(0.92);
     opacity: 0;
   }
   to {
-    transform: scale(1);
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win {
+    animation: none;
   }
 }
 
@@ -145,9 +154,11 @@
     border-radius: 14px;
   }
   /* Bottom clearance: HomeBar (HomeBar.module.css) floats above the running-line ticker at
-     `bottom: 30px (--mobile-ticker-height) + safe-area + 14px`, and is itself ~56px tall (42px
-     circle + 7px top/bottom padding) — so its own top edge sits ~100px above `.desktop`'s
-     bottom edge. A window needs to stop above that, with a real gap.
+     `bottom: var(--mobile-ticker-height) + safe-area + 14px`, and is itself ~56px tall (42px
+     circle + 7px top/bottom padding) — so its own top edge sits that far above `.desktop`'s
+     bottom edge. A window needs to stop above that, with a real gap. That whole sum is
+     `--mobile-bottom-clear` (base.css), read from here rather than re-added as constants, so
+     unmounting the ticker gives the height back to the window instead of leaving a dead strip.
      Sized in `%` here, not `92vh` — `.desktop` (base.css) is `92vh` but also `max-height: 1000px`,
      and on any viewport taller than ~1087px (e.g. a desktop browser just narrowed in width, a
      common way to "test mobile" without a real device) that cap wins, so `.desktop`'s actual
@@ -159,7 +170,7 @@
   /* one window open: fills the usable area. two: stacked top/bottom. */
   :global(body.win1) .win {
     top: 104px !important;
-    height: calc(100% - 224px) !important;
+    height: calc(100% - 104px - var(--mobile-bottom-clear)) !important;
   }
   :global(body.win2) .win.stackTop {
     top: 100px !important;
@@ -167,7 +178,7 @@
   }
   :global(body.win2) .win.stackBot {
     top: 50% !important;
-    height: calc(50% - 120px) !important;
+    height: calc(50% - var(--mobile-bottom-clear)) !important;
   }
   .content {
     overflow: auto;

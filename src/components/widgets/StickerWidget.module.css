@@ -13,7 +13,7 @@
   font-family: 'Archivo', sans-serif;
   text-align: left;
   cursor: grab;
-  border-radius: 30px;
+  border-radius: 26px;
   transform: rotate(var(--rest-rotate, 0deg));
   transition:
     transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.3),
@@ -31,16 +31,16 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  border-radius: 30px;
-  padding: 16px 17px;
+  border-radius: 26px;
+  padding: 12px 13px;
   overflow: hidden;
   /* The cut-line and the shadow that lifts it off the wallpaper. Both are
      drawn with box-shadow rather than a border so the white ring hugs the
      radius exactly and never double-strokes at the corners. */
   box-shadow:
-    0 0 0 5px var(--c-white),
-    6px 7px 0 5px rgba(0, 0, 0, 0.55),
-    0 22px 40px rgba(0, 0, 0, 0.45);
+    0 0 0 4px var(--c-white),
+    5px 6px 0 4px rgba(0, 0, 0, 0.55),
+    0 18px 32px rgba(0, 0, 0, 0.45);
 }
 
 .lime .face {
@@ -60,29 +60,42 @@
    legible without a per-colour override. */
 .title {
   position: relative;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 1.6px;
+  letter-spacing: 1.1px;
   text-transform: uppercase;
   opacity: 0.62;
   flex-shrink: 0;
-  padding-right: 54px;
+  padding-right: 38px;
 }
 /* No icon disc in the corner means nothing to clear. */
 .face:not(:has(.iconBadge)):not(:has(.art)) .title,
 .face:not(:has(.iconBadge)):not(:has(.art)) .lead {
   padding-right: 0;
 }
+/*
+  Sized against the card, not the viewport. The card is a fixed 176px at
+  every width now, so one rule holds everywhere — the old pair of fixed
+  sizes either overflowed the card or shrank the headline to nothing
+  depending on which side of a breakpoint you were on.
+*/
 .lead {
   position: relative;
-  font-size: 26px;
+  font-size: 17px;
   font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.8px;
+  line-height: 1;
+  letter-spacing: -0.5px;
   text-transform: uppercase;
-  margin-top: 6px;
+  margin-top: 5px;
   flex-shrink: 0;
-  padding-right: 54px;
+  padding-right: 38px;
+  display: -webkit-box;
+  /* Four, not three. At this width the headline breaks one word to a line,
+     and three lines turned "a page for your links" into "a page for your…"
+     — the last word is the one that says what the widget makes. */
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 /* Emphasis is a knocked-out highlight block, not a second hue — a marker
    swipe over the word reads far louder than a recoloured or outlined word,
@@ -91,9 +104,9 @@
   font-weight: 800;
   background: #0d0d0f;
   color: var(--c-white);
-  padding: 0 7px 2px;
+  padding: 0 5px 1px;
   margin: 0 -2px;
-  border-radius: 6px;
+  border-radius: 5px;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -109,6 +122,7 @@
 }
 
 .sub {
+  display: none;
   font-size: 10.5px;
   font-weight: 600;
   line-height: 1.32;
@@ -127,35 +141,39 @@
    PNGs carry their own alpha, so no blend mode is involved. */
 .art {
   position: absolute;
-  top: -28%;
-  right: -14%;
-  height: 94%;
+  top: -24%;
+  right: -16%;
+  height: 86%;
   width: auto;
   object-fit: contain;
   pointer-events: none;
 }
-/* Copy keeps clear of the art instead of running under it. */
-.face:has(.art) .title,
+/* Copy keeps clear of the art instead of running under it. The headline
+   gets the narrower gutter of the two: the art's silhouette is widest at
+   the top, where the small-caps label sits, and tapers past the headline. */
+.face:has(.art) .title {
+  padding-right: 52px;
+}
 .face:has(.art) .lead {
-  padding-right: 72px;
+  padding-right: 44px;
 }
 
 /* A peel-off label stuck over the corner — it overhangs the cut-line, so it
    lives outside `.face` (which clips) on the shell itself. */
 .badge {
   position: absolute;
-  top: -10px;
-  left: -12px;
+  top: -9px;
+  left: -10px;
   z-index: 2;
   transform: rotate(-11deg);
   background: var(--c-accent);
   color: #0d1a00;
   border: 3px solid var(--c-white);
   border-radius: 999px;
-  padding: 5px 11px;
-  font-size: 10px;
+  padding: 4px 9px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.1px;
   text-transform: uppercase;
   white-space: nowrap;
   box-shadow: 3px 4px 7px rgba(0, 0, 0, 0.4);
@@ -170,10 +188,10 @@
    a die-cut sticker usually carries its mark. */
 .iconBadge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 46px;
-  height: 46px;
+  top: 9px;
+  right: 9px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -189,18 +207,18 @@
 
 .button {
   position: relative;
-  margin-top: 10px;
+  margin-top: auto;
   flex-shrink: 0;
   width: 100%;
-  height: 36px;
+  height: 32px;
   border-radius: 999px;
   border: 2px solid currentColor;
   background: #0d0d0f;
   color: var(--c-white);
   font-family: inherit;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1.2px;
+  letter-spacing: 0.9px;
   text-transform: uppercase;
   cursor: pointer;
   display: flex;
@@ -233,71 +251,6 @@
   text-align: left;
 }
 
-/*
-  Mobile. The breakpoint is 760px to match useAutoLayout's own — it resizes
-  every widget into a square grid cell below that, and this file used to
-  switch at 700, so between the two the widget was shrunk while its type
-  stayed desktop-sized and `.face`'s `overflow: hidden` ate the button.
-
-  In a ~160px cell there is only room for the kicker, two lines of headline
-  and the button, so the supporting line goes and the button is pinned to
-  the bottom with `margin-top: auto` rather than relying on a spacer that
-  can be squeezed to nothing.
-*/
-@media (max-width: 760px) {
-  .face {
-    padding: 11px 12px;
-  }
-  .title {
-    font-size: 8px;
-    letter-spacing: 1px;
-    padding-right: 0;
-  }
-  .lead {
-    font-size: 15px;
-    line-height: 1.02;
-    letter-spacing: -0.4px;
-    margin-top: 4px;
-    padding-right: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .sub,
-  .spacer {
-    display: none;
-  }
-  .button {
-    margin-top: auto;
-    height: 30px;
-    font-size: 8.5px;
-    letter-spacing: 0.8px;
-    gap: 4px;
-  }
-  .iconBadge {
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
-  }
-  .face:has(.iconBadge) .title,
-  .face:has(.iconBadge) .lead,
-  .face:has(.art) .title,
-  .face:has(.art) .lead {
-    padding-right: 26px;
-  }
-  .art {
-    top: -20%;
-    right: -20%;
-    height: 78%;
-  }
-  .badge {
-    top: -8px;
-    left: -9px;
-    padding: 3px 8px;
-    font-size: 8px;
-    letter-spacing: 1px;
-    border-width: 2px;
-  }
-}
+/* The sticker used to have a second, smaller set of type rules for the
+   mobile grid. That grid is gone — the card is one size everywhere — so
+   the rules above are all of them. */

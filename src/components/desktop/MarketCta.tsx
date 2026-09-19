@@ -1,5 +1,4 @@
 import { AeroButton } from '@/components/shared/AeroButton';
-import { Sticker } from '@/components/shared/Sticker';
 import { useAppState } from '@/state/AppStateContext';
 import styles from './MarketCta.module.css';
 
@@ -8,9 +7,10 @@ interface MarketCtaProps {
 }
 
 /**
- * Onboarding nudge for the Market icon: a decorative sticker (no click
- * handler of its own — matches the "soon" badge treatment) plus a real
- * button that actually opens Market. Replaces the original `ctaBubbles()` +
+ * Onboarding nudge for the Market icon: one button that opens Market. It
+ * used to carry a decorative "Try this" sticker as well, which said the
+ * same thing twice over a now-smaller icon. Replaces the original
+ * `ctaBubbles()` +
  * spotlight-tour combo (Tools.html:3030-3046) with a plainer "click the
  * button" affordance; MarketWindow itself decides to open on the sell step
  * from `state.tours`, so this button doesn't need to pass anything special.
@@ -24,7 +24,6 @@ export function MarketCta({ onOpen }: MarketCtaProps) {
 
   return (
     <div className={styles.wrap}>
-      <Sticker text="Try this" color="pink" rotate={-8} className={styles.sticker} />
       <AeroButton
         variant="lime"
         size="sm"

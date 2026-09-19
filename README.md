@@ -68,3 +68,17 @@ npm run build:all
 соответствующих `.env.production` файлах. Затем выполните `npm run deploy:tools`,
 `npm run deploy:online` и `npm run deploy:router`. Доменный маршрут
 `not.online` добавляется как Custom Domain только роутеру.
+
+## Аналитика
+
+Редактор отправляет события в self-hosted Plausible CE через
+`@plausible-analytics/tracker`. Укажите в `.env` адрес инстанса и домен сайта,
+как он заведён в Plausible:
+
+```env
+VITE_PLAUSIBLE_HOST=https://plausible.example.com
+VITE_PLAUSIBLE_DOMAIN=not.online
+```
+
+Без этих переменных аналитика отключена. Кастомные события — `trackEvent()` из
+`src/lib/analytics.ts`.

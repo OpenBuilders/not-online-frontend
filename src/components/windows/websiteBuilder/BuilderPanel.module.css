@@ -1,0 +1,584 @@
+.panel {
+  height: 100%;
+  overflow: auto;
+  padding: 4px 18px 22px;
+  background: var(--c-paper);
+  color: var(--c-ink);
+}
+
+.section {
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.section:last-child {
+  border-bottom: none;
+  padding-bottom: 6px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  color: var(--c-ink);
+}
+/* The builder is a first-run sequence, so the numbers are the order to work
+   in, not decoration. */
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: var(--c-white);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-muted);
+  margin: 14px 0 5px;
+}
+.section > .label:first-of-type {
+  margin-top: 0;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  min-width: 0;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--c-ink);
+  outline: none;
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.3);
+}
+.textarea {
+  min-height: 58px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.handleField {
+  display: flex;
+  align-items: center;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  padding-left: 11px;
+}
+.handleField:focus-within {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.3);
+}
+.handleInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 9px 11px 9px 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-ink);
+  outline: none;
+}
+.prefix {
+  flex-shrink: 0;
+  padding-left: 11px;
+  font-size: 12.5px;
+  color: var(--c-muted);
+}
+
+/* ---- avatar ---- */
+
+.avatarRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.avatarOption {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  background: var(--c-white);
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: inherit;
+  font-size: 9px;
+  color: var(--c-muted);
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.avatarOption img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatarOption:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.avatarOption.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.avatarOption:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.avatarUpload {
+  border-style: dashed;
+}
+
+.uploadError {
+  margin: 8px 0 0;
+  color: var(--c-danger-2);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+/* ---- templates ---- */
+
+.templates {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.template {
+  position: relative;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  background: var(--c-white);
+  padding: 7px 7px 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.template:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.template.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.template:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+/* Locked: visible, legible, and plainly not available yet. */
+.template.locked {
+  cursor: default;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.template.locked:hover {
+  transform: none;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+/* The dimming sits on the thumbnail alone — the sticker and the name are
+   siblings, so they stay at full strength. */
+.template.locked > div:first-child {
+  opacity: 0.45;
+}
+.template.locked .templateName {
+  color: var(--c-muted);
+}
+
+.lockSticker {
+  position: absolute;
+  top: 2px;
+  right: -6px;
+  z-index: 2;
+}
+
+.templateName {
+  display: block;
+  padding: 8px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.blurb {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+/* ---- palettes ---- */
+
+.palettes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.palette {
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: var(--c-white);
+  padding: 6px 6px 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.palette:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.palette.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.palette:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.swatch {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 34px;
+  border-radius: 6px;
+  padding: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+.swatch i {
+  flex: 1;
+  height: 100%;
+  border-radius: 3px;
+}
+.paletteName {
+  display: block;
+  padding: 6px 1px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+/* Two settings that belong together read better side by side than stacked. */
+.pickerRow {
+  display: flex;
+  gap: 10px;
+}
+.pickerRow > div {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- backgrounds ---- */
+
+/*
+  Same three-column grid the palettes use, so "Background" reads as a
+  heading for a row of swatches rather than a stray label floating between
+  two differently-shaped grids.
+*/
+.backdrops {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.backdropOption {
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: var(--c-white);
+  padding: 6px 6px 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.backdropOption:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.backdropOption.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.backdropOption:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.backdropName {
+  display: block;
+  padding: 6px 1px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+/* ---- folder colours ---- */
+
+.folderRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.folderSwatch {
+  width: 58px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 11px;
+  background: var(--c-white);
+  cursor: pointer;
+  transition:
+    border-color 0.13s,
+    transform 0.13s;
+}
+.folderSwatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.folderSwatch:hover {
+  border-color: var(--c-accent-shade-2);
+  transform: translateY(-2px);
+}
+.folderSwatch.on {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.35);
+}
+.folderSwatch:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* ---- chips ---- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-dim);
+  cursor: pointer;
+  transition:
+    background 0.13s,
+    color 0.13s,
+    border-color 0.13s;
+}
+.chip:hover {
+  border-color: var(--c-accent-shade-2);
+  color: var(--c-ink);
+}
+.chip.on {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+.chip:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* ---- links ---- */
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.linkRow {
+  display: grid;
+  grid-template-columns: 62px 1fr 1fr 28px;
+  gap: 6px;
+  align-items: center;
+}
+
+.linkRow.noIcon {
+  grid-template-columns: 1fr 1fr 28px;
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  background: rgba(168, 255, 26, 0.16);
+  color: var(--c-success);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.linkRow .input {
+  padding: 8px 9px;
+  font-size: 12px;
+}
+.removeLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.removeLink:hover {
+  background: rgba(255, 91, 77, 0.14);
+  color: var(--c-danger-2);
+}
+.removeLink:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 1px;
+}
+
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed rgba(0, 0, 0, 0.22);
+  border-radius: 9px;
+  background: transparent;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-dim);
+  cursor: pointer;
+  margin-top: 10px;
+}
+.ghostBtn:hover:not(:disabled) {
+  border-color: var(--c-accent-shade-2);
+  color: var(--c-ink);
+}
+.ghostBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ghostBtn:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* ---- publish ---- */
+
+.liveCard {
+  background: var(--c-paper-3);
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 12px;
+  padding: 13px 14px;
+  margin-bottom: 14px;
+}
+.liveHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-success);
+  flex-shrink: 0;
+}
+.stats {
+  display: flex;
+  gap: 22px;
+  margin-top: 11px;
+}
+.stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.statValue {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-ink);
+}
+.statKey {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--c-muted);
+}
+
+.publish {
+  height: 46px;
+}
+
+.fine {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+@media (max-width: 860px) {
+  .templates,
+  .palettes,
+  .backdrops {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .linkRow {
+    grid-template-columns: 62px 1fr 28px;
+  }
+  .linkRow.noIcon {
+    grid-template-columns: 1fr 28px;
+  }
+  .linkRow input:last-of-type {
+    grid-column: 1 / -1;
+  }
+  .templates {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .linkRow .select {
+    grid-column: 1 / -1;
+  }
+}

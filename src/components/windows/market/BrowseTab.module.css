@@ -1,0 +1,12 @@
+/* Ported from .mk2-grid (Tools.html:1229) — `auto-fit` not `auto-fill`:
+   fill keeps empty track columns at full width when there are only 2-3
+   cards in a 760px-wide window, pushing all the real content into a
+   narrow strip on the left with a dead void to the right. auto-fit
+   collapses those empty tracks so the 1fr cards actually share the
+   window's width. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  padding-top: 6px;
+}

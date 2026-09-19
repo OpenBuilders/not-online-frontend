@@ -1,0 +1,44 @@
+/* Scaled-up sibling of AeroButton's `.soonBubble` (AeroButton.module.css) —
+   same pill/border/shadow/rotation construction, sized to stand on its own
+   as a callout rather than pin to a button's corner. */
+
+.sticker {
+  position: relative;
+  display: inline-block;
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--c-white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 40;
+}
+
+.lime {
+  background: var(--c-accent);
+  color: #102400;
+}
+.pink {
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
+.dark {
+  background: #1c1c20;
+  color: var(--c-white);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.white {
+  background: var(--c-white);
+  color: #111;
+}
+
+.withIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

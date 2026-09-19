@@ -1,0 +1,176 @@
+/* Ported from Tools.html:530-570 (.win/.win-titlebar/.win-dot/...), the
+   global "windows never exceed the viewport" rule at :718, the legacy
+   700px width rule at :702, and the 760px full-screen mobile stacking
+   block at :1341-1354. Two mobile breakpoints (700px and 760px) coexist
+   in the source file itself — ported as-is, not consolidated here. */
+
+.win {
+  position: fixed;
+  min-height: 320px;
+  background: var(--c-paper-2);
+  border-radius: 14px;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: pop 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  /* windows never exceed the viewport, at any screen size */
+  max-width: 96vw;
+  max-height: 90vh;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.titlebar {
+  height: 44px;
+  background: linear-gradient(var(--c-line-light), var(--c-line-light-2));
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  flex-shrink: 0;
+  touch-action: none;
+}
+.titlebar:active {
+  cursor: grabbing;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  position: relative;
+  border: none;
+  padding: 0;
+}
+.dot.red {
+  background: var(--c-tl-red);
+  cursor: pointer;
+}
+/* big invisible hit area so a slightly-off custom cursor still lands the close */
+.dot.red::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+}
+/* an x appears on the red dot whenever you're over the titlebar, so it's obvious */
+.dot.red::after {
+  content: '\00d7';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.12s;
+  pointer-events: none;
+}
+.titlebar:hover .dot.red::after {
+  opacity: 1;
+}
+.dot.red:hover {
+  background: #ff4136;
+}
+.dot.yellow {
+  background: var(--c-tl-yellow);
+}
+.dot.green {
+  background: var(--c-tl-green);
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  color: var(--c-dim);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+.spacer {
+  width: 52px;
+  flex-shrink: 0;
+}
+.content {
+  flex: 1;
+  overflow: auto;
+  background: var(--c-paper);
+}
+
+@media (max-width: 700px) {
+  .win {
+    width: 92vw;
+  }
+}
+
+@media (max-width: 760px) {
+  .win {
+    /* `.desktop` (base.css) is itself inset from the real viewport — it's `96vw`/`92vh`, not
+       `100vw`/`100vh` — so sizing a window in `vw` put it flush with the true viewport edges,
+       which ran past `.desktop`'s own edges instead of sitting inside them. `.win` is rendered
+       as a direct child of `.desktop` (position: relative, base.css), so switching to
+       `position: absolute` here makes every value below resolve against `.desktop`'s own box
+       instead — 90% width, centered with a 5% gutter on each side ("10% narrower than the
+       desktop screen"). Dragging is already inert at this breakpoint (every `!important` below
+       overrides whatever inline `left`/`top` useDrag would otherwise set), so this doesn't
+       touch drag behavior. */
+    position: absolute !important;
+    left: 5% !important;
+    width: 90% !important;
+    max-width: 90%;
+    border-radius: 14px;
+  }
+  /* Bottom clearance: HomeBar (HomeBar.module.css) floats above the running-line ticker at
+     `bottom: 30px (--mobile-ticker-height) + safe-area + 14px`, and is itself ~56px tall (42px
+     circle + 7px top/bottom padding) — so its own top edge sits ~100px above `.desktop`'s
+     bottom edge. A window needs to stop above that, with a real gap.
+     Sized in `%` here, not `92vh` — `.desktop` (base.css) is `92vh` but also `max-height: 1000px`,
+     and on any viewport taller than ~1087px (e.g. a desktop browser just narrowed in width, a
+     common way to "test mobile" without a real device) that cap wins, so `.desktop`'s actual
+     rendered height stops growing with `vh` while a `92vh`-based formula here kept scaling past
+     it — the window could end up taller than `.desktop` itself regardless of any pixel constant
+     subtracted from it. `.win` is `position: absolute` inside `.desktop` (`position: relative`),
+     so a plain `%` height always resolves against `.desktop`'s real, already-clamped height —
+     correct in every case instead of only when the `max-height` cap isn't in play. */
+  /* one window open: fills the usable area. two: stacked top/bottom. */
+  :global(body.win1) .win {
+    top: 104px !important;
+    height: calc(100% - 224px) !important;
+  }
+  :global(body.win2) .win.stackTop {
+    top: 100px !important;
+    height: calc(50% - 114px) !important;
+  }
+  :global(body.win2) .win.stackBot {
+    top: 50% !important;
+    height: calc(50% - 120px) !important;
+  }
+  .content {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

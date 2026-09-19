@@ -1,0 +1,92 @@
+/* Ported from Tools.html:1207-1216, plus the mobile block at :1586-1591 —
+   that's the only one of the two conflicting mobile blocks that actually
+   renders (see the class comment on the 700px one for why). */
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 620px;
+  padding: 0 16px;
+  /* renders below the still-visible email/OTP card rather than replacing
+     it — see LoginScreen.tsx */
+  margin-top: 22px;
+}
+.title {
+  font-size: 22px;
+  font-weight: 300;
+  text-align: center;
+}
+.sub {
+  font-size: 13px;
+  opacity: 0.7;
+  text-align: center;
+  margin-top: -6px;
+}
+.cards {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.card {
+  width: 260px;
+  background: rgba(20, 20, 24, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: left;
+}
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(168, 255, 26, 0.14);
+  color: var(--c-accent);
+  margin-bottom: 10px;
+}
+.card.pink .icon {
+  background: rgba(255, 26, 145, 0.16);
+  color: var(--c-accent-2);
+}
+.card h4 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.card p {
+  font-size: 12px;
+  opacity: 0.65;
+  line-height: 1.5;
+  margin: 6px 0 12px;
+}
+
+@media (max-width: 760px) {
+  .cards {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .card {
+    width: auto;
+    flex: 1;
+    padding: 12px;
+  }
+  .card p {
+    font-size: 10.5px;
+    margin: 4px 0 9px;
+  }
+  .card h4 {
+    font-size: 12.5px;
+  }
+  .icon {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 6px;
+  }
+}

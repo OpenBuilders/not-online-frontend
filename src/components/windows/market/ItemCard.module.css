@@ -1,0 +1,57 @@
+/* Ported in spirit from .mk2-card/.mk2-prev/.mk2-info (Tools.html:1230-1238),
+   using the light-window palette (Tools.html:1478-1479). */
+
+.card {
+  position: relative;
+  background: var(--c-white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  overflow: visible;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+}
+.card:hover {
+  border-color: rgba(120, 190, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.callout {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  z-index: 2;
+}
+
+.preview {
+  aspect-ratio: 1 / 1;
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-paper-3);
+  color: var(--c-accent-shade-2);
+}
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  padding: 10px 12px 12px;
+}
+.name {
+  font-size: 13px;
+  color: var(--c-ink);
+  font-weight: 500;
+}
+.price {
+  font-size: 13px;
+  color: var(--c-accent-shade-2);
+  font-weight: 700;
+  margin-top: 3px;
+}

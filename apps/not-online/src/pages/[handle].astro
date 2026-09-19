@@ -1,0 +1,39 @@
+---
+import { SitePage } from '../components/templates/SitePage';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublicLinkPage } from '../lib/linkPage';
+
+export const prerender = false;
+
+const handle = Astro.params.handle?.trim().toLowerCase() ?? '';
+const page = handle ? await getPublicLinkPage(handle) : null;
+const cfg = page
+  ? {
+      handle: page.handle,
+      name: page.name,
+      bio: page.bio,
+      avatar: page.avatar,
+      template: page.template,
+      palette: page.palette,
+      backdrop: page.backdrop,
+      backdropImage: page.backdropImage,
+      buttonStyle: page.buttonStyle,
+      buttonColor: page.buttonColor,
+      folderColor: page.folderColor,
+      links: page.links.map(({ id, icon, title, url }) => ({ id, icon, title, url })),
+      seed: page.seed,
+    }
+  : null;
+
+if (!page) Astro.response.status = 404;
+---
+
+<BaseLayout title={page ? `${page.name} — not.online` : 'Page not found — not.online'} description={page?.bio}>
+  {cfg ? <div class="page"><SitePage cfg={cfg} /></div> : <main class="not-found"><h1>404</h1><p>This page does not exist.</p></main>}
+</BaseLayout>
+
+<style>
+  .page { width: 100%; height: 100svh; }
+  .not-found { min-height: 100svh; display: grid; place-content: center; padding: 24px; text-align: center; background: #0b0b0c; color: white; font-family: Arial, sans-serif; }
+  .not-found h1 { margin: 0; color: #a8ff1a; font-size: 72px; }
+</style>

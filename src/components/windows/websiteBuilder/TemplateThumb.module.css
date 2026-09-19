@@ -1,0 +1,174 @@
+.thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--t-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 7px;
+  gap: 4px;
+}
+
+/* ---- poster ---- */
+.posterTitle {
+  height: 13px;
+  width: 78%;
+  background: var(--t-ink);
+  border-radius: 1px;
+}
+.posterHl {
+  height: 6px;
+  width: 54%;
+  background: var(--t-accent);
+  border-radius: 1px;
+}
+.slab {
+  height: 9px;
+  width: 100%;
+  border: 1.5px solid var(--t-ink);
+  border-radius: 1px;
+  margin-top: 2px;
+}
+
+/* ---- stickers ---- */
+.thumb[data-template='stickers'] {
+  padding: 0;
+}
+.stkA,
+.stkB,
+.stkC {
+  position: absolute;
+  box-shadow:
+    0 0 0 2.5px #fff,
+    2px 3px 3px rgba(0, 0, 0, 0.4);
+}
+.stkA {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--t-accent);
+  top: 11px;
+  left: 14px;
+  transform: rotate(-8deg);
+}
+.stkB {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  background: var(--t-accent-2);
+  top: 30px;
+  right: 16px;
+  transform: rotate(10deg);
+}
+.stkC {
+  width: 24px;
+  height: 24px;
+  border-radius: 50% 42% 55% 45%;
+  background: #101010;
+  bottom: 9px;
+  left: 30px;
+  transform: rotate(-4deg);
+}
+
+/* ---- bold ---- */
+.thumb[data-template='bold'] {
+  padding: 6px;
+}
+.boldFrame {
+  flex: 1;
+  border: 2px solid var(--t-ink);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px;
+}
+.boldRow {
+  height: 8px;
+  width: 100%;
+  background: var(--t-ink);
+  opacity: 0.85;
+}
+.boldRow:last-child {
+  width: 64%;
+}
+.boldRow[data-hot='true'] {
+  background: var(--t-accent);
+  opacity: 1;
+}
+
+/* ---- folders ---- */
+.thumb[data-template='folders'] {
+  justify-content: center;
+  padding: 10px;
+}
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.shelf img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ---- web 1.0 ---- */
+.thumb[data-template='web1'] {
+  justify-content: center;
+  padding: 9px;
+}
+.geo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.geoKicker {
+  height: 3px;
+  width: 42%;
+  background: var(--t-accent);
+}
+.geoH {
+  height: 9px;
+  width: 78%;
+  background: var(--t-accent-2);
+}
+.geoRule {
+  height: 2px;
+  width: 100%;
+  background: var(--t-ink);
+  opacity: 0.45;
+  margin: 2px 0;
+}
+.geoLink {
+  height: 4px;
+  width: 54%;
+  background: var(--t-accent-2);
+  opacity: 0.8;
+}
+.geoLink[data-hot='true'] {
+  width: 40%;
+  background: var(--t-accent);
+  opacity: 1;
+}
+
+/* ---- just a button ---- */
+.thumb[data-template='button'] {
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.bigBtn {
+  width: 100%;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #c6ff5c, #8fd814);
+  border: 1px solid #7fc400;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 3px 6px rgba(0, 0, 0, 0.3);
+}

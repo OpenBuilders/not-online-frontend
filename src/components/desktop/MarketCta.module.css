@@ -1,0 +1,40 @@
+/* Both pieces overlay the icon artwork itself, like stickers actually stuck
+   on the app icon — not floating beside it. Positioned against the icon
+   image box specifically (112px desktop / 76px mobile, centered inside
+   DesktopIcon's wider flex column — see DesktopIcon.module.css `.iconImg`),
+   not the icon's full width (which also includes the label underneath). */
+
+.wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  cursor: default;
+}
+
+.sticker {
+  position: absolute;
+  top: -10px;
+  left: 2px;
+  z-index: 6;
+}
+
+.button {
+  position: absolute;
+  top: 82px;
+  left: 74px;
+  z-index: 6;
+  pointer-events: auto;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 760px) {
+  .sticker {
+    top: -8px;
+    left: 0;
+  }
+  .button {
+    top: 52px;
+    left: 48px;
+  }
+}

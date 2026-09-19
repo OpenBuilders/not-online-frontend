@@ -1,0 +1,124 @@
+/*
+  Redesigned to match the reference button (>> MY ASSETS/BUTTON.svg): a solid
+  top-to-bottom pill gradient with a separate glossy inset highlight layered
+  on top, rather than the old padding-box/border-box gradient-border trick.
+  Every variant reuses the same two-layer construction; only the base
+  gradient and text color change per color.
+*/
+
+.aero {
+  position: relative;
+  border-radius: 9999px;
+  border: none;
+  background: linear-gradient(180deg, #ecf2f4 0%, #b8b8b8 100%);
+  color: #111;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  padding: 0 16px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+  transition:
+    filter 0.14s,
+    transform 0.1s;
+}
+/* glossy inset highlight, proportioned from the reference SVG (inset rect
+   68/96 tall, 3/96 from the top, white fading to transparent) */
+.aero::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  right: 6px;
+  height: 68%;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+.aero:hover {
+  filter: brightness(1.07);
+}
+.aero:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4);
+}
+.aero:disabled {
+  opacity: 0.55;
+}
+
+.lime {
+  background: linear-gradient(180deg, #cbff6e 0%, var(--c-accent-shade-2) 100%);
+  color: #102400;
+}
+.pink {
+  background: linear-gradient(180deg, #ff6bb6 0%, #c9006b 100%);
+  color: var(--c-white);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+.dark {
+  background: linear-gradient(180deg, #3c3c42 0%, #131316 100%);
+  color: var(--c-white);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+.ghost {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06));
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.ghost::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 100%);
+}
+/* Ported from `.win.light .aero.ghost` — expressed here as an explicit prop
+   (`theme="light"`) instead of matching an ancestor's global class, so this
+   component stays self-contained regardless of which window renders it. */
+.ghostLight {
+  background: linear-gradient(180deg, #ededed, #dcdcdc);
+  color: #33333a;
+}
+.ghostLight::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* still-live modifiers from the first .aero block (Tools.html:1108-1109) */
+.sm {
+  height: 32px;
+  font-size: 11.5px;
+  padding: 0 12px;
+}
+.wide {
+  width: 100%;
+}
+
+/* Tools.html:1425-1430. Rendered as a sibling of <button>, not a child of
+   it — a disabled button's `opacity` would otherwise wash out the badge
+   too, and the whole point of the badge is that it stays fully opaque
+   while the button it's pinned to reads as unavailable. */
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+.soonBubble {
+  position: absolute;
+  top: -9px;
+  right: -8px;
+  z-index: 3;
+  font-family: 'Archivo', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--c-accent-2);
+  color: var(--c-white);
+  border-radius: 20px;
+  padding: 3px 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  border: 1.5px solid var(--c-white);
+  transform: rotate(6deg);
+  pointer-events: none;
+}

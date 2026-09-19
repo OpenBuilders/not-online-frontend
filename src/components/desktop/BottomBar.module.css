@@ -1,0 +1,72 @@
+/* Ported from Tools.html:131-176. */
+
+.bottomBar {
+  position: relative;
+  z-index: 20;
+  margin-top: auto;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 0;
+  overflow: hidden;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+.runningLine {
+  display: flex;
+  white-space: nowrap;
+  animation: scrollLine 28s linear infinite;
+  gap: 48px;
+  padding-left: 20px;
+}
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+.num {
+  color: var(--c-accent);
+  font-weight: 500;
+}
+.name {
+  color: var(--c-white);
+  opacity: 0.8;
+}
+.dot {
+  width: 4px;
+  height: 4px;
+  background: var(--c-accent);
+  border-radius: 50%;
+  opacity: 0.3;
+}
+@keyframes scrollLine {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 700px) {
+  .item {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 760px) {
+  .bottomBar {
+    /* on a real device with a home-indicator safe area, sit above it
+       rather than having its bottom half run underneath */
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .runningLine {
+    animation: none !important;
+  }
+}

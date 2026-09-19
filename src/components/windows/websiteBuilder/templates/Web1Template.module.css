@@ -1,0 +1,131 @@
+/*
+  1996. The type is Times and Arial — the two fonts every machine already
+  had, which is what pages of this era were actually set in.
+
+  There are no boxes here on purpose: no borders, no fills, no cards. A
+  GeoCities page was centred text sitting straight on a tiled background,
+  and every bit of its character came from type, colour and <hr>. Adding
+  containers is what made the earlier version look like a modern page
+  wearing a costume.
+*/
+
+.root {
+  height: 100%;
+  overflow: auto;
+  padding: 34px 22px 40px;
+  font-family: 'Times New Roman', Times, serif;
+  text-align: center;
+}
+
+.sheet {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.welcome {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--pg-accent);
+}
+
+.h1 {
+  margin: 10px 0 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+  text-wrap: balance;
+  /* Ink on ground, not accent-2 on ground: half the palettes have a white
+     secondary accent, which vanishes on the light ones. The accent does the
+     era's drop-shadow trick instead, where contrast doesn't depend on it. */
+  color: var(--pg-ink);
+  text-shadow: 3px 3px 0 var(--pg-accent);
+}
+
+.rule {
+  height: 0;
+  margin: 22px 0;
+  border: none;
+  border-top: 2px solid var(--pg-ink);
+  opacity: 0.45;
+}
+
+.portrait {
+  display: block;
+  width: 116px;
+  height: auto;
+  margin: 4px auto 0;
+}
+
+.intro {
+  margin: 18px 0 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--pg-ink);
+}
+
+.dingbat {
+  margin: 22px 0 0;
+  font-size: 15px;
+  letter-spacing: 8px;
+  color: var(--pg-accent);
+}
+
+.list {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.list li + li {
+  margin-top: 4px;
+}
+.list a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 6px;
+  font-size: 21px;
+  color: var(--pg-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.icon {
+  flex-shrink: 0;
+}
+.icon[data-image='true'] {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+/* The selection highlight — a link going inverse-video the moment the
+   pointer touches it. The only interaction this page has. */
+.list a:hover,
+.list a:focus-visible {
+  background: var(--pg-accent);
+  color: var(--pg-accent-ink);
+  outline: none;
+}
+
+.signoff {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--pg-ink);
+  opacity: 0.55;
+}
+
+@media (max-width: 520px) {
+  .h1 {
+    font-size: 30px;
+  }
+  .list a {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,210 @@
+.root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 30px 24px;
+  text-align: center;
+  font-family: 'Archivo', sans-serif;
+}
+
+/* Present, readable if you look for it, invisible if you don't — the point
+   of the template is that there is one thing to press. */
+.whisper {
+  flex-shrink: 0;
+  max-width: 44ch;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: lowercase;
+  line-height: 1.5;
+  opacity: 0.28;
+}
+
+/*
+  Every face below is painted from the same four variables the colourway
+  supplies (--b-base / --b-hi / --b-lo / --b-ink), so style and colour stay
+  independent: six faces times six colourways, not six buttons.
+*/
+.button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(84%, 460px);
+  min-height: 108px;
+  padding: 22px 34px;
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--b-ink);
+  transition:
+    transform 0.14s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    filter 0.14s,
+    box-shadow 0.14s;
+}
+.button:focus-visible {
+  outline: 3px solid var(--pg-accent-2);
+  outline-offset: 5px;
+}
+
+.label {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(22px, 5vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* ---- Windows 95: square, chiselled bevel, and it really depresses ---- */
+.button[data-style='win95'] {
+  background: var(--b-base);
+  border: 2px solid;
+  border-color: var(--b-hi) var(--b-lo) var(--b-lo) var(--b-hi);
+  border-radius: 0;
+  box-shadow:
+    inset 1px 1px 0 color-mix(in srgb, var(--b-hi) 70%, transparent),
+    inset -1px -1px 0 color-mix(in srgb, var(--b-lo) 70%, transparent),
+    3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+.button[data-style='win95'] .label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.button[data-style='win95']:active {
+  border-color: var(--b-lo) var(--b-hi) var(--b-hi) var(--b-lo);
+  box-shadow: none;
+  transform: translate(3px, 3px);
+}
+
+/* ---- Aqua: pill, deep gloss across the top, coloured halo ----
+   `overflow: hidden` because a short wide highlight has far less corner
+   curve than the tall pill behind it, so at the ends it poked out past the
+   button's own edge; clipping to the button is the fix that holds at every
+   width. The outer box-shadows are unaffected. */
+.button[data-style='aqua'] {
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--b-hi) 92%, transparent) 0%,
+    var(--b-base) 48%,
+    var(--b-lo) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--b-lo) 80%, #000);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -8px 14px -8px rgba(0, 0, 0, 0.45),
+    0 4px 14px color-mix(in srgb, var(--b-base) 55%, transparent),
+    0 14px 26px rgba(0, 0, 0, 0.3);
+}
+/* the glass bubble sitting on the top half */
+.button[data-style='aqua']::before {
+  content: '';
+  position: absolute;
+  inset: 4px 5% auto 5%;
+  height: 42%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.12));
+  pointer-events: none;
+}
+.button[data-style='aqua'] .label {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ---- Frutiger Aero: soft rectangle, wet sheen, glow ---- */
+.button[data-style='aero'] {
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--b-hi) 0%, var(--b-base) 42%, var(--b-lo) 100%);
+  border: 1px solid color-mix(in srgb, var(--b-lo) 65%, transparent);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 -14px 22px -14px rgba(0, 0, 0, 0.4),
+    0 0 26px color-mix(in srgb, var(--b-base) 45%, transparent),
+    0 16px 30px rgba(0, 0, 0, 0.28);
+}
+.button[data-style='aero']::before {
+  content: '';
+  position: absolute;
+  inset: 1px 1px 52% 1px;
+  border-radius: 19px 19px 60% 60% / 19px 19px 32px 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.button[data-style='aero'] .label {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+/* ---- Brutalist: flat fill, hard border, hard offset ---- */
+.button[data-style='brutal'] {
+  background: var(--b-base);
+  border: 4px solid #101010;
+  border-radius: 0;
+  box-shadow: 10px 10px 0 #101010;
+}
+.button[data-style='brutal']:hover {
+  transform: translate(5px, 5px);
+  box-shadow: 5px 5px 0 #101010;
+}
+
+/* ---- Modern pill: flat, soft, nothing to see here ---- */
+.button[data-style='pill'] {
+  background: var(--b-base);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--b-lo) 45%, transparent);
+}
+.button[data-style='pill'] .label {
+  letter-spacing: -0.4px;
+  text-transform: none;
+}
+
+/* ---- Terminal: no fill, just a box and a cursor ---- */
+.button[data-style='terminal'] {
+  background: transparent;
+  color: var(--b-base);
+  border: 2px solid var(--b-base);
+  border-radius: 0;
+}
+.button[data-style='terminal'] .label {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+.button[data-style='terminal'] .label::after {
+  content: '_';
+  animation: caret 1.05s steps(1) infinite;
+}
+.button[data-style='terminal']:hover {
+  background: var(--b-base);
+  color: var(--b-ink);
+}
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Hover/press for the faces that don't define their own. */
+.button:hover:not([data-style='brutal']):not([data-style='win95']) {
+  transform: translateY(-3px) scale(1.015);
+  filter: brightness(1.05);
+}
+.button:active:not([data-style='win95']) {
+  transform: translateY(2px) scale(0.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+  .button[data-style='terminal'] .label::after {
+    animation: none;
+  }
+}

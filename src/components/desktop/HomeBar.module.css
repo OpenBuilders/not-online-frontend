@@ -1,0 +1,59 @@
+/* Ported from Tools.html:1340, 1359-1365 (.homebar/.hb) and the inline
+   `#launcher` cssText built in toggleLauncher() (~line 3696-3717). */
+
+.homebar {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .homebar {
+    display: flex;
+    /* Anchored to `.desktop` (the phone-frame box itself, `position:
+       relative; overflow: hidden`), not the real browser viewport.
+       `.desktop` is a centered 96vw/92vh box, not full-bleed — `position:
+       fixed` here measured from the actual window, so on real devices
+       (dynamic toolbars changing viewport height, or the frame just not
+       matching the window's aspect ratio) this pill could drift below the
+       frame or over its rounded corner. Absolute-inside-.desktop makes it
+       impossible to end up anywhere but where the frame actually is. */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    /* clears the running-line ticker plus, on a real device, the
+       home-indicator safe area beneath it — not a magic pixel guess */
+    bottom: calc(var(--mobile-ticker-height) + env(safe-area-inset-bottom) + 14px);
+    z-index: 5000;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 9px;
+    /* a fixed radius could clip into a slightly flattened stadium
+       depending on the exact height; this always resolves to a full pill */
+    border-radius: 9999px;
+    background: rgba(14, 14, 16, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    max-width: calc(100% - 24px);
+  }
+  .hb {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  /* "Apps" expands this same pill in place into one row of circular icon
+     buttons ending in a pink close button — there's room for all of them
+     side by side, so this never wraps to a second line. */
+  .homebarOpen {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 9999px;
+  }
+  .homebarOpen .hb {
+    width: 38px;
+    height: 38px;
+  }
+}

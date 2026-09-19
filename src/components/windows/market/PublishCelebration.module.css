@@ -1,0 +1,80 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(250, 250, 252, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  max-width: 320px;
+  width: 100%;
+  background: var(--c-white);
+  border-radius: 20px;
+  padding: 28px 24px 24px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.badge {
+  margin: 0 auto 14px;
+  color: var(--c-accent-shade-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.badge img {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+}
+.title {
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+.sub {
+  font-size: 13px;
+  color: var(--c-dim);
+  margin-top: 8px;
+}
+.sub strong {
+  color: var(--c-ink);
+}
+.joke {
+  font-size: 12px;
+  color: var(--c-muted);
+  margin: 12px 0 18px;
+  line-height: 1.5;
+}
+
+.unlockNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  margin: -6px 0 18px;
+  border-radius: 12px;
+  background: rgba(168, 255, 26, 0.12);
+  color: var(--c-accent-shade-2);
+  font-size: 11.5px;
+  font-weight: 600;
+}

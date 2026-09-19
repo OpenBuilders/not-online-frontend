@@ -6,11 +6,8 @@ import type { AppState, SiteConfig, SiteTemplateId, TourId } from '@/types';
 // the picked background survive a reload here — for a guest and a logged-in seller alike, since
 // neither is part of the real backend session (that's cookie + `/auth/me`, see useAuth.ts).
 const PROGRESS_STORAGE_KEY = 'notportal:app-progress:v1';
-// The links page has no backend yet, so a published page lives entirely in
-// this browser. It gets its own key rather than riding along in the progress
-// blob: an uploaded avatar or background is a data URL, which is big enough
-// to blow the storage quota, and a failed write there must not also cost the
-// user their onboarding progress.
+// A links page is also cached in this browser for guests and for a quick first
+// render. An authenticated user's canonical copy lives in the backend.
 const SITE_STORAGE_KEY = 'notportal:site:v1';
 
 const TOUR_IDS: TourId[] = ['market', 'settings', 'page'];

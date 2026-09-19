@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { FocusTour, type FocusTourStep } from '@/components/shared/FocusTour';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
+import { getMyLinkPage, saveLinkPage, toSiteConfig } from '@/api/linkPages';
 import { blankSite } from '@/data/siteTemplates';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
@@ -39,8 +40,14 @@ export function WebsiteBuilderWindow() {
   const windowRef = useRef<HTMLDivElement>(null);
 
   const [cfg, setCfg] = useState<SiteConfig>(() => state.site ?? blankSite());
+  const presentationRef = useRef({
+    views: state.site?.views ?? 0,
+    clicks: state.site?.clicks ?? 0,
+  });
   const [live, setLive] = useState(() => state.site !== null);
   const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [device, setDevice] = useState<PreviewDevice>('desktop');
   const [celebrating, setCelebrating] = useState(false);
   const [mobileView, setMobileView] = useState<MobileView>('setup');
@@ -57,6 +64,35 @@ export function WebsiteBuilderWindow() {
   useEffect(() => {
     if (narrow) setDevice('phone');
   }, [narrow]);
+
+  useEffect(() => {
+    if (!state.logged) return;
+    let cancelled = false;
+
+    void getMyLinkPage()
+      .then((page) => {
+        if (cancelled) return;
+        if (!page) {
+          setLive(false);
+          setDirty(true);
+          return;
+        }
+        const saved = toSiteConfig(page, presentationRef.current);
+        setCfg(saved);
+        setSite(saved);
+        setLive(true);
+        setDirty(false);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setSaveError(error instanceof Error ? error.message : 'Could not load your saved page.');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.logged, setSite]);
 
   const isGuest = !state.logged;
   const isFirstRun = isGuest && !state.tours.has('page');
@@ -108,22 +144,45 @@ export function WebsiteBuilderWindow() {
     if (tourActive && narrow) setMobileView('setup');
   }, [tourActive, narrow, tourIndex]);
 
-  function publish() {
+  async function publish() {
     if (tourActive && tourIndex === TOUR_ORDER.length) setTourIndex((i) => i + 1);
     const published: SiteConfig = {
       ...cfg,
       handle: cfg.handle.trim() || 'yourname',
       name: cfg.name.trim() || cfg.handle.trim() || 'Your Name',
-      // A brand-new page has an audience of exactly one so far.
-      views: live ? cfg.views : 1,
     };
-    setCfg(published);
-    setSite(published);
-    completeTour('page');
-    setDirty(false);
-    if (!live) {
-      setLive(true);
-      setCelebrating(true);
+    setSaveError(null);
+
+    if (isGuest) {
+      presentationRef.current = { views: published.views, clicks: published.clicks };
+      setCfg(published);
+      setSite(published);
+      completeTour('page');
+      setDirty(false);
+      if (!live) {
+        setLive(true);
+        setCelebrating(true);
+      }
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await saveLinkPage(published);
+      const saved = toSiteConfig(response, published);
+      presentationRef.current = { views: saved.views, clicks: saved.clicks };
+      setCfg(saved);
+      setSite(saved);
+      completeTour('page');
+      setDirty(false);
+      if (!live) {
+        setLive(true);
+        setCelebrating(true);
+      }
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Could not save your page.');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -160,6 +219,8 @@ export function WebsiteBuilderWindow() {
           live={live}
           dirty={dirty}
           isGuest={isGuest}
+          saving={saving}
+          saveError={saveError}
           onPublish={publish}
           tour={tour}
         />

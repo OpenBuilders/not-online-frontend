@@ -105,6 +105,7 @@
 }
 .prefix {
   flex-shrink: 0;
+  padding-left: 11px;
   font-size: 12.5px;
   color: var(--c-muted);
 }
@@ -157,6 +158,13 @@
 }
 .avatarUpload {
   border-style: dashed;
+}
+
+.uploadError {
+  margin: 8px 0 0;
+  color: var(--c-danger-2);
+  font-size: 11.5px;
+  line-height: 1.4;
 }
 
 /* ---- templates ---- */

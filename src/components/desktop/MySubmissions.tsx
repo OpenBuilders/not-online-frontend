@@ -95,7 +95,7 @@ export function MySubmissions() {
                   <MaterialIcon name="public" size={15} />
                 </span>
                 <strong className={styles.pageUrl}>
-                  {site ? `${site.handle}.not.online` : 'Your links page'}
+                  {site ? `not.online/${site.handle}` : 'Your links page'}
                 </strong>
                 <span className={styles.status} data-status={site ? 'APPROVED' : 'DRAFT'}>
                   {site ? 'Live' : 'Not built'}

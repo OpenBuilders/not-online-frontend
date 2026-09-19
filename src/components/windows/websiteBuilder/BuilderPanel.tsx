@@ -1,4 +1,4 @@
-import { useRef, type ChangeEvent, type RefObject } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from 'react';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { Sticker } from '@/components/shared/Sticker';
@@ -39,11 +39,15 @@ interface BuilderPanelProps {
   live: boolean;
   dirty: boolean;
   isGuest: boolean;
-  onPublish: () => void;
+  saving: boolean;
+  saveError: string | null;
+  onPublish: () => void | Promise<void>;
   tour: BuilderTourHooks;
 }
 
 const MAX_LINKS = 8;
+const MAX_IMAGE_BYTES = 1_000_000;
+const IMAGE_SIZE_ERROR = 'Image must be 1 MB or smaller.';
 
 function readAsDataUrl(file: File, done: (url: string) => void) {
   const reader = new FileReader();
@@ -52,11 +56,22 @@ function readAsDataUrl(file: File, done: (url: string) => void) {
 }
 
 /** The left half of the builder: every choice that feeds the preview, in the order a first-timer should meet them. */
-export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour }: BuilderPanelProps) {
+export function BuilderPanel({ cfg, patch, live, dirty, isGuest, saving, saveError, onPublish, tour }: BuilderPanelProps) {
   const avatarFileRef = useRef<HTMLInputElement>(null);
   const backdropFileRef = useRef<HTMLInputElement>(null);
+  const [uploadedAvatar, setUploadedAvatar] = useState<string | null>(() =>
+    cfg.avatar && !AVATAR_PRESETS.includes(cfg.avatar) ? cfg.avatar : null,
+  );
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [backdropError, setBackdropError] = useState<string | null>(null);
   const palette = getPalette(cfg.palette);
   const template = getTemplate(cfg.template);
+
+  useEffect(() => {
+    if (cfg.avatar && !AVATAR_PRESETS.includes(cfg.avatar)) {
+      setUploadedAvatar(cfg.avatar);
+    }
+  }, [cfg.avatar]);
 
   // "Just a button" is one link by definition, so the editor shows exactly
   // one row and no way to add another.
@@ -68,13 +83,30 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
 
   const onAvatarFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) readAsDataUrl(file, (url) => patch({ avatar: url }));
+    if (file) {
+      if (file.size > MAX_IMAGE_BYTES) {
+        setAvatarError(IMAGE_SIZE_ERROR);
+      } else {
+        setAvatarError(null);
+        readAsDataUrl(file, (url) => {
+          setUploadedAvatar(url);
+          patch({ avatar: url });
+        });
+      }
+    }
     e.target.value = '';
   };
 
   const onBackdropFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) readAsDataUrl(file, (url) => patch({ backdrop: 'photo', backdropImage: url }));
+    if (file) {
+      if (file.size > MAX_IMAGE_BYTES) {
+        setBackdropError(IMAGE_SIZE_ERROR);
+      } else {
+        setBackdropError(null);
+        readAsDataUrl(file, (url) => patch({ backdrop: 'photo', backdropImage: url }));
+      }
+    }
     e.target.value = '';
   };
 
@@ -110,6 +142,7 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           id="pb-name"
           className={styles.input}
           placeholder="Your Name"
+          maxLength={255}
           value={cfg.name}
           onChange={(e) => patch({ name: e.target.value })}
         />
@@ -121,7 +154,7 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           id="pb-bio"
           className={styles.textarea}
           placeholder="I make things that are probably nothing."
-          maxLength={140}
+          maxLength={255}
           value={cfg.bio}
           onChange={(e) => patch({ bio: e.target.value })}
         />
@@ -132,44 +165,65 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           <span className={styles.step}>2</span> Avatar
         </h3>
         {showAvatar ? (
-          <div className={styles.avatarRow}>
-            <button
-              type="button"
-              className={cx(styles.avatarOption, styles.avatarNone, cfg.avatar === null && styles.on)}
-              onClick={() => {
-                patch({ avatar: null });
-                tour.onPicked('avatar');
-              }}
-              aria-pressed={cfg.avatar === null}
-            >
-              <MaterialIcon name="text_fields" size={18} />
-              <span>Initials</span>
-            </button>
-            {AVATAR_PRESETS.map((src) => (
+          <>
+            <div className={styles.avatarRow}>
               <button
-                key={src}
                 type="button"
-                className={cx(styles.avatarOption, cfg.avatar === src && styles.on)}
+                className={cx(styles.avatarOption, styles.avatarNone, cfg.avatar === null && styles.on)}
                 onClick={() => {
-                  patch({ avatar: src });
+                  patch({ avatar: null });
                   tour.onPicked('avatar');
                 }}
-                aria-pressed={cfg.avatar === src}
-                aria-label="Use this avatar"
+                aria-pressed={cfg.avatar === null}
               >
-                <img src={src} alt="" />
+                <MaterialIcon name="text_fields" size={18} />
+                <span>Initials</span>
               </button>
-            ))}
-            <button
-              type="button"
-              className={cx(styles.avatarOption, styles.avatarUpload)}
-              onClick={() => avatarFileRef.current?.click()}
-            >
-              <MaterialIcon name="add_photo_alternate" size={18} />
-              <span>Upload</span>
-            </button>
-            <input ref={avatarFileRef} type="file" accept="image/*" hidden onChange={onAvatarFile} />
-          </div>
+              {AVATAR_PRESETS.map((src) => (
+                <button
+                  key={src}
+                  type="button"
+                  className={cx(styles.avatarOption, cfg.avatar === src && styles.on)}
+                  onClick={() => {
+                    patch({ avatar: src });
+                    tour.onPicked('avatar');
+                  }}
+                  aria-pressed={cfg.avatar === src}
+                  aria-label="Use this avatar"
+                >
+                  <img src={src} alt="" />
+                </button>
+              ))}
+              {uploadedAvatar && (
+                <button
+                  type="button"
+                  className={cx(styles.avatarOption, cfg.avatar === uploadedAvatar && styles.on)}
+                  onClick={() => {
+                    patch({ avatar: uploadedAvatar });
+                    tour.onPicked('avatar');
+                  }}
+                  aria-pressed={cfg.avatar === uploadedAvatar}
+                  aria-label="Use uploaded avatar"
+                >
+                  <img src={uploadedAvatar} alt="" />
+                </button>
+              )}
+              <button
+                type="button"
+                className={cx(styles.avatarOption, styles.avatarUpload)}
+                onClick={() => avatarFileRef.current?.click()}
+              >
+                <MaterialIcon name="add_photo_alternate" size={18} />
+                <span>Upload</span>
+              </button>
+              <input ref={avatarFileRef} type="file" accept="image/*" hidden onChange={onAvatarFile} />
+            </div>
+            {avatarError && (
+              <p className={styles.uploadError} role="alert">
+                {avatarError}
+              </p>
+            )}
+          </>
         ) : (
           <p className={styles.blurb}>Just a button doesn&apos;t show an avatar — that&apos;s rather the point.</p>
         )}
@@ -324,6 +378,11 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           </button>
           <input ref={backdropFileRef} type="file" accept="image/*" hidden onChange={onBackdropFile} />
         </div>
+        {backdropError && (
+          <p className={styles.uploadError} role="alert">
+            {backdropError}
+          </p>
+        )}
         {cfg.backdropImage && (
           <button type="button" className={styles.ghostBtn} onClick={() => backdropFileRef.current?.click()}>
             <MaterialIcon name="image" size={15} />
@@ -416,12 +475,13 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
           ref={tour.publishRef}
           variant="lime"
           wide
-          disabled={live && !dirty}
+          disabled={saving || (live && !dirty)}
           onClick={onPublish}
           className={styles.publish}
         >
-          {live ? (dirty ? 'Save changes' : 'All changes saved') : 'Publish my page'}
+          {saving ? 'Saving…' : live ? (dirty ? 'Save changes' : 'All changes saved') : 'Publish my page'}
         </AeroButton>
+        {saveError && <p className={styles.uploadError} role="alert">{saveError}</p>}
         {isGuest && <p className={styles.fine}>Guest demo — your page lives in this browser only. Log in to keep it.</p>}
       </section>
     </div>

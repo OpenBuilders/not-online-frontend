@@ -18,7 +18,7 @@ export function StatBar() {
 
   // The "open calls" (Radar) segment still points at a window parked with
   // its widget, so it stays out until that comes back.
-  const siteLabel = state.site ? `${state.site.handle}.not.online`.slice(0, 16) : '—';
+  const siteLabel = state.site ? `not.online/${state.site.handle}`.slice(0, 16) : '—';
 
   return (
     <div className={styles.statbar}>

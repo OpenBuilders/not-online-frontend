@@ -53,7 +53,15 @@ async function apiRequest<T>(
     return undefined as T
   }
 
-  return (await response.json()) as T
+  const body = await response.text()
+  if (!body) {
+    throw new ApiError('The server returned an empty response.', response.status)
+  }
+  try {
+    return JSON.parse(body) as T
+  } catch {
+    throw new ApiError('The server returned an invalid response.', response.status)
+  }
 }
 
 export function requestOtp(email: string): Promise<MessageResponse> {

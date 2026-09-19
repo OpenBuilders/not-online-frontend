@@ -233,12 +233,71 @@
   text-align: left;
 }
 
-@media (max-width: 700px) {
+/*
+  Mobile. The breakpoint is 760px to match useAutoLayout's own — it resizes
+  every widget into a square grid cell below that, and this file used to
+  switch at 700, so between the two the widget was shrunk while its type
+  stayed desktop-sized and `.face`'s `overflow: hidden` ate the button.
+
+  In a ~160px cell there is only room for the kicker, two lines of headline
+  and the button, so the supporting line goes and the button is pinned to
+  the bottom with `margin-top: auto` rather than relying on a spacer that
+  can be squeezed to nothing.
+*/
+@media (max-width: 760px) {
+  .face {
+    padding: 11px 12px;
+  }
+  .title {
+    font-size: 8px;
+    letter-spacing: 1px;
+    padding-right: 0;
+  }
   .lead {
-    font-size: 20px;
+    font-size: 15px;
+    line-height: 1.02;
+    letter-spacing: -0.4px;
+    margin-top: 4px;
+    padding-right: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sub,
+  .spacer {
+    display: none;
   }
   .button {
+    margin-top: auto;
+    height: 30px;
+    font-size: 8.5px;
+    letter-spacing: 0.8px;
+    gap: 4px;
+  }
+  .iconBadge {
+    top: 8px;
+    right: 8px;
+    width: 32px;
     height: 32px;
-    font-size: 9px;
+  }
+  .face:has(.iconBadge) .title,
+  .face:has(.iconBadge) .lead,
+  .face:has(.art) .title,
+  .face:has(.art) .lead {
+    padding-right: 26px;
+  }
+  .art {
+    top: -20%;
+    right: -20%;
+    height: 78%;
+  }
+  .badge {
+    top: -8px;
+    left: -9px;
+    padding: 3px 8px;
+    font-size: 8px;
+    letter-spacing: 1px;
+    border-width: 2px;
   }
 }

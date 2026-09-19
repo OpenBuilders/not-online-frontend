@@ -40,8 +40,8 @@ export const AVATAR_FILES = [
 
 /** The house illustration set, offered as link icons alongside the plain symbols. */
 export const ICON_FILES = [
-  'icon_!!!.png',
-  'icon_90%.png',
+  'icon_alert.png',
+  'icon_90_percent.png',
   'icon_alarm.png',
   'icon_archive.png',
   'icon_buttondelete.png',
@@ -106,6 +106,12 @@ export const getFolderColor = (id: string): FolderColor => FOLDER_COLORS.find((c
 /** A link's mark: a built-in symbol name, a path to one of the images above, or nothing at all. */
 export const NO_ICON = '';
 export const isImageIcon = (icon: string) => icon.startsWith('/');
+
+/** Keep already saved pages working after unsafe asset filenames were renamed. */
+export const normalizeSiteAssetUrl = (icon: string) =>
+  icon
+    .replace('/assets/site/icons/icon_!!!.png', '/assets/site/icons/icon_alert.png')
+    .replace('/assets/site/icons/icon_90%.png', '/assets/site/icons/icon_90_percent.png');
 
 /** "icon_paperclip.png" -> "paperclip", for the picker's labels. */
 export const iconLabel = (src: string) =>

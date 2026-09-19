@@ -1,5 +1,5 @@
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { NO_ICON, isImageIcon } from '@/data/siteAssets';
+import { NO_ICON, isImageIcon, normalizeSiteAssetUrl } from '@/data/siteAssets';
 
 interface LinkIconProps {
   icon: string;
@@ -22,11 +22,13 @@ export function LinkIcon({ icon, size, className }: LinkIconProps) {
   if (!icon || icon === NO_ICON) return null;
 
   if (isImageIcon(icon)) {
+    const source = normalizeSiteAssetUrl(icon);
+
     return (
       <img
         className={className}
         data-image="true"
-        src={icon}
+        src={source}
         alt=""
         width={size * 2}
         height={size * 2}

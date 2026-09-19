@@ -16,3 +16,9 @@ export const FOLDER_COLORS: FolderColor[] = FOLDER_COLOR_FILES.map((file) => {
 export const getFolderColor = (id: string): FolderColor => FOLDER_COLORS.find((color) => color.id === id) ?? FOLDER_COLORS[0];
 export const NO_ICON = '';
 export const isImageIcon = (icon: string) => icon.startsWith('/');
+
+/** Keep already saved pages working after unsafe asset filenames were renamed. */
+export const normalizeSiteAssetUrl = (icon: string) =>
+  icon
+    .replace('/assets/site/icons/icon_!!!.png', '/assets/site/icons/icon_alert.png')
+    .replace('/assets/site/icons/icon_90%.png', '/assets/site/icons/icon_90_percent.png');

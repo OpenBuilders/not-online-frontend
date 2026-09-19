@@ -82,8 +82,13 @@
   transform: translate(3px, 3px);
 }
 
-/* ---- Aqua: pill, deep gloss across the top, coloured halo ---- */
+/* ---- Aqua: pill, deep gloss across the top, coloured halo ----
+   `overflow: hidden` because a short wide highlight has far less corner
+   curve than the tall pill behind it, so at the ends it poked out past the
+   button's own edge; clipping to the button is the fix that holds at every
+   width. The outer box-shadows are unaffected. */
 .button[data-style='aqua'] {
+  overflow: hidden;
   border-radius: 999px;
   background: linear-gradient(
     180deg,
@@ -102,8 +107,8 @@
 .button[data-style='aqua']::before {
   content: '';
   position: absolute;
-  inset: 3px 6px auto 6px;
-  height: 44%;
+  inset: 4px 5% auto 5%;
+  height: 42%;
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.12));
   pointer-events: none;
@@ -114,6 +119,7 @@
 
 /* ---- Frutiger Aero: soft rectangle, wet sheen, glow ---- */
 .button[data-style='aero'] {
+  overflow: hidden;
   border-radius: 20px;
   background: linear-gradient(180deg, var(--b-hi) 0%, var(--b-base) 42%, var(--b-lo) 100%);
   border: 1px solid color-mix(in srgb, var(--b-lo) 65%, transparent);

@@ -345,8 +345,12 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, onPublish, tour
         )}
         <div className={styles.links}>
           {visibleLinks.map((l) => (
-            <div key={l.id} className={styles.linkRow}>
-              <IconPicker value={l.icon} onChange={(icon) => setLink(l.id, { icon })} />
+            <div key={l.id} className={cx(styles.linkRow, template.noLinkIcons && styles.noIcon)}>
+              {/* Hidden rather than forced to "none": these templates draw no
+                  icons, so the picker would be a setting with no effect —
+                  but the choice is kept, and comes back with a template
+                  that does use it. */}
+              {!template.noLinkIcons && <IconPicker value={l.icon} onChange={(icon) => setLink(l.id, { icon })} />}
               <input
                 className={styles.input}
                 placeholder="Label"

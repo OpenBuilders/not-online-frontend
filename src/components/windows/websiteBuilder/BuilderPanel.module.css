@@ -424,6 +424,10 @@
   align-items: center;
 }
 
+.linkRow.noIcon {
+  grid-template-columns: 1fr 1fr 28px;
+}
+
 .notice {
   display: flex;
   align-items: flex-start;
@@ -556,6 +560,9 @@
   }
   .linkRow {
     grid-template-columns: 62px 1fr 28px;
+  }
+  .linkRow.noIcon {
+    grid-template-columns: 1fr 28px;
   }
   .linkRow input:last-of-type {
     grid-column: 1 / -1;

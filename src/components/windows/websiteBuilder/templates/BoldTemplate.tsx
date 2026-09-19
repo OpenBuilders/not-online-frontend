@@ -8,7 +8,7 @@ import styles from './BoldTemplate.module.css';
  * decoration: they are what a reader uses to refer to a row out loud.
  */
 export function BoldTemplate({ cfg, content }: TemplateProps) {
-  const { name, handle, bio, links } = content;
+  const { name, handle, bio, links, avatar } = content;
 
   return (
     <div className={styles.root}>
@@ -18,8 +18,11 @@ export function BoldTemplate({ cfg, content }: TemplateProps) {
             <div className={styles.name}>{name}</div>
             <div className={styles.url}>{siteUrl(cfg.handle)}</div>
           </div>
+          {/* The corner block carries the avatar when there is one, and
+              falls back to a fragment of the handle when there isn't —
+              either way it's the one bit of colour up here. */}
           <span className={styles.mark} aria-hidden="true">
-            {handle.slice(0, 3)}
+            {avatar ? <img src={avatar} alt="" /> : handle.slice(0, 3)}
           </span>
         </div>
 

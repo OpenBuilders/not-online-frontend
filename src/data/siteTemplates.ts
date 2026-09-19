@@ -35,6 +35,8 @@ export interface SiteTemplate {
   blurb: string;
   /** Templates that carry exactly one link (and hide the rest of the link editor). */
   singleLink?: boolean;
+  /** Templates that draw links as pure type — the editor hides the icon picker for these. */
+  noLinkIcons?: boolean;
   /** Open to a logged-out visitor. The rest are a reason to sign in. */
   guest?: boolean;
 }
@@ -43,9 +45,9 @@ export const TEMPLATES: SiteTemplate[] = [
   { id: 'poster', name: 'Poster', blurb: 'Huge type, highlight blocks, links as full-width slabs', guest: true },
   { id: 'folders', name: 'Folders', blurb: 'Links as desktop folders, in the colour of your choosing', guest: true },
   { id: 'stickers', name: 'Stickers', blurb: 'Every link is a die-cut sticker with its own shape and tilt' },
-  { id: 'bold', name: 'Bold', blurb: 'A numbered index in wide mono — the whole page is the list' },
+  { id: 'bold', name: 'Bold', blurb: 'A numbered index in wide mono — the whole page is the list', noLinkIcons: true },
   { id: 'web1', name: 'Web 1.0', blurb: 'A homepage from 1996. No chrome, no borders, no restraint.' },
-  { id: 'button', name: 'Just a button', blurb: 'One link, one enormous button. Pick its era and its colour.', singleLink: true },
+  { id: 'button', name: 'Just a button', blurb: 'One link, one enormous button. Pick its era and its colour.', singleLink: true, noLinkIcons: true },
 ];
 
 export const getTemplate = (id: SiteTemplateId): SiteTemplate => TEMPLATES.find((t) => t.id === id) ?? TEMPLATES[0];

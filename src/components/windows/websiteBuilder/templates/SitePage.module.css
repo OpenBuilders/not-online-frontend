@@ -97,13 +97,14 @@
 }
 
 /* The one thing every page carries. Barely there on purpose — it signs the
-   page without being part of anyone's design. */
+   page without being part of anyone's design. Bottom-right and inset far
+   enough to clear Bold's frame stroke, which was drawing straight over it
+   when this sat on the bottom edge. */
 .mark {
   position: absolute;
   z-index: 3;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 22px;
+  right: 28px;
   pointer-events: none;
   font-family: 'Archivo', sans-serif;
   font-size: 9px;

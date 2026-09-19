@@ -2,28 +2,10 @@
   padding-top: 6px;
 }
 
-.teaser {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  /* .lockOverlay is `inset: 0` of this box, and its content (sticker + lock
-     + copy + button, centered in a column) needs real room — without a
-     floor here it only gets the blurred stat grid's own short height, and
-     most of the overlay spills out past it instead of being visible inside
-     the window. */
-  min-height: 320px;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
-}
-.blurred {
-  filter: blur(3px);
-  opacity: 0.6;
-  pointer-events: none;
-  user-select: none;
 }
 .stat {
   background: var(--c-white);
@@ -44,25 +26,40 @@
   margin-top: 4px;
 }
 
-.lockOverlay {
-  position: absolute;
-  inset: 0;
+.joinWrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
   text-align: center;
-  padding: 20px;
-  color: var(--c-dim);
+  padding: 10px 0 4px;
+  color: var(--c-ink);
 }
-.sticker {
-  margin-bottom: 6px;
+.joinTitle {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  text-transform: uppercase;
 }
-.lockOverlay p {
+.joinSub {
+  margin: 8px 0 0;
   font-size: 12.5px;
+  font-weight: 600;
   color: var(--c-muted);
-  max-width: 220px;
+}
+/* The stage draws its cursor bubble outside its own box, so it gets room
+   on both sides rather than being clipped against the window's padding. */
+.joinStage {
+  width: 100%;
+  margin-top: 2px;
+}
+.joinFoot {
+  margin: 10px 0 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-faint);
 }
 
 .moreSoon {

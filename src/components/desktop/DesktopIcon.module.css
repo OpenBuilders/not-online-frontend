@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 132px;
+  width: 106px;
   cursor: pointer;
   z-index: 5;
   transition: transform 0.1s;
@@ -19,9 +19,9 @@
 }
 
 .iconImg {
-  width: 112px;
-  height: 112px;
-  border-radius: 22px;
+  width: 90px;
+  height: 90px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
@@ -36,7 +36,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 22px;
+  border-radius: 18px;
 }
 .iconImg svg {
   width: 100%;
@@ -44,7 +44,7 @@
 }
 
 .label {
-  font-size: 24px;
+  font-size: 19px;
   line-height: 1.12;
   color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
@@ -92,36 +92,26 @@
   filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
 }
 
-@media (max-width: 700px) {
+/* One mobile step, at the same 760px every other file uses. Two overlapping
+   breakpoints (700 and 760) disagreed about icon size in the gap between
+   them. */
+@media (max-width: 760px) {
   .icon {
-    width: 96px;
+    width: 86px;
     gap: 6px;
   }
   .iconImg {
-    width: 78px;
-    height: 78px;
-    border-radius: 16px;
-    font-size: 40px;
+    width: 72px;
+    height: 72px;
+    border-radius: 15px;
+    font-size: 34px;
   }
   .file .iconImg {
-    font-size: 32px;
-  }
-  .label {
-    font-size: 16px;
-    max-width: 120px;
-    padding: 3px 9px;
-  }
-}
-
-@media (max-width: 760px) {
-  .icon {
-    width: 96px;
-  }
-  .iconImg {
-    width: 76px;
-    height: 76px;
+    font-size: 26px;
   }
   .label {
     font-size: 15px;
+    max-width: 110px;
+    padding: 3px 9px;
   }
 }

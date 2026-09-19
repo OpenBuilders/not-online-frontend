@@ -3,14 +3,14 @@
    has its own bespoke layout and doesn't use this.
 
    All of the card's visual chrome now lives in StickerWidget; this file is
-   just the positioned/draggable/sized root. On mobile useAutoLayout
-   overrides the width/height inline for the 2-column square grid, which the
-   sticker fills at 100%. */
+   just the positioned/draggable/sized root. One size at every width now —
+   the mobile grid that used to resize these is gone, so the sticker's type
+   no longer has to work at two different card sizes. */
 
 .wrap {
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 176px;
+  height: 176px;
   z-index: 10;
   touch-action: none;
 }

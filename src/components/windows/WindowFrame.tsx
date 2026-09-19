@@ -37,8 +37,10 @@ export function WindowFrame({ win, children }: WindowFrameProps) {
   });
 
   const stack = stackPosition(windows, win.id);
+  // Centred on both axes, then cascaded — a fixed top made a tall window
+  // hug the ceiling and a short one float above the middle of the screen.
   const left = `calc(50% - ${win.width / 2}px + ${win.offsetIndex * 26}px)`;
-  const top = `${86 + win.offsetIndex * 26}px`;
+  const top = `calc(50% - ${(win.height ?? 520) / 2}px + ${win.offsetIndex * 26}px)`;
 
   return (
     <div

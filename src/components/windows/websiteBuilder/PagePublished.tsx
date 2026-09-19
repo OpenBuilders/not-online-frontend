@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
+import { CircleStage } from '@/components/cta/CircleStage';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { Confetti } from '@/components/shared/Confetti';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { PATRON_URL } from '@/data/links';
 import { siteUrl } from '@/data/siteTemplates';
+import { cx } from '@/lib/cx';
 import styles from './PagePublished.module.css';
 
 const JOKES = [
@@ -24,6 +25,12 @@ interface PagePublishedProps {
  * Market's PublishCelebration. For a guest it is also the one place the
  * patron pitch belongs: they have just seen the thing work, which is the
  * only moment an upsell is worth reading.
+ *
+ * The guest's way in is the interactive ring rather than a "Become a
+ * patron" button, because there are two roles on offer here and a single
+ * button could only name one of them. The pitch above it and the "Keep
+ * editing" way out below it both stay — the ring replaces the button, not
+ * the card around it.
  */
 export function PagePublished({ handle, isGuest, onDone }: PagePublishedProps) {
   const joke = useMemo(() => JOKES[Math.floor(Math.random() * JOKES.length)], []);
@@ -35,7 +42,7 @@ export function PagePublished({ handle, isGuest, onDone }: PagePublishedProps) {
           trap it inside this card. Same reason as PublishCelebration. */}
       <Confetti />
       <div className={styles.overlay}>
-        <div className={styles.card}>
+        <div className={cx(styles.card, isGuest && styles.cardJoin)}>
           <div className={styles.urlBadge}>
             <MaterialIcon name="public" size={17} />
             {siteUrl(handle)}
@@ -55,14 +62,11 @@ export function PagePublished({ handle, isGuest, onDone }: PagePublishedProps) {
                   in the picker.
                 </p>
               </div>
-              <AeroButton
-                variant="lime"
-                wide
-                className={styles.cta}
-                onClick={() => window.open(PATRON_URL, '_blank', 'noopener')}
-              >
-                Become a patron
-              </AeroButton>
+              <div className={styles.join}>
+                <span className={styles.joinTitle}>Join the circle</span>
+                <span className={styles.joinSub}>Move the light. Pick your role</span>
+                <CircleStage size={230} onClose={onDone} className={styles.joinStage} />
+              </div>
               <button type="button" className={styles.later} onClick={onDone}>
                 Keep editing
               </button>

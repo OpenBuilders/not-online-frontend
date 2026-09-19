@@ -1,0 +1,122 @@
+.scrim {
+  /* Fixed, not absolute: this also opens over the login screen, which is
+     itself a fixed, scrolling layer at z-index 6000. */
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 8, 10, 0.62);
+  backdrop-filter: blur(8px);
+  animation: fade 0.22s ease-out;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.card {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: 100%;
+  /* The bubble that follows the cursor runs past the drawing's own box by
+     design, and a scrollbar appearing and vanishing on hover shifted every
+     item in the card. Nothing here is meant to be scrolled to, so it's
+     clipped instead; the stage is sized to fit its card at every width. */
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 34px 34px 30px;
+  font-family: 'Archivo', sans-serif;
+  text-align: center;
+  /* The sticker language the widgets use: hard white cut-line, hard shadow. */
+  box-shadow:
+    0 0 0 5px var(--c-white),
+    8px 10px 0 5px rgba(0, 0, 0, 0.5),
+    0 30px 70px rgba(0, 0, 0, 0.55);
+  animation: pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+@keyframes pop {
+  from {
+    transform: scale(0.94) translateY(10px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .card {
+    animation: none;
+  }
+}
+
+.dark {
+  background: #121216;
+  color: var(--c-white);
+}
+.paper {
+  background: var(--c-paper);
+  color: var(--c-ink);
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(127, 127, 140, 0.18);
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.close:hover {
+  background: rgba(127, 127, 140, 0.34);
+}
+.close:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+.head {
+  margin-bottom: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1.4px;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.sub {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: 0.6;
+}
+
+@media (max-width: 760px) {
+  .card {
+    padding: 26px 18px 22px;
+    border-radius: 22px;
+  }
+  /* Keeps the centred heading clear of the close button in the corner. */
+  .head {
+    padding: 0 34px;
+  }
+  .title {
+    font-size: 26px;
+    letter-spacing: -0.8px;
+  }
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CircleJoinCta } from '@/components/cta/CircleJoinCta';
 import { EmailStep } from '@/components/login/EmailStep';
 import { OtpStep } from '@/components/login/OtpStep';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
@@ -12,11 +13,30 @@ interface LoginScreenProps {
 
 type Step = 'email' | 'otp';
 
+/** The countdown shown after a code is sent. Also the fallback when the
+ *  response carries no usable `expiresAt`, and the ceiling on one that
+ *  does — a server window longer than this would leave the timer sitting
+ *  there for minutes, which is not what it's for. */
 const OTP_TTL_MILLISECONDS = 2 * 60 * 1_000;
 
 function errorMessage(error: unknown): string {
   if (error instanceof ApiError) return error.message;
   return error instanceof Error ? error.message : 'Something went wrong.';
+}
+
+/**
+ * Whether a failed OTP request means "we don't know this address" rather
+ * than "that request was malformed" or "slow down".
+ *
+ * `/auth/otp/request` has no dedicated flag for it, so this reads the
+ * status: 400 is a bad payload and 429 is the rate limiter, and every other
+ * 4xx on this endpoint is the backend declining to send a code to an
+ * address it has no account for. Anything else (a 5xx, a dead connection)
+ * is our problem, not the visitor's, and shows as a plain error instead.
+ */
+function isUnknownEmail(error: unknown): boolean {
+  if (!(error instanceof ApiError)) return false;
+  return error.status >= 401 && error.status < 500 && error.status !== 429;
 }
 
 /**
@@ -41,6 +61,9 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
   const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
   const [otpSecondsLeft, setOtpSecondsLeft] = useState(120);
   const [error, setError] = useState('');
+  // The email isn't one of ours. The field keeps what was typed so another
+  // address can be tried, and the CTA opens over the top of it.
+  const [notInCircle, setNotInCircle] = useState(false);
 
   const [clock, setClock] = useState({ time: '00:00', date: '—' });
   const emailRef = useRef<HTMLInputElement>(null);
@@ -95,12 +118,12 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
       return;
     }
     setError('');
+    setNotInCircle(false);
     requestOtpMutation.mutate(v, {
       onSuccess: (response) => {
+        const ceiling = Date.now() + OTP_TTL_MILLISECONDS;
         const responseExpiry = Date.parse(response.expiresAt);
-        const expiresAt = Number.isNaN(responseExpiry)
-          ? Date.now() + OTP_TTL_MILLISECONDS
-          : responseExpiry;
+        const expiresAt = Number.isNaN(responseExpiry) ? ceiling : Math.min(responseExpiry, ceiling);
         setEmail(v);
         setOtp('');
         setOtpHint(response.message || `code sent to ${v}`);
@@ -110,7 +133,14 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
         );
         setStep('otp');
       },
-      onError: (err) => setError(errorMessage(err)),
+      onError: (err) => {
+        if (isUnknownEmail(err)) {
+          setError('We don\u2019t know that address. Try another, or join below.');
+          setNotInCircle(true);
+          return;
+        }
+        setError(errorMessage(err));
+      },
     });
   }
 
@@ -168,6 +198,14 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
       <button type="button" className={styles.cancel} onClick={onClose}>
         Continue as guest
       </button>
+
+      {notInCircle && (
+        <CircleJoinCta
+          title="Probably not in circle"
+          sub="Join us. Move the light, pick your role \u2014 or close this and try another email."
+          onClose={() => setNotInCircle(false)}
+        />
+      )}
     </div>
   );
 }

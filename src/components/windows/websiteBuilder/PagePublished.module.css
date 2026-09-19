@@ -92,8 +92,33 @@
   color: var(--c-dim);
 }
 
-.cta {
-  height: 46px;
+/* The ring needs more room than the button it replaced, so the guest's
+   card is the wider of the two. */
+.cardJoin {
+  max-width: 400px;
+}
+
+.join {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--c-ink);
+}
+.joinTitle {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.8px;
+  text-transform: uppercase;
+}
+.joinSub {
+  margin-top: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-muted);
+}
+.joinStage {
+  width: 100%;
 }
 
 .later {

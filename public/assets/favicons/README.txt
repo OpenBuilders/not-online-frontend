@@ -1,9 +1,13 @@
-Drop the favicon set here, using exactly these filenames — index.html already
-links to all of them, so nothing else needs changing once they land:
+The favicon set. index.html links favicon-32x32.png, favicon-16x16.png,
+favicon.ico and apple-touch-icon.png directly, plus site.webmanifest, which
+is what points at the two android-chrome files.
 
-  favicon.ico            16 + 32 px, multi-size .ico  (browser tabs, legacy)
-  favicon.svg            any size, vector             (modern browsers, scales)
-  favicon-96x96.png      96 x 96                      (fallback for no-SVG)
-  apple-touch-icon.png   180 x 180, no transparency   (iOS home screen)
+  favicon-16x16 / -32x32      what a browser tab actually renders
+  favicon.ico                 48x48, fallback for anything asking for an .ico
+  apple-touch-icon            180x180, iOS home screen
+  android-chrome-192 / -512   referenced from site.webmanifest, not from HTML
+  favicon-48 / -64 / -128 /
+  -256 / -512                 spare sizes, not linked from anywhere
 
-A file that isn't here yet just 404s; the others still work.
+Icon paths inside site.webmanifest are relative to the manifest itself, so
+the whole set stays movable as one folder.

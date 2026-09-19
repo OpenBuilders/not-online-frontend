@@ -67,4 +67,4 @@ npm run build:all
 Перед production-сборкой задайте `VITE_API_URL` и `LINK_PAGES_API_URL` в
 соответствующих `.env.production` файлах. Затем выполните `npm run deploy:tools`,
 `npm run deploy:online` и `npm run deploy:router`. Доменный маршрут
-`not.online/*` назначается только роутеру.
+`not.online` добавляется как Custom Domain только роутеру.

@@ -10,6 +10,7 @@
     "build": "tsc -b && vite build",
     "build:online": "npm --prefix apps/not-online run build",
     "deploy:tools": "npm run build && wrangler deploy",
+    "deploy:online": "npm --prefix apps/not-online run deploy",
     "deploy:router": "npm --prefix apps/router run deploy",
     "build:all": "npm run build && npm run build:online",
     "lint": "oxlint",

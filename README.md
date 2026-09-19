@@ -64,6 +64,7 @@ npm run build:online
 npm run build:all
 ```
 
-Для production: `npm run deploy:tools`, затем из `apps/not-online` —
-`npm run deploy`, и после этого `npm run deploy:router`. Доменный маршрут
+Перед production-сборкой задайте `VITE_API_URL` и `LINK_PAGES_API_URL` в
+соответствующих `.env.production` файлах. Затем выполните `npm run deploy:tools`,
+`npm run deploy:online` и `npm run deploy:router`. Доменный маршрут
 `not.online/*` назначается только роутеру.

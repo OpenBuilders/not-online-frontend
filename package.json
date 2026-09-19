@@ -5,7 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:online": "npm --prefix apps/not-online run dev",
+    "dev:router": "npm --prefix apps/router run dev",
     "build": "tsc -b && vite build",
+    "build:online": "npm --prefix apps/not-online run build",
+    "deploy:tools": "npm run build && wrangler deploy",
+    "deploy:router": "npm --prefix apps/router run deploy",
+    "build:all": "npm run build && npm run build:online",
     "lint": "oxlint",
     "preview": "vite preview",
     "typecheck": "tsc -b"
@@ -22,6 +28,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
     "typescript": "^5.9.3",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "wrangler": "^4.100.0"
   }
 }

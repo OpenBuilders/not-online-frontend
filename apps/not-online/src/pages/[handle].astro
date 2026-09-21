@@ -28,7 +28,11 @@ const cfg = page
 if (!page) Astro.response.status = 404;
 ---
 
-<BaseLayout title={page ? `${page.name} — not.online` : 'Page not found — not.online'} description={page?.bio}>
+<BaseLayout
+  title={page ? `${page.name} — not.online` : 'Page not found — not.online'}
+  description={page?.bio}
+  favicon={page?.avatar ?? undefined}
+>
   {cfg ? <div class="page"><SitePage cfg={cfg} /></div> : <main class="not-found"><h1>404</h1><p>This page does not exist.</p></main>}
 </BaseLayout>
 

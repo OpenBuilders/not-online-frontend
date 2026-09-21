@@ -298,8 +298,8 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
           maxLength={255}
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          // No Enter-to-advance here on purpose — Enter in a textarea should still just add a
-          // line break; the bubble's own Next button is the way forward for this one field.
+        // No Enter-to-advance here on purpose — Enter in a textarea should still just add a
+        // line break; the bubble's own Next button is the way forward for this one field.
         />
 
         <div className={styles.row2}>
@@ -323,21 +323,26 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
               />
             </div>
           </div>
-          <div>
-            <label className={styles.formLabel}>Contact</label>
-            <input
-              ref={contactRef}
-              className={styles.input}
-              placeholder={state.logged ? undefined : 'email, @username, link…'}
-              maxLength={1000}
-              value={state.logged ? (state.email ?? '') : contact}
-              disabled={state.logged}
-              onChange={(e) => setContact(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') completeContact();
-              }}
-            />
-          </div>
+
+
+        
+          {!state.logged && (
+            <div>
+              <label className={styles.formLabel}>Contact</label>
+              <input
+                ref={contactRef}
+                className={styles.input}
+                placeholder={'email, @username, link…'}
+                maxLength={1000}
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') completeContact();
+                }}
+              />
+            </div>
+          )}
+
         </div>
 
         <AeroButton

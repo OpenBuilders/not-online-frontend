@@ -28,6 +28,7 @@ export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) 
       badge="Try me"
       buttonIcon="public"
       buttonLabel="Build page"
+      openOnCardClick
       onOpen={() =>
         openWindow({ kind: 'websiteBuilder', title: 'Your links page', width: 1040, height: 660, singleton: true })
       }

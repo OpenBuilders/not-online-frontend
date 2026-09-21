@@ -2,9 +2,10 @@
 interface Props {
   title: string;
   description?: string;
+  favicon?: string;
 }
 
-const { title, description = 'A page on not.online' } = Astro.props;
+const { title, description = 'A page on not.online', favicon } = Astro.props;
 ---
 
 <!doctype html>
@@ -14,6 +15,18 @@ const { title, description = 'A page on not.online' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="robots" content="index,follow" />
+    {favicon ? (
+      <link rel="icon" href={favicon} />
+    ) : (
+      <>
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
+        <link rel="icon" href="/assets/favicons/favicon.ico" sizes="48x48" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
+        <link rel="manifest" href="/assets/favicons/site.webmanifest" />
+      </>
+    )}
+    <meta name="theme-color" content="#1c1c1e" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />

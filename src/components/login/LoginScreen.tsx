@@ -57,7 +57,6 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [otpHint, setOtpHint] = useState('code sent, check your inbox');
   const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
   const [otpSecondsLeft, setOtpSecondsLeft] = useState(120);
   const [error, setError] = useState('');
@@ -126,7 +125,6 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
         const expiresAt = Number.isNaN(responseExpiry) ? ceiling : Math.min(responseExpiry, ceiling);
         setEmail(v);
         setOtp('');
-        setOtpHint(response.message || `code sent to ${v}`);
         setOtpExpiresAt(expiresAt);
         setOtpSecondsLeft(
           Math.max(0, Math.ceil((expiresAt - Date.now()) / 1_000))
@@ -185,7 +183,6 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
             onChange={setOtp}
             onSubmit={verify}
             onRequestNewCode={sendCode}
-            hint={otpHint}
             busy={busy}
             secondsLeft={otpSecondsLeft}
             inputRef={otpRef}

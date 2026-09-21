@@ -22,6 +22,8 @@ interface WidgetCardProps {
   art?: string;
   /** Peel-off label stuck over the top-left corner, e.g. "TRY ME". */
   badge?: string;
+  /** Open when the sticker face is clicked, not only its action button. */
+  openOnCardClick?: boolean;
 }
 
 /**
@@ -52,6 +54,7 @@ export function WidgetCard({
   rotate,
   art,
   badge,
+  openOnCardClick = false,
 }: WidgetCardProps) {
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -62,9 +65,32 @@ export function WidgetCard({
   });
 
   const style: CSSProperties = { left: x, top: y };
+  const handleOpen = () => {
+    // Same click-vs-drag disambiguation DesktopIcon uses — a drag that
+    // happens to end on the card shouldn't also open the window.
+    if (hasMovedRef.current) {
+      hasMovedRef.current = false;
+      return;
+    }
+    onOpen();
+  };
 
   return (
-    <div id={id} ref={elementRef} className={cx(styles.wrap, styles.stickerRoot, 'widget-card')} style={style} data-x={x} data-y={y}>
+    <div
+      id={id}
+      ref={elementRef}
+      className={cx(styles.wrap, styles.stickerRoot, 'widget-card')}
+      style={style}
+      data-x={x}
+      data-y={y}
+      onClick={(event) => {
+        // The action button already invokes `handleOpen`; letting its click
+        // bubble would open the singleton twice.
+        if (openOnCardClick && !(event.target as HTMLElement).closest('button')) {
+          handleOpen();
+        }
+      }}
+    >
       <StickerWidget
         color={color}
         icon={buttonIcon}
@@ -75,15 +101,7 @@ export function WidgetCard({
         rotate={rotate}
         art={art}
         badge={badge}
-        onOpen={() => {
-          // Same click-vs-drag disambiguation DesktopIcon uses — a drag that
-          // happens to end on the button shouldn't also open the window.
-          if (hasMovedRef.current) {
-            hasMovedRef.current = false;
-            return;
-          }
-          onOpen();
-        }}
+        onOpen={handleOpen}
       />
     </div>
   );

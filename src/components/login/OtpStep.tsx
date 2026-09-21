@@ -7,7 +7,6 @@ interface OtpStepProps {
   onChange: (value: string) => void;
   onSubmit: () => void;
   onRequestNewCode: () => void;
-  hint: string;
   busy: boolean;
   secondsLeft: number;
   inputRef: RefObject<HTMLInputElement | null>;
@@ -29,7 +28,6 @@ export function OtpStep({
   onChange,
   onSubmit,
   onRequestNewCode,
-  hint,
   busy,
   secondsLeft,
   inputRef,
@@ -63,7 +61,6 @@ export function OtpStep({
           <MaterialIcon name="arrow_forward" />
         </button>
       </div>
-      <div className={styles.hint}>{hint}</div>
       <div className={`${styles.otpTimer} ${expired ? styles.otpTimerExpired : ''}`}>
         {expired ? (
           <>

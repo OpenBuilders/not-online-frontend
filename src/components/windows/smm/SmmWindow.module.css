@@ -1,0 +1,211 @@
+/*
+  The same Finder-style rail Market uses (MarketWindow.module.css), kept
+  visually identical on purpose — two tool windows on one desktop should
+  not each invent their own way of holding sections. What distinguishes
+  SMM from Market is its accent, not its chrome: `--smm` is lime where
+  Market is plain ink, and every SMM-only surface below takes its colour
+  from that one variable.
+*/
+
+.window {
+  --smm: var(--c-accent);
+  --smm-ink: #0d1a00;
+  position: relative;
+  display: flex;
+  height: 100%;
+}
+
+/*
+  Collapsed to its icons, opening on hover. It stays in flow and moves the
+  content across rather than covering it — an overlay dropped the labels
+  on top of whatever was underneath them, which read as a panel that had
+  come loose.
+*/
+.rail {
+  flex-shrink: 0;
+  width: 54px;
+  background: var(--c-paper-3);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  transition:
+    width 0.16s ease,
+    box-shadow 0.16s ease;
+}
+.rail:hover,
+.rail:focus-within {
+  width: 156px;
+  box-shadow: 6px 0 22px rgba(0, 0, 0, 0.14);
+}
+.railItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 140px;
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  padding: 10px 9px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--c-dim);
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Fades rather than unmounting: the row keeps its full width behind the
+   clip, so the icons never shift as the rail opens. */
+.railLabel {
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+.rail:hover .railLabel,
+.rail:focus-within .railLabel {
+  opacity: 1;
+}
+.railItem:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--c-near-black);
+}
+.railItem.on {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.railItem:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: -2px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+  padding: 16px;
+  background: var(--c-paper);
+  color: var(--c-ink);
+  position: relative;
+}
+
+@media (max-width: 760px) {
+  .window {
+    flex-direction: column;
+  }
+  /* Back in flow as a row: there is no hover on a phone, so a rail that
+     only opens when pointed at would never open.
+
+     The hover and focus rules have to be named again here, not just
+     overridden by `.rail`: `.rail:hover` is the more specific selector
+     and kept winning inside this query, so a tap — which leaves the row
+     hovered and focused — still ran the 156px open and its shadow. */
+  .rail,
+  .rail:hover,
+  .rail:focus-within {
+    position: static;
+    width: auto;
+    flex-direction: row;
+    align-items: stretch;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: none;
+    overflow-x: hidden;
+    gap: 6px;
+    transition: none;
+  }
+  /* Three tabs, one row, equal shares of it. */
+  .railItem {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .railLabel {
+    opacity: 1;
+  }
+  .body {
+    padding: 12px;
+  }
+  .body {
+    padding: 12px;
+  }
+}
+
+/* One line, the weight of a footnote. It is a fact about where the work
+   lives, not an advertisement — the Join is the only part that raises its
+   voice, and only a little. */
+.localNote {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: var(--c-paper-2);
+  padding: 7px 10px;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--c-dim);
+}
+/* By class, not by element: MaterialIcon renders a <span> too, so a bare
+   `.localNote span` gave the icon its own flex share and it pushed the
+   sentence halfway across the bar. */
+.noteIcon {
+  flex-shrink: 0;
+}
+.noteText {
+  flex: 1;
+  min-width: 0;
+}
+.localNote button {
+  flex-shrink: 0;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+  background: var(--c-ink);
+  padding: 4px 11px;
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--c-white);
+  cursor: pointer;
+}
+.localNote button:hover {
+  background: var(--smm);
+  border-color: var(--smm);
+  color: var(--smm-ink);
+}
+.localNote button:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  /* The icon and the button between them left the sentence about twenty
+     characters of width, which ran it to four lines. On a phone the line
+     gets the full row and the button drops under it. */
+  .localNote {
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 10.5px;
+  }
+  .noteIcon {
+    display: none;
+  }
+  .noteText {
+    flex: 1 1 100%;
+  }
+  .localNote button {
+    margin-left: auto;
+  }
+}

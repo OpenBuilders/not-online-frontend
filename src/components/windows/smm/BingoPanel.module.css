@@ -1,0 +1,235 @@
+/*
+  Sized to be seen whole. The board is the one thing here that must not
+  scroll — a bingo card you have to scroll is a list — so the squares are
+  capped rather than filling the window's full width: five 718px-wide
+  columns would be 718px tall, and the window has about 540px to give.
+*/
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+}
+
+.head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.headText {
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.9px;
+  color: var(--c-ink);
+}
+.sub {
+  margin: 5px 0 0;
+  max-width: 54ch;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+.sub b {
+  font-weight: 800;
+  color: var(--c-ink);
+}
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+.scoreNum {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -1.4px;
+  color: var(--c-ink);
+  font-variant-numeric: tabular-nums;
+}
+.scoreLabel {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+ /*
+  Full width, and the rows share whatever height is left. The board used
+  to be capped at 430px so the squares could stay square — which fitted,
+  but left half the window empty and made the cards look like an
+  afterthought. Letting the rows be `1fr` of the remaining space uses the
+  whole width, keeps the board on screen without scrolling, and lets the
+  cards grow with the window instead of being pinned to a guess.
+*/
+.board {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--n, 5), minmax(0, 1fr));
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.square {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  background: var(--c-white);
+  padding: 12px 13px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    transform 0.12s;
+}
+.square:hover:not(:disabled) {
+  border-color: var(--c-ink);
+  transform: translateY(-1px);
+}
+.square:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/*
+  The square's own drawing, uncovered by crossing it off. Sits behind the
+  text at low opacity rather than replacing it: the prompt still has to be
+  readable afterwards, because a crossed square is also the record of what
+  you made.
+*/
+.art {
+  position: absolute;
+  right: -8%;
+  bottom: -6%;
+  height: 78%;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+  animation: reveal 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-8deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .art {
+    animation: none;
+  }
+}
+
+.text {
+  position: relative;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--c-ink);
+  /* Whatever fits the square. A prompt longer than this was written badly,
+     which is a copy problem and not a layout one. */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Sent but not yet made. Enough to tell it apart from an untouched square
+   without pretending it is done — the whole reason the two clicks are
+   separate. */
+.queued {
+  background: var(--c-paper-2);
+  border-color: rgba(0, 0, 0, 0.22);
+  border-style: dashed;
+}
+/* Pinned to the corner rather than stacked under the prompt: in the flow
+   it took a line of height off a card that only has three, and clipped the
+   last line of the prompt mid-word. */
+.queuedMark {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  background: var(--c-paper-2);
+  padding-left: 4px;
+}
+
+/* Crossed: the square goes dark, the text stays readable on it. */
+.square.on {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+}
+.square.on .text {
+  color: rgba(255, 255, 255, 0.52);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+.cross {
+  position: absolute;
+  right: 7px;
+  bottom: 6px;
+  color: var(--c-accent);
+}
+
+/* Part of a finished line: a lime ring rather than a fill, so the line
+   reads across five squares instead of five squares each shouting. */
+.square.inLine {
+  box-shadow:
+    inset 0 0 0 2px var(--c-accent),
+    0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
+.square.free {
+  background: var(--c-paper-2);
+  border-style: dashed;
+  cursor: default;
+}
+.square.free .text {
+  color: var(--c-muted);
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  /* Still five columns — a 5x5 that reflows stops being a bingo card. */
+  .square {
+    padding: 4px;
+    border-radius: 8px;
+    gap: 2px;
+  }
+  .text {
+    font-size: 8px;
+    line-height: 1.22;
+    -webkit-line-clamp: 6;
+  }
+  .queuedMark,
+  .cross {
+    display: none;
+  }
+}

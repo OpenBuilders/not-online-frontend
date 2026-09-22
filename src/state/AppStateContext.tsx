@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react';
 import { blankSite } from '@/data/siteTemplates';
-import type { AppState, SiteConfig, SiteTemplateId, TourId } from '@/types';
+import type { AppState, SiteConfig, SiteTemplateId, SmmPost, SmmState, TourId } from '@/types';
 
 // Onboarding progress (which tours are done, whether a guest has explored the catalogue) and
 // the picked background survive a reload here — for a guest and a logged-in seller alike, since
@@ -9,8 +9,12 @@ const PROGRESS_STORAGE_KEY = 'notportal:app-progress:v1';
 // A links page is also cached in this browser for guests and for a quick first
 // render. An authenticated user's canonical copy lives in the backend.
 const SITE_STORAGE_KEY = 'notportal:site:v1';
+// The media kit's posts. This is the only place a post exists — there is no
+// backend behind the tool yet, which is exactly what the notice inside it
+// tells a logged-out visitor, so the two have to stay true to each other.
+const SMM_STORAGE_KEY = 'notportal:smm:v1';
 
-const TOUR_IDS: TourId[] = ['market', 'settings', 'page'];
+const TOUR_IDS: TourId[] = ['market', 'settings', 'page', 'smm'];
 
 interface PersistedProgress {
   tours: TourId[];
@@ -60,6 +64,29 @@ function loadPersistedSite(): SiteConfig | null {
   }
 }
 
+const EMPTY_SMM: SmmState = { posts: [], bingoCrossed: [] };
+
+/**
+ * Merged onto an empty slice rather than trusted whole: a build that adds
+ * a field to SmmState would otherwise read `undefined` for it out of
+ * storage the previous build wrote, and crash on first render.
+ */
+function loadPersistedSmm(): SmmState {
+  try {
+    const raw = localStorage.getItem(SMM_STORAGE_KEY);
+    if (!raw) return EMPTY_SMM;
+    const parsed = JSON.parse(raw) as Partial<SmmState> | null;
+    return {
+      posts: Array.isArray(parsed?.posts) ? parsed.posts : [],
+      bingoCrossed: Array.isArray(parsed?.bingoCrossed) ? parsed.bingoCrossed : [],
+    };
+  } catch {
+    // Unparseable, or storage blocked entirely (private windows, site data
+    // switched off). Neither is worth failing a render for.
+    return EMPTY_SMM;
+  }
+}
+
 function buildInitialState(): AppState {
   const persisted = loadPersistedProgress();
   return {
@@ -72,6 +99,7 @@ function buildInitialState(): AppState {
     wallpaper: persisted.wallpaper,
     appIcons: {},
     exploredCatalog: persisted.exploredCatalog,
+    smm: loadPersistedSmm(),
   };
 }
 
@@ -83,7 +111,11 @@ type Action =
   | { type: 'SET_CURSOR'; cursor: string }
   | { type: 'SET_WALLPAPER'; wallpaper: string | null }
   | { type: 'SET_APP_ICON'; app: string; dataUrl: string }
-  | { type: 'MARK_EXPLORED_CATALOG' };
+  | { type: 'MARK_EXPLORED_CATALOG' }
+  | { type: 'SMM_ADD_POST'; post: SmmPost }
+  | { type: 'SMM_UPDATE_POST'; id: string; patch: Partial<SmmPost> }
+  | { type: 'SMM_REMOVE_POST'; id: string }
+  | { type: 'SMM_TOGGLE_BINGO'; id: string };
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -109,6 +141,24 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, appIcons: { ...state.appIcons, [action.app]: action.dataUrl } };
     case 'MARK_EXPLORED_CATALOG':
       return state.exploredCatalog ? state : { ...state, exploredCatalog: true };
+    case 'SMM_ADD_POST':
+      return { ...state, smm: { ...state.smm, posts: [action.post, ...state.smm.posts] } };
+    case 'SMM_UPDATE_POST':
+      return {
+        ...state,
+        smm: {
+          ...state.smm,
+          posts: state.smm.posts.map((p) => (p.id === action.id ? { ...p, ...action.patch } : p)),
+        },
+      };
+    case 'SMM_REMOVE_POST':
+      return { ...state, smm: { ...state.smm, posts: state.smm.posts.filter((p) => p.id !== action.id) } };
+    case 'SMM_TOGGLE_BINGO': {
+      const crossed = state.smm.bingoCrossed.includes(action.id)
+        ? state.smm.bingoCrossed.filter((id) => id !== action.id)
+        : [...state.smm.bingoCrossed, action.id];
+      return { ...state, smm: { ...state.smm, bingoCrossed: crossed } };
+    }
     default:
       return state;
   }
@@ -124,6 +174,10 @@ interface AppStateContextValue {
   setWallpaper: (wallpaper: string | null) => void;
   setAppIcon: (app: string, dataUrl: string) => void;
   markExploredCatalog: () => void;
+  addSmmPost: (post: SmmPost) => void;
+  updateSmmPost: (id: string, patch: Partial<SmmPost>) => void;
+  removeSmmPost: (id: string) => void;
+  toggleSmmBingo: (id: string) => void;
 }
 
 const AppStateCtx = createContext<AppStateContextValue | null>(null);
@@ -155,6 +209,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [state.site]);
 
+  // Written on every change rather than on unload: a desktop tab is usually
+  // closed by closing the window, and `beforeunload` is not reliably
+  // delivered when it is.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SMM_STORAGE_KEY, JSON.stringify(state.smm));
+    } catch {
+      // Quota is the realistic failure here: a post's photos are stored as
+      // data URLs, and a handful of them passes what an origin is given.
+      // Losing the write beats losing the session.
+    }
+  }, [state.smm]);
+
   const login = useCallback((email: string) => dispatch({ type: 'LOGIN', email }), []);
   const logout = useCallback(() => dispatch({ type: 'LOGOUT' }), []);
   const completeTour = useCallback((tour: TourId) => dispatch({ type: 'COMPLETE_TOUR', tour }), []);
@@ -163,6 +230,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const setWallpaper = useCallback((wallpaper: string | null) => dispatch({ type: 'SET_WALLPAPER', wallpaper }), []);
   const setAppIcon = useCallback((app: string, dataUrl: string) => dispatch({ type: 'SET_APP_ICON', app, dataUrl }), []);
   const markExploredCatalog = useCallback(() => dispatch({ type: 'MARK_EXPLORED_CATALOG' }), []);
+  const addSmmPost = useCallback((post: SmmPost) => dispatch({ type: 'SMM_ADD_POST', post }), []);
+  const updateSmmPost = useCallback(
+    (id: string, patch: Partial<SmmPost>) => dispatch({ type: 'SMM_UPDATE_POST', id, patch }),
+    []
+  );
+  const removeSmmPost = useCallback((id: string) => dispatch({ type: 'SMM_REMOVE_POST', id }), []);
+  const toggleSmmBingo = useCallback((id: string) => dispatch({ type: 'SMM_TOGGLE_BINGO', id }), []);
 
   const value = useMemo<AppStateContextValue>(
     () => ({
@@ -175,8 +249,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setWallpaper,
       setAppIcon,
       markExploredCatalog,
+      addSmmPost,
+      updateSmmPost,
+      removeSmmPost,
+      toggleSmmBingo,
     }),
-    [state, login, logout, completeTour, setSite, setCursor, setWallpaper, setAppIcon, markExploredCatalog]
+    [
+      state,
+      login,
+      logout,
+      completeTour,
+      setSite,
+      setCursor,
+      setWallpaper,
+      setAppIcon,
+      markExploredCatalog,
+      addSmmPost,
+      updateSmmPost,
+      removeSmmPost,
+      toggleSmmBingo,
+    ]
   );
 
   return <AppStateCtx.Provider value={value}>{children}</AppStateCtx.Provider>;

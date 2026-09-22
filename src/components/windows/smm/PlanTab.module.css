@@ -1,0 +1,604 @@
+/*
+  Calendar on the left, one panel on the right holding either the queue of
+  undated posts or the contents of an opened day. They are never wanted at
+  the same moment, so they share the column rather than each taking a
+  slice of the window's height.
+*/
+
+.tab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 288px;
+  gap: 14px;
+  height: 100%;
+  min-height: 0;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.month {
+  flex: 1;
+  margin-left: 4px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--c-ink);
+}
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: var(--c-white);
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.nav:hover:not(:disabled) {
+  border-color: var(--c-ink);
+  color: var(--c-ink);
+}
+.nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.today {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.today:hover {
+  background: var(--c-accent);
+  border-color: var(--c-ink);
+  color: #102400;
+}
+
+.hints {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hints li {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+.hints b {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+/* ---- pick mode ---- */
+
+/*
+  A post arrived from Archive and the grid is the only live thing on
+  screen. Everything that is not a possible day steps back rather than
+  being covered by a scrim — a scrim over the calendar would hide the very
+  thing you need to read to choose.
+*/
+.pickBar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--c-ink);
+  color: var(--c-white);
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pickBar b {
+  font-weight: 800;
+}
+.pickBar :global(.material-symbols-outlined) {
+  color: var(--c-accent);
+}
+.pickCancel {
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: none;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-white);
+  cursor: pointer;
+}
+.pickCancel:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.gridPicking .cell {
+  cursor: default;
+}
+.pickable {
+  cursor: pointer;
+  border-color: rgba(0, 0, 0, 0.3);
+  border-style: dashed;
+}
+.pickable:hover {
+  background: var(--c-accent);
+  border-color: var(--c-ink);
+  border-style: solid;
+}
+.unpickable {
+  opacity: 0.4;
+}
+/* The hover card is noise while a cell is being chosen. */
+.gridPicking .peek {
+  display: none;
+}
+
+/* ---- the grid ---- */
+
+/* Named once for the whole grid. The columns are real weekdays because
+   the run starts on today and is seven wide. */
+/*
+  Header and grid share a width narrower than the column they sit in. The
+  cells fill whatever width they are given, so the only way to size them
+  is to size the grid; this percentage and the panel's width are set
+  together, since taking room for one takes it from the other.
+*/
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 7), minmax(0, 1fr));
+  gap: 6px;
+  flex-shrink: 0;
+  width: 92%;
+  margin-inline: auto;
+}
+.weekdays span {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--c-faint);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 7), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows, 6), minmax(0, 1fr));
+  gap: 6px;
+  /*
+    Square cells, stated as the grid's own ratio rather than as a row
+    height. The width here is definite — the grid is a flex item
+    stretching across the column — so `aspect-ratio` derives the height
+    from it and every cell lands square whatever the window does. Left to
+    fill the remaining height, the rows came out a fifth taller than they
+    were wide.
+  */
+  aspect-ratio: var(--cols, 7) / var(--rows, 6);
+  /* An explicit width rather than letting alignment decide: in a flex
+     column `align-self` governs the horizontal axis, so asking for
+     `start` there stopped the grid stretching and it shrank to its
+     content. */
+  width: 92%;
+  margin-inline: auto;
+  max-height: 100%;
+  min-height: 0;
+}
+
+/*
+  `overflow: visible`, unlike every other card in this app: the hover card
+  hangs out of the cell and over its neighbours, and clipping it to the
+  cell would leave two lines of it with the rest cut off.
+*/
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 11px;
+  background: var(--c-white);
+  padding: 6px 7px;
+  overflow: visible;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+
+/*
+  Small, centred and faint. It is the only thing in an empty day, and at
+  label size a grid of 42 of them read as a spreadsheet.
+*/
+.date {
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 0.86;
+  letter-spacing: -1.2px;
+  color: var(--c-ink);
+  opacity: 0.16;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* A day with something on it swaps palette outright rather than gaining a
+   marker — which days are spoken for should be readable from across the
+   room, before any dot is counted. */
+.filled {
+  background: var(--c-accent);
+  /* The same 2px inner ring today wears, rather than an ink border: the
+     border is 1px, and the two together made a booked day's edge read
+     three pixels thick next to today's two. */
+  box-shadow: inset 0 0 0 2px var(--c-ink);
+  cursor: pointer;
+}
+.filled .date {
+  opacity: 0.55;
+  color: #102400;
+}
+.filled:hover {
+  background: #b9ff45;
+}
+.openCell {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+}
+.openCell .date {
+  color: var(--c-accent);
+  opacity: 0.6;
+}
+.openCell:hover {
+  background: #26262c;
+}
+
+/* Today is a ring, not a label. At 66px square the word sat right across
+   the date it was there to mark. */
+.todayCell {
+  box-shadow: inset 0 0 0 2px var(--c-ink);
+}
+.todayCell .date {
+  opacity: 0.3;
+}
+.droppable {
+  border-color: rgba(0, 0, 0, 0.22);
+  border-style: dashed;
+}
+.overCell {
+  background: var(--c-accent);
+  border-color: var(--c-ink);
+  border-style: solid;
+}
+
+/*
+  The month, as a peel-off tab stuck to the top of the cell that begins
+  it. It used to be a label inside the cell, which read as a property of
+  that single day — it is an event in the run, and a tab hanging over the
+  edge says so.
+*/
+/* Scoped through `.cell` on purpose: Sticker's own drop shadow is a
+   single-class rule, so a bare `.monthTab` would depend on which
+   stylesheet the bundler happened to emit last. */
+.cell .monthTab {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  z-index: 3;
+  font-size: 8.5px;
+  padding: 3px 9px;
+  box-shadow: none;
+}
+
+/* One dot per post, along the bottom. Counting to four is instant;
+   reading four clipped titles is not. */
+/* Absolute, so the date sits in the true centre of the cell rather than
+   being pushed up by however many dots the day has. */
+.dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  pointer-events: none;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #102400;
+}
+.openCell .dot {
+  background: var(--c-accent);
+}
+
+/* ---- the hover card ---- */
+
+.peek {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  z-index: 20;
+  width: 190px;
+  border-radius: 12px;
+  background: var(--c-ink);
+  color: var(--c-white);
+  padding: 10px 11px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+.peekBelow {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+.cell:hover .peek {
+  opacity: 1;
+}
+.peekHead {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+.peekList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 7px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.peekList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.peekList svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--c-accent);
+}
+.peekFoot {
+  margin-top: 9px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* ---- the panel ---- */
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 14px;
+  background: var(--c-paper-2);
+  padding: 12px;
+  transition: opacity 0.14s;
+}
+.sideDim {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.sideHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--c-ink);
+}
+.sideCount {
+  border-radius: 999px;
+  background: var(--c-ink);
+  color: var(--c-white);
+  padding: 1px 7px;
+  letter-spacing: 0.4px;
+}
+/* The opened day names itself large, so the panel and the cell that
+   opened it read as the same object. */
+.sideDate {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  text-transform: uppercase;
+}
+.sideClose {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.sideClose:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.sideNote {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.dayList,
+.trayList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.dayItem,
+.trayItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 9px;
+  background: var(--c-white);
+  padding: 6px 7px;
+  color: var(--c-muted);
+}
+.trayItem {
+  cursor: grab;
+}
+@media (hover: none) {
+  /* No drag on touch — the row is a tap target there. */
+  .trayItem {
+    cursor: pointer;
+  }
+}
+.trayItem:hover {
+  border-color: var(--c-ink);
+}
+/* It is a button now as well as a drag source, so it takes focus. */
+.trayItem:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.trayItemDragging {
+  opacity: 0.4;
+}
+.dayThumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--c-paper-3);
+  overflow: hidden;
+}
+.dayThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.dayTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dayRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.dayRemove:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+@media (max-width: 760px) {
+  .tab {
+    grid-template-columns: minmax(0, 1fr);
+    /* The calendar takes the height its own aspect ratio asks for and the
+       tray takes everything left, rather than the other way round: with
+       the grid on 1fr its rows still stopped at that ratio and the
+       leftover sat under them as dead window. */
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .grid {
+    grid-auto-rows: minmax(58px, 1fr);
+    gap: 3px;
+  }
+  .cell {
+    padding: 4px 6px;
+    border-radius: 8px;
+  }
+  /* Much smaller: at 22px in a 58px cell the figure was the cell. Below
+     about 16px it stops being a background numeral and becomes a label,
+     so it has to come up out of the wash — at 0.16 a 13px number sits
+     around #e8e8e8 on white, which is not a readable date. */
+  .date {
+    font-size: 13px;
+    letter-spacing: 0;
+    opacity: 0.5;
+  }
+  .filled .date,
+  .openCell .date {
+    opacity: 1;
+  }
+  .todayCell .date {
+    opacity: 0.85;
+  }
+  .peek {
+    display: none;
+  }
+  /* No cap now — the panel is bounded by its own row. */
+  .dayList,
+  .trayList {
+    max-height: none;
+  }
+  .trayGrip {
+    display: none;
+  }
+}

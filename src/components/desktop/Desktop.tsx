@@ -3,6 +3,7 @@ import { DesktopIconLayer } from '@/components/desktop/DesktopIconLayer';
 import { HomeBar } from '@/components/desktop/HomeBar';
 import { TopRow } from '@/components/desktop/TopRow';
 import { LoginScreen } from '@/components/login/LoginScreen';
+import { SmmWidget } from '@/components/widgets/SmmWidget';
 import { WebsiteBuilderWidget } from '@/components/widgets/WebsiteBuilderWidget';
 import { WindowManager } from '@/components/windows/WindowManager';
 import { BACKGROUND_OPTIONS } from '@/data/backgrounds';
@@ -55,8 +56,9 @@ export function Desktop() {
 
       <TopRow onRequestLogin={() => setLoginOpen(true)} />
 
-      {/* The Radar/Toolbox/Orgs/SMM widgets are still parked — their tools
-          don't exist here yet. The links page does, so its widget is live. */}
+      {/* Radar, Toolbox and Orgs are still parked — their tools don't exist
+          here yet. The links page and the media kit do. */}
+      <SmmWidget desktopRef={desktopRef} />
       <WebsiteBuilderWidget desktopRef={desktopRef} />
 
       <DesktopIconLayer desktopRef={desktopRef} />

@@ -18,6 +18,9 @@ interface FocusTourProps {
   containerRef: RefObject<HTMLElement | null>;
   steps: FocusTourStep[];
   activeIndex: number;
+  /** Renders a way out of the tour. A spotlight with no exit is a trap —
+   *  the Market tour omits this because its own form has a visible Close. */
+  onSkip?: () => void;
 }
 
 interface Rect {
@@ -65,7 +68,7 @@ function roundedRectPath(x: number, y: number, w: number, h: number, r: number):
  * Input-type steps (typing into a field) show a small "Next" button in the
  * bubble instead of auto-advancing on the first keystroke — see `onNext`.
  */
-export function FocusTour({ containerRef, steps, activeIndex }: FocusTourProps) {
+export function FocusTour({ containerRef, steps, activeIndex, onSkip }: FocusTourProps) {
   const [rect, setRect] = useState<Rect | null>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   // The portal target lives in state (set alongside rect), not read from
@@ -150,6 +153,11 @@ export function FocusTour({ containerRef, steps, activeIndex }: FocusTourProps) 
         {step.onNext && (
           <button type="button" className={styles.bubbleNext} onClick={step.onNext}>
             Next
+          </button>
+        )}
+        {onSkip && (
+          <button type="button" className={styles.bubbleSkip} onClick={onSkip}>
+            Skip
           </button>
         )}
       </div>

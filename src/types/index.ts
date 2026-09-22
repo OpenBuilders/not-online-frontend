@@ -62,7 +62,44 @@ export interface SiteConfig {
 
 /** The guest onboarding chain unlocks these one at a time. The widget-backed
  *  'radar' step is still parked — see useGuestGating.ts. */
-export type TourId = 'market' | 'settings' | 'page';
+export type TourId = 'market' | 'settings' | 'page' | 'smm';
+
+// ---- not media kit (the SMM tool) ----
+
+/** The four places a post can go. Each one gets its own hints and templates. */
+export type SmmPlatform = 'instagram' | 'x' | 'youtube' | 'telegram';
+
+/**
+ * Where a post is in the loop. `posted` is the end of it — those drop out
+ * of the working list into a collapsed shelf, so the archive only ever
+ * shows what still needs doing.
+ */
+export type SmmPostStatus = 'draft' | 'scheduled' | 'posted';
+
+export interface SmmPost {
+  id: string;
+  title: string;
+  body: string;
+  platform: SmmPlatform;
+  labels: string[];
+  /** Data URLs, stored in this browser with the rest of the post. */
+  photos: string[];
+  status: SmmPostStatus;
+  /**
+   * `YYYY-MM-DD` once it lands in a calendar cell, null while it's a draft.
+   * A day, and only a day — there is no time of day on a post. Planning a
+   * month is about which days carry something; the minute a post goes out
+   * is decided in the app you post from, not here.
+   */
+  day: string | null;
+  createdAt: number;
+}
+
+export interface SmmState {
+  posts: SmmPost[];
+  /** Bingo squares already crossed off, by square id. */
+  bingoCrossed: string[];
+}
 
 export interface AppState {
   logged: boolean;
@@ -76,6 +113,7 @@ export interface AppState {
   appIcons: Record<string, string>;
   /** A guest has clicked out to a live catalogue item at least once — unlocks the 3rd background option. */
   exploredCatalog: boolean;
+  smm: SmmState;
 }
 
 // ---- window manager ----
@@ -83,7 +121,7 @@ export interface AppState {
 /** One entry per openable app/window. The remaining widget-backed windows
  *  (radar/tools/orgs/smm) are parked with the widgets themselves — add them
  *  back here when they come back. */
-export type WindowKind = 'market' | 'settings' | 'websiteBuilder' | 'artistApply' | 'notFound' | 'blank';
+export type WindowKind = 'market' | 'settings' | 'websiteBuilder' | 'smm' | 'artistApply' | 'notFound' | 'blank';
 
 export interface WindowInstance {
   id: string;

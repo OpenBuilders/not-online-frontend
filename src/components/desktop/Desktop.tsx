@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { DesktopIconLayer } from '@/components/desktop/DesktopIconLayer';
 import { HomeBar } from '@/components/desktop/HomeBar';
-import { MySubmissions } from '@/components/desktop/MySubmissions';
 import { TopRow } from '@/components/desktop/TopRow';
 import { LoginScreen } from '@/components/login/LoginScreen';
 import { WebsiteBuilderWidget } from '@/components/widgets/WebsiteBuilderWidget';
@@ -61,7 +60,12 @@ export function Desktop() {
       <WebsiteBuilderWidget desktopRef={desktopRef} />
 
       <DesktopIconLayer desktopRef={desktopRef} />
-      <MySubmissions />
+      {/* MySubmissions is kept in the tree but no longer rendered. Every
+          number it carried is now stated by the widget that owns it — the
+          page's address and its traffic sit on the builder sticker — so a
+          bar restating them across the top summarised things already on
+          screen, and was the one piece of chrome that made the desktop
+          read as a dashboard. */}
       {/* BottomBar (the running line) is kept in the tree but not rendered —
           the component stays available for when it's wanted back. */}
 

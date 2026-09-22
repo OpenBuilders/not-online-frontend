@@ -1,8 +1,6 @@
-import { useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import { type ReactNode, type RefObject } from 'react';
 import { StickerWidget, type StickerColor } from '@/components/widgets/StickerWidget';
-import { useDrag } from '@/state/useDrag';
-import { cx } from '@/lib/cx';
-import styles from './WidgetCard.module.css';
+import { WidgetShell } from '@/components/widgets/WidgetShell';
 
 interface WidgetCardProps {
   id: string;
@@ -22,8 +20,6 @@ interface WidgetCardProps {
   art?: string;
   /** Peel-off label stuck over the top-left corner, e.g. "TRY ME". */
   badge?: string;
-  /** Open when the sticker face is clicked, not only its action button. */
-  openOnCardClick?: boolean;
 }
 
 /**
@@ -33,11 +29,9 @@ interface WidgetCardProps {
  * its content on the face. Radar has its own bespoke layout and doesn't use
  * this, though it wraps its own content the same way.
  *
- * Carries a plain `widget-card` marker class alongside the CSS-module
- * class — useAutoLayout queries the desktop for that literal selector to
- * stack widgets on mobile, same as it does for `.desktop-icon`. It's a
- * query hook, not a style hook; every visual rule lives under the module's
- * hashed class instead.
+ * Placement and dragging live in WidgetShell, which SmmWidget also uses
+ * for its own state-dependent face — this component is now only the
+ * standard title/lead/sub/button treatment that most widgets want.
  */
 export function WidgetCard({
   id,
@@ -54,55 +48,32 @@ export function WidgetCard({
   rotate,
   art,
   badge,
-  openOnCardClick = false,
 }: WidgetCardProps) {
-  const elementRef = useRef<HTMLDivElement>(null);
-
-  const hasMovedRef = useDrag({
-    elementRef,
-    bounds: desktopRef,
-    excludeSelector: `.${styles.stickerRoot} button`,
-  });
-
-  const style: CSSProperties = { left: x, top: y };
-  const handleOpen = () => {
-    // Same click-vs-drag disambiguation DesktopIcon uses — a drag that
-    // happens to end on the card shouldn't also open the window.
-    if (hasMovedRef.current) {
-      hasMovedRef.current = false;
-      return;
-    }
-    onOpen();
-  };
-
   return (
-    <div
-      id={id}
-      ref={elementRef}
-      className={cx(styles.wrap, styles.stickerRoot, 'widget-card')}
-      style={style}
-      data-x={x}
-      data-y={y}
-      onClick={(event) => {
-        // The action button already invokes `handleOpen`; letting its click
-        // bubble would open the singleton twice.
-        if (openOnCardClick && !(event.target as HTMLElement).closest('button')) {
-          handleOpen();
-        }
-      }}
-    >
-      <StickerWidget
-        color={color}
-        icon={buttonIcon}
-        title={title}
-        lead={lead}
-        sub={sub}
-        actionLabel={buttonLabel}
-        rotate={rotate}
-        art={art}
-        badge={badge}
-        onOpen={handleOpen}
-      />
-    </div>
+    <WidgetShell id={id} x={x} y={y} desktopRef={desktopRef}>
+      {(hasMoved) => (
+        <StickerWidget
+          color={color}
+          icon={buttonIcon}
+          title={title}
+          lead={lead}
+          sub={sub}
+          actionLabel={buttonLabel}
+          rotate={rotate}
+          art={art}
+          badge={badge}
+          onOpen={() => {
+            // Same click-vs-drag disambiguation DesktopIcon uses — a drag
+            // that happens to end on the button shouldn't also open the
+            // window.
+            if (hasMoved.current) {
+              hasMoved.current = false;
+              return;
+            }
+            onOpen();
+          }}
+        />
+      )}
+    </WidgetShell>
   );
 }

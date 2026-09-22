@@ -29,5 +29,5 @@ The endpoint and domain are deliberately hardcoded public browser configuration,
 so no Cloudflare variables are needed for Plausible.
 
 Every click on a user-configured link sends the `Link Click` custom event with
-`page_handle`, `link_id`, `link_title`, and `link_position` properties. Add a
+`page_handle` and `link_title` properties. Add a
 custom-event goal named `Link Click` in Plausible to report those clicks.

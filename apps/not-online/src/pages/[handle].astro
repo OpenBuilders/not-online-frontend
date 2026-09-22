@@ -58,34 +58,28 @@ if (!page) Astro.response.status = 404;
   const plausibleHost = 'https://plausible.probablynothing.xyz';
   const plausibleDomain = 'not.online';
 
-  // Keep analytics opt-in at deploy time: local previews and deployments
-  // without the two public settings never send a request.
-  if (plausibleHost && plausibleDomain) {
-    init({
-      domain: plausibleDomain,
-      endpoint: `${plausibleHost}/api/event`,
+  init({
+    domain: plausibleDomain,
+    endpoint: `${plausibleHost}/api/event`,
+  });
+
+  document.addEventListener('click', (event) => {
+    if (event.defaultPrevented || !(event.target instanceof Element)) return;
+
+    const link = event.target.closest<HTMLAnchorElement>('a[data-link-title]');
+    if (!link || link.getAttribute('href') === '#') return;
+
+    const page = link.closest<HTMLElement>('[data-page-handle]');
+    const pageHandle = page?.dataset.pageHandle;
+    if (!pageHandle) return;
+
+    track('Link Click', {
+      props: {
+        page_handle: pageHandle,
+        link_title: link.dataset.linkTitle ?? '',
+      },
     });
-
-    document.addEventListener('click', (event) => {
-      if (event.defaultPrevented || !(event.target instanceof Element)) return;
-
-      const link = event.target.closest<HTMLAnchorElement>('a[data-link-id]');
-      if (!link || link.getAttribute('href') === '#') return;
-
-      const page = link.closest<HTMLElement>('[data-page-handle]');
-      const pageHandle = page?.dataset.pageHandle;
-      if (!pageHandle) return;
-
-      track('Link Click', {
-        props: {
-          page_handle: pageHandle,
-          link_id: link.dataset.linkId ?? '',
-          link_title: link.dataset.linkTitle ?? '',
-          link_position: Number(link.dataset.linkPosition ?? 0),
-        },
-      });
-    });
-  }
+  });
 </script>
 
 <style>

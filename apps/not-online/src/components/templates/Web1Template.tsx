@@ -31,15 +31,13 @@ export function Web1Template({ content }: TemplateProps) {
         <p className={styles.dingbat}>✦ ✦ ✦</p>
 
         <ul className={styles.list}>
-          {links.map((l, i) => (
+          {links.map((l) => (
             <li key={l.id}>
               <a
                 href={l.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                data-link-id={l.id}
                 data-link-title={l.title}
-                data-link-position={i + 1}
               >
                 <LinkIcon icon={l.icon} size={15} className={styles.icon} />
                 {l.title}

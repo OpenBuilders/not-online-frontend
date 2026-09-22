@@ -35,9 +35,7 @@ export function ButtonTemplate({ cfg, content }: TemplateProps) {
         href={link?.url || '#'}
         target="_blank"
         rel="noreferrer"
-        data-link-id={link?.id}
         data-link-title={link?.title}
-        data-link-position={link ? 1 : undefined}
       >
         <span className={styles.label}>{link?.title || 'Press me'}</span>
       </a>

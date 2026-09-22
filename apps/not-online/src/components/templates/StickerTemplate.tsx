@@ -43,9 +43,7 @@ export function StickerTemplate({ cfg, content }: TemplateProps) {
               className={styles.sticker}
               data-tone={tone}
               data-shape={shape}
-              data-link-id={l.id}
               data-link-title={l.title}
-              data-link-position={i + 1}
               style={vars}
               href={l.url || '#'}
               target="_blank"

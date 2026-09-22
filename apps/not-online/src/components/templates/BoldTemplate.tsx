@@ -30,9 +30,7 @@ export function BoldTemplate({ cfg, content }: TemplateProps) {
                 href={l.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                data-link-id={l.id}
                 data-link-title={l.title}
-                data-link-position={i + 1}
               >
                 <span className={styles.num}>#{i + 1}</span>
                 <span className={styles.title}>{l.title}</span>

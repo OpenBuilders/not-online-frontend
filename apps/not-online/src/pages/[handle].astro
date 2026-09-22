@@ -2,18 +2,11 @@
 import { SitePage } from '../components/templates/SitePage';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublicLinkPage } from '../lib/linkPage';
-import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
 const handle = Astro.params.handle?.trim().toLowerCase() ?? '';
 const page = handle ? await getPublicLinkPage(handle) : null;
-const analyticsEnv = env as {
-  PUBLIC_PLAUSIBLE_HOST?: string;
-  PUBLIC_PLAUSIBLE_DOMAIN?: string;
-};
-const plausibleHost = analyticsEnv.PUBLIC_PLAUSIBLE_HOST?.trim().replace(/\/$/, '') ?? '';
-const plausibleDomain = analyticsEnv.PUBLIC_PLAUSIBLE_DOMAIN?.trim() ?? '';
 const cfg = page
   ? {
       handle: page.handle,
@@ -45,8 +38,6 @@ if (!page) Astro.response.status = 404;
       <div
         class="page"
         data-page-handle={cfg.handle}
-        data-plausible-host={plausibleHost}
-        data-plausible-domain={plausibleDomain}
       >
         <SitePage cfg={cfg} />
       </div>
@@ -62,9 +53,10 @@ if (!page) Astro.response.status = 404;
 <script>
   import { init, track } from '@plausible-analytics/tracker';
 
-  const pageRoot = document.querySelector<HTMLElement>('[data-page-handle]');
-  const plausibleHost = pageRoot?.dataset.plausibleHost;
-  const plausibleDomain = pageRoot?.dataset.plausibleDomain;
+  // The endpoint is intentionally public: it is used directly by visitors'
+  // browsers to send anonymous analytics events.
+  const plausibleHost = 'https://plausible.probablynothing.xyz';
+  const plausibleDomain = 'not.online';
 
   // Keep analytics opt-in at deploy time: local previews and deployments
   // without the two public settings never send a request.

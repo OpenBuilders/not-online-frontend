@@ -26,7 +26,14 @@ export function BoldTemplate({ cfg, content }: TemplateProps) {
         <ol className={styles.list}>
           {links.map((l, i) => (
             <li key={l.id}>
-              <a href={l.url || '#'} target="_blank" rel="noreferrer">
+              <a
+                href={l.url || '#'}
+                target="_blank"
+                rel="noreferrer"
+                data-link-id={l.id}
+                data-link-title={l.title}
+                data-link-position={i + 1}
+              >
                 <span className={styles.num}>#{i + 1}</span>
                 <span className={styles.title}>{l.title}</span>
                 <span className={styles.go}>↗</span>

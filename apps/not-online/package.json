@@ -15,6 +15,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^13.7.0",
     "@astrojs/react": "^5.0.7",
+    "@plausible-analytics/tracker": "^0.4.6",
     "astro": "^6.4.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

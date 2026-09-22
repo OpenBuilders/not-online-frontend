@@ -20,3 +20,16 @@ The renderer fetches `GET /link-pages/:handle` from `notportal-backend`. Only pu
 ## Deployment
 
 The project targets Cloudflare Workers. Set `LINK_PAGES_API_URL` to the deployed backend URL. Do not map `not.online/*` to this Worker directly: the shared-domain route belongs to `apps/router`, which invokes this Worker through a Cloudflare service binding. The editor and public renderer stay separate applications; images are served directly from Spaces.
+
+## Link analytics
+
+To enable Plausible in public pages, set both public deployment variables:
+
+```env
+PUBLIC_PLAUSIBLE_HOST=https://plausible.example.com
+PUBLIC_PLAUSIBLE_DOMAIN=not.online
+```
+
+Every click on a user-configured link sends the `Link Click` custom event with
+`page_handle`, `link_id`, `link_title`, and `link_position` properties. Add a
+custom-event goal named `Link Click` in Plausible to report those clicks.

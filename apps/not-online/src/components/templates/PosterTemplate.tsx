@@ -26,8 +26,17 @@ export function PosterTemplate({ content }: TemplateProps) {
       </p>
 
       <div className={styles.links}>
-        {links.map((l) => (
-          <a key={l.id} className={styles.link} href={l.url || '#'} target="_blank" rel="noreferrer">
+        {links.map((l, i) => (
+          <a
+            key={l.id}
+            className={styles.link}
+            href={l.url || '#'}
+            target="_blank"
+            rel="noreferrer"
+            data-link-id={l.id}
+            data-link-title={l.title}
+            data-link-position={i + 1}
+          >
             {hasIcon(l.icon) && (
               <span className={styles.linkIcon}>
                 <LinkIcon icon={l.icon} size={20} />

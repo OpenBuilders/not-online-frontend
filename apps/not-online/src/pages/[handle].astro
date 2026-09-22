@@ -33,8 +33,44 @@ if (!page) Astro.response.status = 404;
   description={page?.bio}
   favicon={page?.avatar ?? undefined}
 >
-  {cfg ? <div class="page"><SitePage cfg={cfg} /></div> : <main class="not-found"><h1>404</h1><p>This page does not exist.</p></main>}
+  {cfg ? <div class="page" data-page-handle={cfg.handle}><SitePage cfg={cfg} /></div> : <main class="not-found"><h1>404</h1><p>This page does not exist.</p></main>}
 </BaseLayout>
+
+<script>
+  import { init, track } from '@plausible-analytics/tracker';
+
+  const plausibleHost = import.meta.env.PUBLIC_PLAUSIBLE_HOST?.trim().replace(/\/$/, '');
+  const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN?.trim();
+
+  // Keep analytics opt-in at deploy time: local previews and deployments
+  // without the two public settings never send a request.
+  if (plausibleHost && plausibleDomain) {
+    init({
+      domain: plausibleDomain,
+      endpoint: `${plausibleHost}/api/event`,
+    });
+
+    document.addEventListener('click', (event) => {
+      if (event.defaultPrevented || !(event.target instanceof Element)) return;
+
+      const link = event.target.closest<HTMLAnchorElement>('a[data-link-id]');
+      if (!link || link.getAttribute('href') === '#') return;
+
+      const page = link.closest<HTMLElement>('[data-page-handle]');
+      const pageHandle = page?.dataset.pageHandle;
+      if (!pageHandle) return;
+
+      track('Link Click', {
+        props: {
+          page_handle: pageHandle,
+          link_id: link.dataset.linkId ?? '',
+          link_title: link.dataset.linkTitle ?? '',
+          link_position: Number(link.dataset.linkPosition ?? 0),
+        },
+      });
+    });
+  }
+</script>
 
 <style>
   .page { width: 100%; height: 100svh; }

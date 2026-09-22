@@ -27,8 +27,17 @@ export function FoldersTemplate({ cfg, content }: TemplateProps) {
       </div>
 
       <div className={styles.shelf}>
-        {links.map((l) => (
-          <a key={l.id} className={styles.folder} href={l.url || '#'} target="_blank" rel="noreferrer">
+        {links.map((l, i) => (
+          <a
+            key={l.id}
+            className={styles.folder}
+            href={l.url || '#'}
+            target="_blank"
+            rel="noreferrer"
+            data-link-id={l.id}
+            data-link-title={l.title}
+            data-link-position={i + 1}
+          >
             <span className={styles.art}>
               <img className={styles.folderImg} src={folder.src} alt="" />
               <LinkIcon icon={l.icon} size={16} className={styles.badge} />

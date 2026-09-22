@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { PATRON_URL } from '@/data/links';
-import { useWindowManager } from '@/state/WindowManagerContext';
+import { ARTIST_URL, PATRON_URL } from '@/data/links';
 import { loadAlphaMaps, sampleSide, type AlphaMaps, type Side } from './circleProbe';
 
 /** How long the beam lingers after a tap before fading out on its own. */
@@ -19,7 +18,6 @@ const TOUCH_LINGER_MS = 1700;
  * Market Stats tab), where there is no popup for picking a side to dismiss.
  */
 export function useCircleLight(onClose?: () => void) {
-  const { openWindow } = useWindowManager();
   const stageRef = useRef<HTMLDivElement>(null);
   const mapsRef = useRef<AlphaMaps | null>(null);
   const fadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,16 +73,14 @@ export function useCircleLight(onClose?: () => void) {
     setOver(null);
   }, []);
 
+  // Both roles lead off the desktop to the main site. The artist side used
+  // to open an in-app window whose content was still a placeholder, so half
+  // of this CTA's whole purpose dead-ended on an empty panel.
   const act = useCallback(
     (side: Side) => {
-      if (side === 'patron') {
-        window.open(PATRON_URL, '_blank', 'noopener');
-        return;
-      }
-      onClose?.();
-      openWindow({ kind: 'artistApply', title: 'Apply as Artist', width: 520, singleton: true });
+      window.open(side === 'patron' ? PATRON_URL : ARTIST_URL, '_blank', 'noopener');
     },
-    [onClose, openWindow]
+    []
   );
 
   const onPointerDown = useCallback(

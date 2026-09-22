@@ -47,7 +47,17 @@ export function PagePublished({ handle, isGuest, onDone }: PagePublishedProps) {
             <MaterialIcon name="public" size={17} />
             {siteUrl(handle)}
           </div>
-          <h3 className={styles.title}>It&apos;s live.</h3>
+          {/* A guest's page is not actually live — it lives in this
+              browser and nowhere else. Saying "it's live" and then
+              explaining underneath that it is not was the tool's one
+              dishonest moment. */}
+          <h3 className={styles.title}>{isGuest ? 'It\u2019s almost live.' : 'It\u2019s live.'}</h3>
+          {isGuest && (
+            <p className={styles.locked}>
+              <MaterialIcon name="lock" size={14} />
+              Join our circle to make it live
+            </p>
+          )}
           <p className={styles.joke}>{joke}</p>
 
           {isGuest ? (

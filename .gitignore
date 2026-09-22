@@ -12,6 +12,7 @@ dist
 dist-ssr
 .astro
 .wrangler
+apps/not-online/.deploy-public
 *.local
 *.tsbuildinfo
 .env

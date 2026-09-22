@@ -19,7 +19,14 @@ The renderer fetches `GET /link-pages/:handle` from `notportal-backend`. Only pu
 
 ## Deployment
 
-The project targets Cloudflare Workers. Set `LINK_PAGES_API_URL` to the deployed backend URL. Do not map `not.online/*` to this Worker directly: the shared-domain route belongs to `apps/router`, which invokes this Worker through a Cloudflare service binding. The editor and public renderer stay separate applications; images are served directly from Spaces.
+The project is the single Cloudflare Worker for `not.online`. The repository-root
+command `npm run build:online` stages the Vite editor build with this renderer's
+public assets, then creates the Astro Worker bundle. `/:handle` is rendered on
+demand; every other navigation falls back to the editor SPA.
+
+Set `LINK_PAGES_API_URL` to the deployed backend URL, then deploy from the
+repository root with `npm run deploy`. Attach the `not.online` Custom Domain to
+this Worker only.
 
 ## Link analytics
 

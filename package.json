@@ -3,18 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "dev:online": "npm --prefix apps/not-online run dev",
-    "dev:router": "npm --prefix apps/router run dev",
     "build": "tsc -b && vite build",
-    "build:online": "npm --prefix apps/not-online run build",
-    "deploy:tools": "npm run build && wrangler deploy",
-    "deploy:online": "npm --prefix apps/not-online run deploy",
-    "deploy:router": "npm --prefix apps/router run deploy",
-    "build:all": "npm run build && npm run build:online",
+    "stage:online-assets": "node scripts/stage-unified-assets.mjs",
+    "build:online": "npm run build && npm run stage:online-assets && npm --prefix apps/not-online run build",
+    "build:all": "npm run build:online",
+    "deploy": "npm run build:online && npm --prefix apps/not-online run deploy",
+    "deploy:tools": "npm run deploy",
+    "deploy:online": "npm run deploy",
     "lint": "oxlint",
-    "preview": "vite preview",
+    "preview": "npm run build:online && npm --prefix apps/not-online run preview",
+    "preview:editor": "vite preview",
     "typecheck": "tsc -b"
   },
   "dependencies": {
@@ -30,7 +34,6 @@
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
     "typescript": "^5.9.3",
-    "vite": "^8.3.0",
-    "wrangler": "^4.100.0"
+    "vite": "^8.3.0"
   }
 }

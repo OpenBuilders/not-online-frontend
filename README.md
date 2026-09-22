@@ -4,7 +4,8 @@
 
 - корень — редактор и личный кабинет на React + Vite;
 - `apps/not-online` — публичный SSR-рендерер страниц `not.online/:handle` на Astro.
-- `apps/router` — Cloudflare Worker, распределяющий запросы одного домена между двумя приложениями.
+
+Оба приложения собираются и разворачиваются одним Cloudflare Worker `not-online`.
 
 Бэкенд остаётся отдельным репозиторием `notportal-backend`.
 
@@ -41,33 +42,30 @@ npm run dev:online
 Публичный рендерер доступен на `http://127.0.0.1:4321/<handle>`. Для него
 переменная `LINK_PAGES_API_URL` должна указывать на `notportal-backend`.
 
-## Один домен в production
+## Один Worker в production
 
-На `not.online` запрос сначала принимает Worker из `apps/router`:
+`npm run build:online` сначала собирает редактор Vite, затем добавляет его
+статические файлы к assets Astro и собирает SSR-рендерер. Получившийся Worker
+обслуживает весь `not.online`:
 
-- `/:handle`, `/_astro/*` и `/assets/site/*` направляются в публичный SSR;
-- всё остальное направляется в редактор.
+- `/:handle` рендерятся через Astro SSR;
+- `/_astro/*`, `/assets/*` и `/images/*` отдаются как статические файлы;
+- остальные пути возвращают SPA-оболочку редактора.
 
-Перед первым деплоем в `apps/router/wrangler.jsonc` нужно указать имена двух
-развёрнутых Cloudflare Workers. `wrangler.jsonc` в корне уже описывает Worker
-редактора со статическими файлами Vite. API остаётся отдельным сервисом,
-например `api.not.online`.
+Custom Domain `not.online` нужно привязать только к Worker `not-online`.
+API остаётся отдельным сервисом, например `api.not.online`.
 
 ## Проверки
 
 ```bash
 npm run typecheck
 npm run lint
-npm run build
 npm run build:online
-# либо собрать оба приложения
-npm run build:all
 ```
 
 Перед production-сборкой задайте `VITE_API_URL` и `LINK_PAGES_API_URL` в
-соответствующих `.env.production` файлах. Затем выполните `npm run deploy:tools`,
-`npm run deploy:online` и `npm run deploy:router`. Доменный маршрут
-`not.online` добавляется как Custom Domain только роутеру.
+соответствующих `.env.production` файлах. Затем выполните один раз
+`npm run deploy`.
 
 ## Аналитика
 

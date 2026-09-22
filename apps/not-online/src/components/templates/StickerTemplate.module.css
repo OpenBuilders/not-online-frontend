@@ -56,10 +56,6 @@
   text-transform: uppercase;
   box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.4);
   transform: rotate(1.5deg);
-  max-width: 92%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .bio {

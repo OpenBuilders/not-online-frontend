@@ -2,11 +2,18 @@
 import { SitePage } from '../components/templates/SitePage';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublicLinkPage } from '../lib/linkPage';
+import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
 const handle = Astro.params.handle?.trim().toLowerCase() ?? '';
 const page = handle ? await getPublicLinkPage(handle) : null;
+const analyticsEnv = env as {
+  PUBLIC_PLAUSIBLE_HOST?: string;
+  PUBLIC_PLAUSIBLE_DOMAIN?: string;
+};
+const plausibleHost = analyticsEnv.PUBLIC_PLAUSIBLE_HOST?.trim().replace(/\/$/, '') ?? '';
+const plausibleDomain = analyticsEnv.PUBLIC_PLAUSIBLE_DOMAIN?.trim() ?? '';
 const cfg = page
   ? {
       handle: page.handle,
@@ -33,14 +40,31 @@ if (!page) Astro.response.status = 404;
   description={page?.bio}
   favicon={page?.avatar ?? undefined}
 >
-  {cfg ? <div class="page" data-page-handle={cfg.handle}><SitePage cfg={cfg} /></div> : <main class="not-found"><h1>404</h1><p>This page does not exist.</p></main>}
+  {
+    cfg ? (
+      <div
+        class="page"
+        data-page-handle={cfg.handle}
+        data-plausible-host={plausibleHost}
+        data-plausible-domain={plausibleDomain}
+      >
+        <SitePage cfg={cfg} />
+      </div>
+    ) : (
+      <main class="not-found">
+        <h1>404</h1>
+        <p>This page does not exist.</p>
+      </main>
+    )
+  }
 </BaseLayout>
 
 <script>
   import { init, track } from '@plausible-analytics/tracker';
 
-  const plausibleHost = import.meta.env.PUBLIC_PLAUSIBLE_HOST?.trim().replace(/\/$/, '');
-  const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN?.trim();
+  const pageRoot = document.querySelector<HTMLElement>('[data-page-handle]');
+  const plausibleHost = pageRoot?.dataset.plausibleHost;
+  const plausibleDomain = pageRoot?.dataset.plausibleDomain;
 
   // Keep analytics opt-in at deploy time: local previews and deployments
   // without the two public settings never send a request.

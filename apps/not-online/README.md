@@ -23,12 +23,19 @@ The project targets Cloudflare Workers. Set `LINK_PAGES_API_URL` to the deployed
 
 ## Link analytics
 
-To enable Plausible in public pages, set both public deployment variables:
+To enable Plausible in public pages, add these **Text** variables in Cloudflare
+Dashboard: **Workers & Pages** → **not-online** → **Settings** → **Variables and
+Secrets**. Deploy after saving the values.
 
 ```env
 PUBLIC_PLAUSIBLE_HOST=https://plausible.example.com
 PUBLIC_PLAUSIBLE_DOMAIN=not.online
 ```
+
+`PUBLIC_PLAUSIBLE_HOST` is the public URL of the Plausible instance: use
+`https://plausible.io` for Plausible Cloud or the public dashboard URL of a
+self-hosted Plausible installation. Do not append `/api/event`. These are public
+browser settings, not secrets.
 
 Every click on a user-configured link sends the `Link Click` custom event with
 `page_handle`, `link_id`, `link_title`, and `link_position` properties. Add a

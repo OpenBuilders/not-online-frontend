@@ -69,14 +69,8 @@ npm run build:online
 
 ## Аналитика
 
-Редактор отправляет события в self-hosted Plausible CE через
-`@plausible-analytics/tracker`. Укажите в `.env` адрес инстанса и домен сайта,
-как он заведён в Plausible:
-
-```env
-VITE_PLAUSIBLE_HOST=https://plausible.example.com
-VITE_PLAUSIBLE_DOMAIN=not.online
-```
-
-Без этих переменных аналитика отключена. Кастомные события — `trackEvent()` из
-`src/lib/analytics.ts`.
+Редактор, как и публичные страницы, отправляет анонимную аналитику для
+`not.online` в self-hosted Plausible CE по адресу
+`https://plausible.probablynothing.xyz/api/event`. Конфигурация публичная и
+зашита в клиентской сборке, поэтому для неё не нужны переменные Cloudflare или
+`.env`. Кастомные события — `trackEvent()` из `src/lib/analytics.ts`.

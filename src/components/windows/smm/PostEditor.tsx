@@ -8,6 +8,8 @@ import { cx } from '@/lib/cx';
 import type { SmmPlatform, SmmPost } from '@/types';
 import styles from './PostEditor.module.css';
 
+type PostDraft = Omit<SmmPost, 'id' | 'createdAt'>;
+
 interface PostEditorProps {
   /** null while creating — the editor seeds its own blank post in that case. */
   post: SmmPost | null;
@@ -17,7 +19,9 @@ interface PostEditorProps {
   seed?: { title: string; body: string; platform: SmmPlatform; labels: string[] };
   /** Lets the demo's spotlight find the save button. */
   saveRef?: RefObject<HTMLButtonElement | null>;
-  onSave: (draft: Omit<SmmPost, 'id' | 'createdAt'>) => void;
+  onSave: (draft: PostDraft) => void;
+  /** Persists work already entered when the user leaves a field. */
+  onAutoSave: (draft: PostDraft) => void;
   onDelete?: () => void;
   onClose: () => void;
 }
@@ -41,7 +45,7 @@ function readAsDataUrl(file: File): Promise<string> {
  * advice is worth reading and what the body should look like, so it is the
  * first decision here, the same way it is the first decision in reality.
  */
-export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: PostEditorProps) {
+export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, onClose }: PostEditorProps) {
   const [title, setTitle] = useState(post?.title ?? seed?.title ?? '');
   const [body, setBody] = useState(post?.body ?? seed?.body ?? '');
   const [platform, setPlatform] = useState<SmmPlatform>(post?.platform ?? seed?.platform ?? 'instagram');
@@ -58,24 +62,8 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
   const info = PLATFORM_BY_ID[platform];
   const over = body.length > info.limit;
 
-  function addLabel() {
-    const t = labelDraft.trim().replace(/^#/, '').toLowerCase();
-    if (!t || labels.includes(t)) {
-      setLabelDraft('');
-      return;
-    }
-    setLabels([...labels, t]);
-    setLabelDraft('');
-  }
-
-  async function addPhotos(files: FileList | null) {
-    if (!files?.length) return;
-    const urls = await Promise.all(Array.from(files).map(readAsDataUrl));
-    setPhotos((prev) => [...prev, ...urls]);
-  }
-
-  function save() {
-    onSave({
+  function currentDraft(overrides: Partial<PostDraft> = {}): PostDraft {
+    return {
       title: title.trim(),
       body,
       platform,
@@ -87,7 +75,37 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
       // in the archive still claiming to be scheduled.
       status: scheduled && !day ? 'draft' : (post?.status ?? 'draft'),
       day: scheduled ? day || null : (post?.day ?? null),
-    });
+      ...overrides,
+    };
+  }
+
+  function autoSave(overrides: Partial<PostDraft> = {}) {
+    onAutoSave(currentDraft(overrides));
+  }
+
+  function addLabel(saveAfter = false) {
+    const t = labelDraft.trim().replace(/^#/, '').toLowerCase();
+    if (!t || labels.includes(t)) {
+      setLabelDraft('');
+      if (saveAfter) autoSave();
+      return;
+    }
+    const nextLabels = [...labels, t];
+    setLabels(nextLabels);
+    setLabelDraft('');
+    if (saveAfter) autoSave({ labels: nextLabels });
+  }
+
+  async function addPhotos(files: FileList | null) {
+    if (!files?.length) return;
+    const urls = await Promise.all(Array.from(files).map(readAsDataUrl));
+    const nextPhotos = [...photos, ...urls];
+    setPhotos(nextPhotos);
+    autoSave({ photos: nextPhotos });
+  }
+
+  function save() {
+    onSave(currentDraft());
   }
 
   return (
@@ -118,7 +136,10 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
                 key={p.id}
                 type="button"
                 className={cx(styles.platform, platform === p.id && styles.platformOn)}
-                onClick={() => setPlatform(p.id)}
+                onClick={() => {
+                  setPlatform(p.id);
+                  autoSave({ platform: p.id });
+                }}
                 aria-pressed={platform === p.id}
               >
                 <PlatformIcon platform={p.id} size={15} />
@@ -133,6 +154,7 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
               className={styles.input}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onBlur={() => autoSave()}
               placeholder="what is this post, in four words"
             />
           </label>
@@ -148,6 +170,7 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
               className={styles.textarea}
               value={body}
               onChange={(e) => setBody(e.target.value)}
+              onBlur={() => autoSave()}
               placeholder="write it, or start from a template on the right"
               rows={9}
             />
@@ -157,9 +180,22 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
             <div className={styles.field}>
               <span className={styles.label}>Scheduled for</span>
               <div className={styles.when}>
-                <input className={styles.date} type="date" value={day} onChange={(e) => setDay(e.target.value)} />
+                <input
+                  className={styles.date}
+                  type="date"
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                  onBlur={() => autoSave()}
+                />
                 {day && (
-                  <button type="button" className={styles.unschedule} onClick={() => setDay('')}>
+                  <button
+                    type="button"
+                    className={styles.unschedule}
+                    onClick={() => {
+                      setDay('');
+                      autoSave({ status: 'draft', day: null });
+                    }}
+                  >
                     <MaterialIcon name="close" size={13} />
                     Back to drafts
                   </button>
@@ -179,7 +215,11 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
                   <button
                     type="button"
                     className={styles.labelX}
-                    onClick={() => setLabels(labels.filter((x) => x !== t))}
+                    onClick={() => {
+                      const nextLabels = labels.filter((x) => x !== t);
+                      setLabels(nextLabels);
+                      autoSave({ labels: nextLabels });
+                    }}
                     aria-label={`Remove ${t}`}
                   >
                     <MaterialIcon name="close" size={12} />
@@ -196,7 +236,7 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
                     addLabel();
                   }
                 }}
-                onBlur={addLabel}
+                onBlur={() => addLabel(true)}
                 placeholder="add a label"
               />
             </div>
@@ -210,7 +250,11 @@ export function PostEditor({ post, seed, saveRef, onSave, onDelete, onClose }: P
                   <img src={src} alt="" />
                   <button
                     type="button"
-                    onClick={() => setPhotos(photos.filter((_, j) => j !== i))}
+                    onClick={() => {
+                      const nextPhotos = photos.filter((_, j) => j !== i);
+                      setPhotos(nextPhotos);
+                      autoSave({ photos: nextPhotos });
+                    }}
                     aria-label="Remove photo"
                   >
                     <MaterialIcon name="close" size={13} />

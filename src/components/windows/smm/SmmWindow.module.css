@@ -85,14 +85,19 @@
 .body {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow: auto;
+  /* The window frame owns scrolling. Keeping an overflow box here clipped
+     calendar hover cards at the body's left edge, before they could reach
+     the navigation rail. */
+  overflow: visible;
   padding: 16px;
   background: var(--c-paper);
   color: var(--c-ink);
   position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 760px) {

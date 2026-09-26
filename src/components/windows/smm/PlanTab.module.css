@@ -363,6 +363,13 @@
 .cell:hover .peek {
   opacity: 1;
 }
+
+/* A tooltip may cross the calendar's edge onto the navigation rail. Lift
+   the hovered grid item itself as well as the card: a child's z-index
+   cannot rise above a sibling of its parent otherwise. */
+.cell:hover {
+  z-index: 2147483647;
+}
 .peekHead {
   font-size: 9px;
   font-weight: 800;

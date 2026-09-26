@@ -168,10 +168,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
   border: 1px dashed rgba(0, 0, 0, 0.18);
   border-radius: 10px;
-  padding: 10px;
+  padding-left: 10px;
   min-height: 44px;
 }
 /* The remove control rides on the sticker's corner rather than inside it —
@@ -181,6 +180,11 @@
   position: relative;
   display: inline-flex;
 }
+
+.labelWrap + .labelWrap {
+  margin-left: 10px;
+}
+
 .labelX {
   position: absolute;
   top: -5px;
@@ -242,10 +246,15 @@
   color: var(--c-ink);
 }
 .labelInput {
-  flex: 1;
+  /* This field owns all otherwise-empty space in the tag box. It is a
+     layout solution rather than a parent click handler, so every visible
+     input area is a real native focus target. */
+  flex: 1 1 90px;
   min-width: 90px;
+  min-height: 42px;
   border: none;
   background: none;
+  padding: 10px;
   font: inherit;
   font-size: 12px;
   color: var(--c-ink);

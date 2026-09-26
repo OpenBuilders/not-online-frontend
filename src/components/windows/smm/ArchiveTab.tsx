@@ -46,7 +46,14 @@ type Panel = 'questions' | 'bingo' | null;
  * and each one replaces the list while it is open, because nobody is
  * scanning drafts and hunting for an idea in the same moment.
  */
-export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, containerRef, onJoin }: ArchiveTabProps) {
+export function ArchiveTab({
+  onPlan,
+  onPickDate,
+  demoStep = null,
+  onDemoNext,
+  containerRef,
+  onJoin,
+}: ArchiveTabProps) {
   const { state, addSmmPost, updateSmmPost, removeSmmPost } = useAppState();
   const guest = !state.logged;
   const [view, setView] = useState<'list' | 'grid'>('list');
@@ -55,7 +62,16 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
   const [showPosted, setShowPosted] = useState(false);
   const newRef = useRef<HTMLButtonElement>(null);
   const saveRef = useRef<HTMLButtonElement>(null);
+  /** Holds a new post after its first blur, before the editor has re-rendered
+   * with that post as its prop. It prevents a blur immediately followed by
+   * Save from creating the same post twice. */
+  const autosavedPostRef = useRef<SmmPost | null>(null);
   const skipDemo = () => onDemoNext?.(null);
+
+  function closeEditor() {
+    autosavedPostRef.current = null;
+    setEditing(null);
+  }
 
   const posts = state.smm.posts;
   const { open, posted } = useMemo(
@@ -74,19 +90,38 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
         post={post}
         seed={editing === 'demo' ? DEMO_POST : undefined}
         saveRef={saveRef}
-        onClose={() => setEditing(null)}
+        onClose={closeEditor}
         onDelete={
           post
             ? () => {
                 removeSmmPost(post.id);
-                setEditing(null);
+                closeEditor();
               }
             : undefined
         }
+        onAutoSave={(draft) => {
+          const existing = post ?? autosavedPostRef.current;
+          if (existing) {
+            updateSmmPost(existing.id, draft);
+            const saved = { ...existing, ...draft };
+            autosavedPostRef.current = saved;
+            setEditing(saved);
+            return;
+          }
+
+          // Do not create empty cards just because someone tabs through an
+          // untouched form. The first meaningful blur becomes the draft.
+          if (!draft.title && !draft.body && draft.labels.length === 0 && draft.photos.length === 0) return;
+          const saved = { ...draft, id: newPostId(), createdAt: Date.now() };
+          autosavedPostRef.current = saved;
+          addSmmPost(saved);
+          setEditing(saved);
+        }}
         onSave={(draft) => {
-          if (post) updateSmmPost(post.id, draft);
+          const existing = post ?? autosavedPostRef.current;
+          if (existing) updateSmmPost(existing.id, draft);
           else addSmmPost({ ...draft, id: newPostId(), createdAt: Date.now() });
-          setEditing(null);
+          closeEditor();
           // Saved during the demo, so the run moves to Plan, where the
           // post is now sitting with no date on it.
           if (demoStep === 1) onDemoNext?.(2);
@@ -104,7 +139,7 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
     );
   }
 
-  const toggle = (which: Exclude<Panel, null>) => {
+  const openPanel = (which: Exclude<Panel, null>) => {
     // A guest never opens the board — the button is the lock, and what it
     // opens is the join CTA. Rendering the CTA *inside* the panel put its
     // scrim inside the tab, which left the window's header lit above it.
@@ -112,7 +147,7 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
       onJoin('Bingo is a patron thing', 'Nine prompts, two clicks each. Move the light, pick your role.');
       return;
     }
-    setPanel((p) => (p === which ? null : which));
+    setPanel(which);
   };
 
   return (
@@ -129,6 +164,7 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
               // During the demo this opens the editor with a post already
               // in it, so the first thing a visitor sees the tool do is
               // the tool doing something.
+              autosavedPostRef.current = null;
               setEditing(demoStep === 0 ? 'demo' : 'new');
               if (demoStep === 0) onDemoNext?.(1);
             }}
@@ -140,8 +176,9 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
 
         <div className={styles.spacer} />
 
-        {/* Grouped with the view switchers, because all three change what
-            the panel below shows rather than changing any post.
+        {/* These are explicit views of the workspace, rather than toggles
+            that rename themselves to Close. Posts returns to the default
+            archive list; Stuck? and Bingo open their respective surfaces.
 
             The prompts are not offered to a guest at all. Unlike bingo and
             the wallpaper, there is nothing to show them behind a lock — a
@@ -151,24 +188,35 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
           <button
             type="button"
             className={cx(styles.ghost, panel === 'questions' && styles.ghostOn)}
-            onClick={() => toggle('questions')}
+            onClick={() => openPanel('questions')}
             aria-pressed={panel === 'questions'}
-            aria-label={panel === 'questions' ? 'Close' : 'Stuck?'}
+            aria-label="Stuck?"
           >
-            <MaterialIcon name={panel === 'questions' ? 'close' : 'lightbulb'} size={15} />
-            <span className={styles.ghostLabel}>{panel === 'questions' ? 'Close' : 'Stuck?'}</span>
+            <MaterialIcon name="lightbulb" size={15} />
+            <span className={styles.ghostLabel}>Stuck?</span>
           </button>
         )}
 
         <button
           type="button"
           className={cx(styles.ghost, panel === 'bingo' && styles.ghostOn)}
-          onClick={() => toggle('bingo')}
+          onClick={() => openPanel('bingo')}
           aria-pressed={panel === 'bingo'}
-          aria-label={panel === 'bingo' ? 'Close' : 'Bingo'}
+          aria-label="Bingo"
         >
-          <MaterialIcon name={panel === 'bingo' ? 'close' : 'apps'} size={15} />
-          <span className={styles.ghostLabel}>{panel === 'bingo' ? 'Close' : 'Bingo'}</span>
+          <MaterialIcon name="apps" size={15} />
+          <span className={styles.ghostLabel}>Bingo</span>
+        </button>
+
+        <button
+          type="button"
+          className={cx(styles.ghost, panel === null && styles.ghostOn)}
+          onClick={() => setPanel(null)}
+          aria-pressed={panel === null}
+          aria-label="Posts"
+        >
+          <MaterialIcon name="view_list" size={15} />
+          <span className={styles.ghostLabel}>Posts</span>
         </button>
 
         <div className={styles.viewToggle} role="group" aria-label="View">
@@ -244,7 +292,10 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
                     key={p.id}
                     post={p}
                     view={view}
-                    onOpen={() => setEditing(p)}
+                    onOpen={() => {
+                      autosavedPostRef.current = null;
+                      setEditing(p);
+                    }}
                     onTogglePosted={() => updateSmmPost(p.id, { status: 'posted' })}
                     onPickDate={() => onPickDate(p.id)}
                   />
@@ -281,7 +332,10 @@ export function ArchiveTab({ onPlan, onPickDate, demoStep = null, onDemoNext, co
                       key={p.id}
                       post={p}
                       view="list"
-                      onOpen={() => setEditing(p)}
+                      onOpen={() => {
+                        autosavedPostRef.current = null;
+                        setEditing(p);
+                      }}
                       onTogglePosted={() => updateSmmPost(p.id, { status: p.day ? 'scheduled' : 'draft' })}
                       onDelete={() => removeSmmPost(p.id)}
                       onPickDate={() => onPickDate(p.id)}

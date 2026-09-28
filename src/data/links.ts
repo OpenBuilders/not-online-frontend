@@ -1,5 +1,5 @@
 /** External destinations the desktop links out to instead of opening anything in-app. */
-export const PATRON_URL = 'https://probablynothing.xyz/patrons';
+export const PATRON_URL = 'https://probablynothing.xyz/patrons?utm_campaign=notonline&utm_source=not-online-cta';
 /**
  * Applying as an artist happens on the main site, not on this desktop.
  * It used to open an in-app window that had never been built past its

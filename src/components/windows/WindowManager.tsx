@@ -12,7 +12,7 @@ import type { JSX } from 'react';
 
 // The remaining widget-backed windows (radar/tools/orgs) are parked with
 // the widgets themselves — add their entries back here when they do.
-// "Become a partner" everywhere now opens https://probablynothing.xyz/patrons
+// "Become a partner" everywhere now opens https://probablynothing.xyz/patrons?utm_campaign=notonline&utm_source=not-online-cta
 // in a new tab instead of an in-app window — see src/data/links.ts.
 const CONTENT_BY_KIND: Record<WindowKind, () => JSX.Element> = {
   market: MarketWindow,

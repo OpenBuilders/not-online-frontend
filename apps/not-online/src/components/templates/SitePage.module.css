@@ -101,6 +101,7 @@
   z-index: 3;
   bottom: 20px;
   left: 50%;
+  text-decoration: none;
   transform: translateX(-50%);
   font-family: 'Archivo', sans-serif;
   font-size: 40px;
@@ -108,4 +109,7 @@
   text-transform: lowercase;
   color: var(--pg-ink);
   opacity: 0.14;
+  &:hover {
+    opacity: 0.22;
+  }
 }

@@ -184,36 +184,6 @@ export function PostEditor({
             />
           </label>
 
-          {scheduled && (
-            <div className={styles.field}>
-              <span className={styles.label}>Scheduled for</span>
-              <div className={styles.when}>
-                <input
-                  className={styles.date}
-                  type="date"
-                  value={day}
-                  onChange={(e) => {
-                    dirtyRef.current = true;
-                    setDay(e.target.value);
-                  }}
-                />
-                {day && (
-                  <button
-                    type="button"
-                    className={styles.unschedule}
-                    onClick={() => {
-                      dirtyRef.current = true;
-                      setDay('');
-                    }}
-                  >
-                    <MaterialIcon name="close" size={13} />
-                    Back to drafts
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
           <div className={styles.field}>
             <span className={styles.label}>Labels</span>
             <div className={styles.labelRow}>

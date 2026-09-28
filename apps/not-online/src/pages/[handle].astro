@@ -22,6 +22,7 @@ const cfg = page
       folderColor: page.folderColor,
       links: page.links.map(({ id, icon, title, url }) => ({ id, icon, title, url })),
       seed: page.seed,
+      customCss: page.customCss ?? '',
     }
   : null;
 

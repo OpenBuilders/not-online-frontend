@@ -56,6 +56,8 @@ export interface SiteConfig {
   links: SiteLink[];
   /** Shuffles the sticker template's scatter — the layout is derived, not hand-placed. */
   seed: number;
+  /** Owner-written CSS, nested under the page root — see templates/customCss.ts. */
+  customCss: string;
   views: number;
   clicks: number;
 }

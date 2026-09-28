@@ -2,6 +2,10 @@
    variables set on `.page`, so picking a new palette re-colours the pattern
    too instead of leaving a grey graticule on a lime page. */
 
+.palette {
+  display: contents;
+}
+
 .page {
   position: relative;
   width: 100%;

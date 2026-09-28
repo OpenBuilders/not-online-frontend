@@ -155,6 +155,7 @@ export function blankSite(): SiteConfig {
     folderColor: 'blue',
     links: [newLink({ icon: 'photo_camera', title: 'Instagram', url: '' }), newLink({ icon: 'mail', title: 'Email', url: '' })],
     seed: 1,
+    customCss: '',
     views: 0,
     clicks: 0,
   };

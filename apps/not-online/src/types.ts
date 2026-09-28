@@ -21,4 +21,5 @@ export interface SiteConfig {
   folderColor: string;
   links: SiteLink[];
   seed: number;
+  customCss: string;
 }

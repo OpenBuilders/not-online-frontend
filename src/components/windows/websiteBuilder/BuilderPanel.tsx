@@ -20,6 +20,7 @@ import styles from './BuilderPanel.module.css';
 import { BackdropSwatch } from './BackdropSwatch';
 import { IconPicker } from './IconPicker';
 import { TemplateThumb } from './TemplateThumb';
+import { MAX_CUSTOM_CSS, scopeCustomCss } from './templates/customCss';
 
 export type TourTarget = 'handle' | 'template' | 'palette' | 'avatar' | 'links';
 
@@ -64,8 +65,26 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, saving, saveErr
   );
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [backdropError, setBackdropError] = useState<string | null>(null);
+  // Tucked away by default — most pages never need it — but a page that
+  // already has some opens with it showing, so it isn't hidden styling.
+  const [cssOpen, setCssOpen] = useState(() => cfg.customCss.trim() !== '');
   const palette = getPalette(cfg.palette);
   const template = getTemplate(cfg.template);
+  // CSS is edited as a draft and only reaches the preview when saved: a
+  // half-typed rule would otherwise flash the page through broken states on
+  // every keystroke.
+  const [cssDraft, setCssDraft] = useState(cfg.customCss);
+  const cssError = scopeCustomCss(cssDraft).error;
+  const cssUnsaved = cssDraft !== cfg.customCss;
+
+  // A page loaded from the server replaces whatever draft was showing.
+  useEffect(() => {
+    setCssDraft(cfg.customCss);
+  }, [cfg.customCss]);
+
+  const saveCss = () => {
+    if (cssError === null && cssUnsaved) patch({ customCss: cssDraft });
+  };
 
   useEffect(() => {
     if (cfg.avatar && !AVATAR_PRESETS.includes(cfg.avatar)) {
@@ -446,6 +465,65 @@ export function BuilderPanel({ cfg, patch, live, dirty, isGuest, saving, saveErr
             New link
           </button>
         )}
+      </section>
+
+      <section className={styles.section}>
+        <details
+          className={styles.advanced}
+          open={cssOpen}
+          onToggle={(e) => setCssOpen(e.currentTarget.open)}
+        >
+          <summary className={styles.head}>
+            <span className={styles.step}>6</span> Custom CSS
+            <span className={styles.optional}>optional</span>
+            <MaterialIcon name="expand_more" size={18} className={styles.chevron} />
+          </summary>
+          <p className={styles.blurb}>
+            Applies to your page only. Plain declarations style the page itself — try{' '}
+            <code>--pg-accent: hotpink;</code> — and selectors like <code>a</code> or <code>h1</code> reach inside it.
+            <code>body</code>, <code>html</code> and <code>:root</code> mean the whole page. Palette variables: <code>--pg-bg</code>, <code>--pg-ink</code>, <code>--pg-accent</code>,{' '}
+            <code>--pg-accent-ink</code>, <code>--pg-accent-2</code>.
+          </p>
+          <textarea
+            id="pb-css"
+            aria-label="Custom CSS"
+            className={cx(styles.textarea, styles.code)}
+            placeholder={'--pg-accent: hotpink;\n\na {\n  text-transform: uppercase;\n}'}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+            maxLength={MAX_CUSTOM_CSS}
+            value={cssDraft}
+            onChange={(e) => setCssDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                saveCss();
+              }
+            }}
+            aria-invalid={cssError !== null}
+          />
+          {cssError && (
+            <p className={styles.uploadError} role="alert">
+              {cssError} Fix it to save.
+            </p>
+          )}
+          <div className={styles.cssActions}>
+            <button type="button" className={styles.ghostBtn} disabled={!cssUnsaved || cssError !== null} onClick={saveCss}>
+              <MaterialIcon name="check" size={15} />
+              Save CSS
+            </button>
+            {cssUnsaved && (
+              <>
+                <button type="button" className={styles.ghostBtn} onClick={() => setCssDraft(cfg.customCss)}>
+                  <MaterialIcon name="undo" size={15} />
+                  Revert
+                </button>
+                <span className={styles.fine}>Not in the preview yet — save (⌘S) to apply.</span>
+              </>
+            )}
+          </div>
+        </details>
       </section>
 
       <section className={styles.section}>

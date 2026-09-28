@@ -31,6 +31,7 @@ export interface LinkPageResponse {
   buttonColor: string;
   folderColor: string;
   seed: number;
+  customCss?: string | null;
   publishedAt: string | null;
   links: LinkPageLinkResponse[];
 }
@@ -83,6 +84,7 @@ function toSaveConfig(site: SiteConfig) {
     buttonColor: site.buttonColor,
     folderColor: site.folderColor,
     seed: site.seed,
+    customCss: site.customCss,
     links: (site.template === 'button' ? site.links.slice(0, 1) : site.links)
       .filter((link) => link.title.trim() && link.url.trim())
       .map((link) => ({
@@ -113,6 +115,7 @@ export function toSiteConfig(
     buttonColor: page.buttonColor,
     folderColor: page.folderColor,
     seed: page.seed,
+    customCss: page.customCss ?? '',
     views: presentation?.views ?? 0,
     clicks: presentation?.clicks ?? 0,
     links: page.links

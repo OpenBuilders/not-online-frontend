@@ -5,6 +5,7 @@ import { BoldTemplate } from './BoldTemplate';
 import { ButtonTemplate } from './ButtonTemplate';
 import { FoldersTemplate } from './FoldersTemplate';
 import { PosterTemplate } from './PosterTemplate';
+import { scopeCustomCss } from './customCss';
 import styles from './SitePage.module.css';
 import { StickerTemplate } from './StickerTemplate';
 import { Web1Template } from './Web1Template';
@@ -44,20 +45,28 @@ export function SitePage({ cfg }: { cfg: SiteConfig }) {
   } as CSSProperties;
 
   const usePhoto = cfg.backdrop === 'photo' && cfg.backdropImage;
+  const { css: customCss } = scopeCustomCss(cfg.customCss);
 
   return (
-    <div className={styles.page} style={vars}>
-      <div
-        className={styles.backdrop}
-        data-kind={usePhoto ? 'photo' : cfg.backdrop === 'photo' ? 'flat' : cfg.backdrop}
-        style={usePhoto ? { backgroundImage: `url(${cfg.backdropImage})` } : undefined}
-      />
+    // The palette sits on a box-less wrapper rather than inline on the page:
+    // inline styles beat every stylesheet, so custom CSS could never
+    // override a `--pg-*` variable. Declared one level up, the page simply
+    // inherits them and a custom declaration on the page takes precedence.
+    <div className={styles.palette} style={vars}>
+      <div className={styles.page} data-site-page>
+        {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
+        <div
+          className={styles.backdrop}
+          data-kind={usePhoto ? 'photo' : cfg.backdrop === 'photo' ? 'flat' : cfg.backdrop}
+          style={usePhoto ? { backgroundImage: `url(${cfg.backdropImage})` } : undefined}
+        />
 
-      <div className={styles.body}>
-        <Template cfg={cfg} content={content} />
+        <div className={styles.body}>
+          <Template cfg={cfg} content={content} />
+        </div>
+
+        <span className={styles.mark}>cultofnot</span>
       </div>
-
-      <span className={styles.mark}>cultofnot</span>
     </div>
   );
 }

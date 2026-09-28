@@ -21,6 +21,7 @@ export interface PublicLinkPage {
   buttonColor: string;
   folderColor: string;
   seed: number;
+  customCss?: string | null;
   links: PublicLink[];
 }
 

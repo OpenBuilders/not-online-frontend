@@ -57,7 +57,7 @@ export function SitePage({ cfg }: { cfg: SiteConfig }) {
         <Template cfg={cfg} content={content} />
       </div>
 
-      <span className={styles.mark}>cultofnot</span>
+      <a href="https://instagram.com/cultofnot" target="_blank" className={styles.mark}>cultofnot</a>
     </div>
   );
 }

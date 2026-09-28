@@ -42,7 +42,6 @@ export function Web1Template({ content }: TemplateProps) {
         </ul>
 
         <hr className={styles.rule} />
-        <p className={styles.signoff}>thanks for visiting !!</p>
       </div>
     </div>
   );

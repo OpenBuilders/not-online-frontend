@@ -1,172 +1,160 @@
-import { useMemo, useRef, useState, type RefObject } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { FocusTour } from '@/components/shared/FocusTour';
 import { BRAINSTORM_QUESTIONS } from '@/data/smmHints';
-import { DEMO_POST } from '@/data/smmDemo';
 import { cx } from '@/lib/cx';
+import { useMediaKit } from '@/hooks/useMediaKit';
+import { backupMediaKitPost } from '@/api/mediaKit';
 import { useAppState } from '@/state/AppStateContext';
-import type { SmmPost } from '@/types';
+import type { SmmPost, SmmPostDraft } from '@/types';
 import styles from './ArchiveTab.module.css';
 import { BingoPanel } from './BingoPanel';
 import { PostCard } from './PostCard';
-import { blankPost, newPostId } from './newPost';
+import { blankPost, postDraft } from './newPost';
 import { PostEditor } from './PostEditor';
 
 interface ArchiveTabProps {
   onPlan: () => void;
-  /** Sends a post to Plan so a calendar cell can be picked for it. */
   onPickDate: (postId: string) => void;
-  /** The guest demo's step while it is on this tab: 0 is New post, 1 is
-   *  save. The window owns the number because the run crosses both tabs. */
-  demoStep?: number | null;
-  onDemoNext?: (step: number | null) => void;
-  /** The window element the spotlight measures against and portals into. */
-  containerRef?: RefObject<HTMLElement | null>;
-  /** Opens the join CTA over the whole window. Patron-only features call
-   *  it instead of opening. */
   onJoin: (title: string, sub: string) => void;
 }
 
-/** `new` is the create case, `demo` the same case with the guided demo's
- *  post already in the fields; a post object is the edit case. */
-type Editing = SmmPost | 'new' | 'demo' | null;
-/** At most one brainstorming surface is open at a time. */
+type Editing = SmmPost | 'new' | null;
 type Panel = 'questions' | 'bingo' | null;
 
-
-/**
- * The working list. Everything still to do is here; anything already
- * posted drops into a collapsed shelf at the bottom, so the list is always
- * a list of work rather than a growing history.
- *
- * Both brainstorming surfaces — the questions and the bingo board — open
- * from this toolbar rather than from the rail. Neither is a stage of the
- * pipeline: they are what you reach for when the first stage is blocked,
- * and each one replaces the list while it is open, because nobody is
- * scanning drafts and hunting for an idea in the same moment.
- */
-export function ArchiveTab({
-  onPlan,
-  onPickDate,
-  demoStep = null,
-  onDemoNext,
-  containerRef,
-  onJoin,
-}: ArchiveTabProps) {
-  const { state, addSmmPost, updateSmmPost, removeSmmPost } = useAppState();
+export function ArchiveTab({ onPlan, onPickDate, onJoin }: ArchiveTabProps) {
+  const { state } = useAppState();
+  const { posts, createPost, updatePost, removePost, addPhotos, removePhoto } = useMediaKit();
   const guest = !state.logged;
   const [view, setView] = useState<'list' | 'grid'>('list');
   const [editing, setEditing] = useState<Editing>(null);
   const [panel, setPanel] = useState<Panel>(null);
   const [showPosted, setShowPosted] = useState(false);
-  const newRef = useRef<HTMLButtonElement>(null);
-  const saveRef = useRef<HTMLButtonElement>(null);
-  /** Holds a new post after its first blur, before the editor has re-rendered
-   * with that post as its prop. It prevents a blur immediately followed by
-   * Save from creating the same post twice. */
   const autosavedPostRef = useRef<SmmPost | null>(null);
-  const skipDemo = () => onDemoNext?.(null);
+  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const editorSessionRef = useRef(0);
 
   function closeEditor() {
+    editorSessionRef.current += 1;
     autosavedPostRef.current = null;
     setEditing(null);
   }
 
-  const posts = state.smm.posts;
+  function queue<T>(operation: () => Promise<T>): Promise<T> {
+    const next = saveQueueRef.current.then(operation, operation);
+    saveQueueRef.current = next.then(
+      () => undefined,
+      () => undefined,
+    );
+    return next;
+  }
+
   const { open, posted } = useMemo(
     () => ({
-      open: posts.filter((p) => p.status !== 'posted'),
-      posted: posts.filter((p) => p.status === 'posted'),
+      open: posts.filter((post) => post.status !== 'posted'),
+      posted: posts.filter((post) => post.status === 'posted'),
     }),
-    [posts]
+    [posts],
   );
 
   if (editing) {
-    const post = editing === 'new' || editing === 'demo' ? null : editing;
+    const post = editing === 'new' ? null : editing;
+    const editorSession = editorSessionRef.current;
+    const persistDraft = (draft: SmmPostDraft, forceCreate = false): Promise<SmmPost | null> =>
+      queue(async () => {
+        if (editorSession !== editorSessionRef.current) return null;
+        const existing = autosavedPostRef.current ?? post;
+        const meaningful = Boolean(draft.title || draft.body || draft.labels.length);
+        if (!existing && !forceCreate && !meaningful) return null;
+
+        try {
+          const saved = existing ? await updatePost(existing, draft) : await createPost(draft);
+          if (editorSession === editorSessionRef.current) {
+            autosavedPostRef.current = saved;
+            setEditing(saved);
+          }
+          return saved;
+        } catch {
+          return null;
+        }
+      });
+
     return (
-      <>
       <PostEditor
         post={post}
-        seed={editing === 'demo' ? DEMO_POST : undefined}
-        saveRef={saveRef}
         onClose={closeEditor}
         onDelete={
           post
-            ? () => {
-                removeSmmPost(post.id);
-                closeEditor();
+            ? async () => {
+                try {
+                  await queue(() => removePost(post.id));
+                  closeEditor();
+                } catch {
+                  // Keep the editor open when the delete could not reach the server.
+                }
               }
             : undefined
         }
-        onAutoSave={(draft) => {
-          const existing = post ?? autosavedPostRef.current;
-          if (existing) {
-            updateSmmPost(existing.id, draft);
-            const saved = { ...existing, ...draft };
-            autosavedPostRef.current = saved;
-            setEditing(saved);
-            return;
-          }
-
-          // Do not create empty cards just because someone tabs through an
-          // untouched form. The first meaningful blur becomes the draft.
-          if (!draft.title && !draft.body && draft.labels.length === 0 && draft.photos.length === 0) return;
-          const saved = { ...draft, id: newPostId(), createdAt: Date.now() };
-          autosavedPostRef.current = saved;
-          addSmmPost(saved);
-          setEditing(saved);
+        onBackup={(draft) => backupMediaKitPost(autosavedPostRef.current ?? post, draft)}
+        onSave={async (draft) => {
+          if (await persistDraft(draft, true)) closeEditor();
         }}
-        onSave={(draft) => {
-          const existing = post ?? autosavedPostRef.current;
-          if (existing) updateSmmPost(existing.id, draft);
-          else addSmmPost({ ...draft, id: newPostId(), createdAt: Date.now() });
-          closeEditor();
-          // Saved during the demo, so the run moves to Plan, where the
-          // post is now sitting with no date on it.
-          if (demoStep === 1) onDemoNext?.(2);
+        onUploadPhotos={async (draft, files) => {
+          const saved = await persistDraft(draft, true);
+          if (!saved || editorSession !== editorSessionRef.current) return null;
+          try {
+            const updated = await queue(() => addPhotos(saved.id, files));
+            if (editorSession === editorSessionRef.current) {
+              autosavedPostRef.current = updated;
+              setEditing(updated);
+            }
+            return updated;
+          } catch {
+            return null;
+          }
+        }}
+        onRemovePhoto={async (photoId) => {
+          if (editorSession !== editorSessionRef.current) return null;
+          const saved = autosavedPostRef.current ?? post;
+          if (!saved) return null;
+          try {
+            const updated = await queue(() => removePhoto(saved.id, photoId));
+            if (editorSession === editorSessionRef.current) {
+              autosavedPostRef.current = updated;
+              setEditing(updated);
+            }
+            return updated;
+          } catch {
+            return null;
+          }
         }}
       />
-      {demoStep === 1 && containerRef && (
-        <FocusTour
-          containerRef={containerRef}
-          activeIndex={0}
-          steps={[{ ref: saveRef, text: 'Already written. File it — you can edit it later.' }]}
-          onSkip={skipDemo}
-        />
-      )}
-      </>
     );
   }
 
-  const openPanel = (which: Exclude<Panel, null>) => {
-    // A guest never opens the board — the button is the lock, and what it
-    // opens is the join CTA. Rendering the CTA *inside* the panel put its
-    // scrim inside the tab, which left the window's header lit above it.
-    if (which === 'bingo' && guest) {
+  function openPanel(which: Exclude<Panel, null>) {
+    if (guest && which === 'bingo') {
       onJoin('Bingo is a patron thing', 'Nine prompts, two clicks each. Move the light, pick your role.');
       return;
     }
     setPanel(which);
-  };
+  }
 
   return (
     <div className={styles.tab}>
       <div className={styles.toolbar}>
-        {/* Wrapped because on a phone it leaves the toolbar entirely and
-            sits at the foot of the tab, where a thumb is. */}
         <div className={styles.newWrap}>
           <AeroButton
-            ref={newRef}
             variant="lime"
             size="sm"
             onClick={() => {
-              // During the demo this opens the editor with a post already
-              // in it, so the first thing a visitor sees the tool do is
-              // the tool doing something.
+              if (guest) {
+                onJoin('Posts need an account', 'Sign in to write a draft and keep it on every device.');
+                return;
+              }
+              editorSessionRef.current += 1;
               autosavedPostRef.current = null;
-              setEditing(demoStep === 0 ? 'demo' : 'new');
-              if (demoStep === 0) onDemoNext?.(1);
+              setEditing('new');
             }}
           >
             <MaterialIcon name="add" size={15} />
@@ -176,14 +164,6 @@ export function ArchiveTab({
 
         <div className={styles.spacer} />
 
-        {/* These are explicit views of the workspace, rather than toggles
-            that rename themselves to Close. Posts returns to the default
-            archive list; Stuck? and Bingo open their respective surfaces.
-
-            The prompts are not offered to a guest at all. Unlike bingo and
-            the wallpaper, there is nothing to show them behind a lock — a
-            list of questions is its own whole feature, and a locked one
-            would only be a list they can read but not use. */}
         {!guest && (
           <button
             type="button"
@@ -241,31 +221,20 @@ export function ArchiveTab({
         </div>
       </div>
 
-      {demoStep === 0 && containerRef && (
-        <FocusTour
-          containerRef={containerRef}
-          activeIndex={0}
-          steps={[{ ref: newRef, text: 'Start here. Everything begins as something written down.' }]}
-          onSkip={skipDemo}
-        />
-      )}
-
       {panel === 'bingo' && <BingoPanel />}
 
       {panel === 'questions' && !guest && (
         <div className={cx(styles.questions, styles.scroll)}>
           <p className={styles.questionsHead}>Answer one of these out loud. The answer is the post.</p>
           <div className={styles.questionList}>
-            {BRAINSTORM_QUESTIONS.map((q) => (
+            {BRAINSTORM_QUESTIONS.map((question) => (
               <button
-                key={q}
+                key={question}
                 type="button"
                 className={styles.question}
-                // A question you like becomes the title of a new draft, so
-                // the thought does not have to be retyped from memory.
-                onClick={() => addSmmPost(blankPost(q, ['idea']))}
+                onClick={() => void createPost(blankPost(question, ['idea'])).catch(() => undefined)}
               >
-                {q}
+                {question}
                 <MaterialIcon name="add" size={14} />
               </button>
             ))}
@@ -280,34 +249,32 @@ export function ArchiveTab({
               <MaterialIcon name="edit_note" size={34} />
               <p className={styles.emptyTitle}>Nothing written down yet</p>
               <p className={styles.emptyBody}>
-                Ideas do not survive the walk home. Put one here as a draft — it does not have to be finished, or
-                good.
+                Ideas do not survive the walk home. Put one here as a draft — it does not have to be finished, or good.
               </p>
             </div>
           ) : (
             <>
               <div className={cx(styles.posts, styles[view])}>
-                {open.map((p) => (
+                {open.map((post) => (
                   <PostCard
-                    key={p.id}
-                    post={p}
+                    key={post.id}
+                    post={post}
                     view={view}
                     onOpen={() => {
-                      autosavedPostRef.current = null;
-                      setEditing(p);
+                      editorSessionRef.current += 1;
+                      autosavedPostRef.current = post;
+                      setEditing(post);
                     }}
-                    onTogglePosted={() => updateSmmPost(p.id, { status: 'posted' })}
-                    onPickDate={() => onPickDate(p.id)}
+                    onTogglePosted={() => void updatePost(post, postDraft(post, { status: 'posted' })).catch(() => undefined)}
+                    onPickDate={() => onPickDate(post.id)}
                   />
                 ))}
               </div>
 
-              {/* The one nudge onward. Drafts with no date are the state
-                  this tool exists to get people out of. */}
-              {open.some((p) => p.status === 'draft') && (
+              {open.some((post) => post.status === 'draft') && (
                 <button type="button" className={styles.next} onClick={onPlan}>
                   <MaterialIcon name="calendar_month" size={15} />
-                  {open.filter((p) => p.status === 'draft').length} with no date — put them in the calendar
+                  {open.filter((post) => post.status === 'draft').length} with no date — put them in the calendar
                   <MaterialIcon name="arrow_forward" size={14} />
                 </button>
               )}
@@ -316,29 +283,28 @@ export function ArchiveTab({
 
           {posted.length > 0 && (
             <div className={styles.shelf}>
-              <button type="button" className={styles.shelfHead} onClick={() => setShowPosted((v) => !v)}>
+              <button type="button" className={styles.shelfHead} onClick={() => setShowPosted((value) => !value)}>
                 <MaterialIcon name={showPosted ? 'expand_more' : 'chevron_right'} size={16} />
                 Posted
                 <span className={styles.shelfCount}>{posted.length}</span>
               </button>
               {showPosted && (
-                // Always a list, whichever view the working set is in. A
-                // posted post is a record, and a record is read down a
-                // column — the grid's tiles gave equal weight to work that
-                // is finished and work that is not.
                 <div className={cx(styles.posts, styles.list)}>
-                  {posted.map((p) => (
+                  {posted.map((post) => (
                     <PostCard
-                      key={p.id}
-                      post={p}
+                      key={post.id}
+                      post={post}
                       view="list"
                       onOpen={() => {
-                        autosavedPostRef.current = null;
-                        setEditing(p);
+                        editorSessionRef.current += 1;
+                        autosavedPostRef.current = post;
+                        setEditing(post);
                       }}
-                      onTogglePosted={() => updateSmmPost(p.id, { status: p.day ? 'scheduled' : 'draft' })}
-                      onDelete={() => removeSmmPost(p.id)}
-                      onPickDate={() => onPickDate(p.id)}
+                      onTogglePosted={() =>
+                        void updatePost(post, postDraft(post, { status: post.day ? 'scheduled' : 'draft' })).catch(() => undefined)
+                      }
+                      onDelete={() => void removePost(post.id).catch(() => undefined)}
+                      onPickDate={() => onPickDate(post.id)}
                     />
                   ))}
                 </div>

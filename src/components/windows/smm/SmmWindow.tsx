@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { CircleJoinCta } from '@/components/cta/CircleJoinCta';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { PATRON_URL } from '@/data/links';
@@ -44,42 +44,14 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
  * the cursor.
  */
 export function SmmWindow() {
-  const { state, completeTour } = useAppState();
+  const { state } = useAppState();
   const guest = !state.logged;
-  const windowRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<Tab>('archive');
 
-  /**
-   * The guided demo, as a step index across both tabs: 0 New post, 1 save,
-   * 2 the tray, 3 the calendar, 4 the join CTA.
-   *
-   * It only starts for a logged-out visitor with an empty archive. The
-   * posts survive a reload now, so "has not seen it" cannot be read from
-   * the tour set alone — someone coming back to their own drafts would
-   * otherwise be walked through writing a demo post on top of them.
-   */
   /** The join CTA, when something asked for it. One instance, mounted at
    *  the window so its scrim covers the whole thing. */
   const [cta, setCta] = useState<{ title?: string; sub?: string } | null>(null);
 
-  const [demo, setDemo] = useState<number | null>(() =>
-    !state.logged && !state.tours.has('smm') && state.smm.posts.length === 0 ? 0 : null
-  );
-  // Derived rather than cleared in an effect: logging in mid-run ends it
-  // without a second render pass.
-  const demoStep = guest ? demo : null;
-
-  function goDemo(next: number | null) {
-    // Either way it does not run again this session.
-    if (next === null || next === 4) completeTour('smm');
-    if (next === 4) {
-      setDemo(null);
-      setCta({});
-      return;
-    }
-    setDemo(next);
-    if (next === 2) setTab('plan');
-  }
   /**
    * The post waiting for a calendar cell. Lives here rather than in either
    * tab because the hand-off crosses them: Archive starts it, Plan
@@ -88,7 +60,7 @@ export function SmmWindow() {
   const [pickingFor, setPickingFor] = useState<string | null>(null);
 
   return (
-    <div className={styles.window} ref={windowRef}>
+    <div className={styles.window}>
       <div className={styles.rail}>
         {TABS.map((t) => (
           <button
@@ -108,15 +80,13 @@ export function SmmWindow() {
         ))}
       </div>
       <div className={styles.body}>
-        {/* Said once, at the top of the tool, rather than on each tab: it
-            is true of everything in here. Stated plainly — there is no
-            server behind this for a guest, and the posts really are only
-            in this browser. */}
+        {/* The guest sees the tool but cannot create browser-only drafts:
+            every real post now belongs to the authenticated account. */}
         {guest && (
           <p className={styles.localNote}>
             <MaterialIcon name="save" size={14} className={styles.noteIcon} />
             <span className={styles.noteText}>
-              Your data is saved locally, in this browser only. Join us to keep your posts safe.
+              Sign in to write posts. Your media kit then follows your account, not this browser.
             </span>
             <button type="button" onClick={() => window.open(PATRON_URL, '_blank', 'noopener')}>
               Join
@@ -131,9 +101,6 @@ export function SmmWindow() {
               setPickingFor(postId);
               setTab('plan');
             }}
-            demoStep={demoStep !== null && demoStep <= 1 ? demoStep : null}
-            onDemoNext={goDemo}
-            containerRef={windowRef}
             onJoin={(title, sub) => setCta({ title, sub })}
           />
         )}
@@ -141,17 +108,13 @@ export function SmmWindow() {
           <PlanTab
             pickingFor={pickingFor}
             onPickDone={() => setPickingFor(null)}
-            demoStep={demoStep !== null && demoStep >= 2 ? demoStep : null}
-            onDemoNext={goDemo}
-            containerRef={windowRef}
             onJoin={(title, sub) => setCta({ title, sub })}
           />
         )}
         {tab === 'glossary' && <GlossaryTab />}
       </div>
 
-      {/* One CTA for the whole window: the end of the demo run, and every
-          patron-only feature a guest reaches for. */}
+      {/* One CTA for the whole window and every patron-only feature. */}
       {cta && <CircleJoinCta title={cta.title} sub={cta.sub} onClose={() => setCta(null)} />}
     </div>
   );

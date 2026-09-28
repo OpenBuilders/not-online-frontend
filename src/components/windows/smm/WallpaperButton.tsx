@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { useAppState } from '@/state/AppStateContext';
+import { useMediaKit } from '@/hooks/useMediaKit';
 import { pickScheme, renderWallpaper, weekAhead, type WallpaperScheme } from './wallpaper';
 import styles from './WallpaperButton.module.css';
 
@@ -21,20 +22,21 @@ interface WallpaperButtonProps {
 
 export function WallpaperButton({ onJoin }: WallpaperButtonProps) {
   const { state } = useAppState();
+  const { posts } = useMediaKit();
   const guest = !state.logged;
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
   const [scheme, setScheme] = useState<WallpaperScheme | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const days = weekAhead(state.smm.posts);
+  const days = weekAhead(posts);
   const planned = days.reduce((n, d) => n + d.posts.length, 0);
 
   const make = useCallback(async () => {
     setBusy(true);
     const next = pickScheme();
     try {
-      const blob = await renderWallpaper(weekAhead(state.smm.posts), next);
+      const blob = await renderWallpaper(weekAhead(posts), next);
       // Revoking the previous object URL matters here: each reroll is a
       // ~400KB bitmap, and they would otherwise be held until reload.
       setUrl((old) => {
@@ -45,7 +47,7 @@ export function WallpaperButton({ onJoin }: WallpaperButtonProps) {
     } finally {
       setBusy(false);
     }
-  }, [state.smm.posts]);
+  }, [posts]);
 
   useEffect(() => {
     return () => {

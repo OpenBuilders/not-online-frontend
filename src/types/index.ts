@@ -62,7 +62,7 @@ export interface SiteConfig {
 
 /** The guest onboarding chain unlocks these one at a time. The widget-backed
  *  'radar' step is still parked — see useGuestGating.ts. */
-export type TourId = 'market' | 'settings' | 'page' | 'smm';
+export type TourId = 'market' | 'settings' | 'page';
 
 // ---- not media kit (the SMM tool) ----
 
@@ -76,14 +76,17 @@ export type SmmPlatform = 'instagram' | 'x' | 'youtube' | 'telegram';
  */
 export type SmmPostStatus = 'draft' | 'scheduled' | 'posted';
 
-export interface SmmPost {
+export interface SmmPhoto {
   id: string;
+  url: string;
+  position: number;
+}
+
+export interface SmmPostDraft {
   title: string;
   body: string;
   platform: SmmPlatform;
   labels: string[];
-  /** Data URLs, stored in this browser with the rest of the post. */
-  photos: string[];
   status: SmmPostStatus;
   /**
    * `YYYY-MM-DD` once it lands in a calendar cell, null while it's a draft.
@@ -92,13 +95,15 @@ export interface SmmPost {
    * is decided in the app you post from, not here.
    */
   day: string | null;
-  createdAt: number;
 }
 
-export interface SmmState {
-  posts: SmmPost[];
-  /** Bingo squares already crossed off, by square id. */
-  bingoCrossed: string[];
+export interface SmmPost extends SmmPostDraft {
+  id: string;
+  photos: SmmPhoto[];
+  /** Incremented by the API to prevent an older tab overwriting newer work. */
+  revision: number;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface AppState {
@@ -113,7 +118,6 @@ export interface AppState {
   appIcons: Record<string, string>;
   /** A guest has clicked out to a live catalogue item at least once — unlocks the 3rd background option. */
   exploredCatalog: boolean;
-  smm: SmmState;
 }
 
 // ---- window manager ----

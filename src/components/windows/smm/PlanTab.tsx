@@ -1,19 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { FocusTour } from '@/components/shared/FocusTour';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { Sticker } from '@/components/shared/Sticker';
 import { PlatformIcon } from '@/components/shared/PlatformIcon';
 import { TIMING_HINTS } from '@/data/smmHints';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
+import { useMediaKit } from '@/hooks/useMediaKit';
 import type { SmmPost } from '@/types';
 import { dayOfMonth, monthShort, monthSpan, rollingGrid, todayKey, weekdaysFrom } from './dates';
 import { HintBulb } from './HintBulb';
 import styles from './PlanTab.module.css';
 import { WallpaperButton } from './WallpaperButton';
+import { postDraft } from './newPost';
 
-/** Four is where a day stops being a plan and becomes a spam run. */
-const MAX_PER_DAY = 4;
 /**
  * Six weeks, seven to a row. The columns are real weekdays — the grid
  * rolls from today, so they start on today's day and the header names
@@ -33,12 +32,6 @@ const ROWS = PAGE / COLUMNS;
 interface PlanTabProps {
   /** A post handed over from Archive, waiting for a cell. */
   pickingFor?: string | null;
-  /** The guest demo's step while it is on this tab: 2 is the tray post, 3
-   *  is the calendar. */
-  demoStep?: number | null;
-  onDemoNext?: (step: number | null) => void;
-  /** The window element the spotlight measures against. */
-  containerRef?: RefObject<HTMLElement | null>;
   /** Opens the join CTA over the whole window, for the wallpaper lock. */
   onJoin: (title: string, sub: string) => void;
   onPickDone?: () => void;
@@ -58,19 +51,17 @@ interface PlanTabProps {
  * it, and the panel on the right says it properly once the day is opened —
  * three levels of detail, each reached by doing less.
  *
- * Both restrictions are enforced rather than discouraged, because both
- * produce plans that cannot be executed: nothing lands on a day that has
- * gone, and no day takes more than four posts. A cell that cannot accept
- * what is being dragged never lights up, so it reads as a property of the
- * day rather than an error the person made.
+ * Dates in the past cannot take a post. Future days intentionally have no
+ * capacity limit: a calendar should show a busy day, not silently refuse it.
  *
  * `pickingFor` is the second way in. Clicking the date on an archive card
  * sends the post here instead of opening a date picker: a picker asks you
  * to choose a day with no idea what is already on it, which is the single
  * thing this grid exists to show.
  */
-export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemoNext, containerRef, onJoin }: PlanTabProps) {
-  const { state, updateSmmPost } = useAppState();
+export function PlanTab({ pickingFor = null, onPickDone, onJoin }: PlanTabProps) {
+  const { state } = useAppState();
+  const { posts, updatePost } = useMediaKit();
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<string | null>(null);
@@ -89,11 +80,8 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
    * uses. It works with a mouse too, and is faster than dragging.
    */
   const [localPick, setLocalPick] = useState<string | null>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const trayRef = useRef<HTMLDivElement>(null);
 
   const guest = !state.logged;
-  const posts = state.smm.posts;
   const today = todayKey();
   const pickId = pickingFor ?? localPick;
   const picking = pickId ? (posts.find((p) => p.id === pickId) ?? null) : null;
@@ -141,11 +129,7 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
   }, [picking, endPick]);
 
   function canDrop(key: string): boolean {
-    if (key < today) return false;
-    const here = byDay.get(key);
-    // A post already in this day is a re-order, not a fifth arrival.
-    if (dragging && here?.some((p) => p.id === dragging)) return true;
-    return (here?.length ?? 0) < MAX_PER_DAY;
+    return key >= today;
   }
 
   /**
@@ -158,7 +142,7 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
     setOver(null);
     setDragging(null);
     if (!post) return;
-    updateSmmPost(post.id, { status: 'scheduled', day: key });
+    void updatePost(post, postDraft(post, { status: 'scheduled', day: key })).catch(() => undefined);
   }
 
   const openPosts = openDay ? (byDay.get(openDay) ?? []) : [];
@@ -225,7 +209,6 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
         </div>
 
         <div
-          ref={gridRef}
           className={cx(styles.grid, picking && styles.gridPicking)}
           style={{ ['--cols' as string]: COLUMNS, ['--rows' as string]: ROWS }}
         >
@@ -250,11 +233,8 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
                 onClick={() => {
                   if (picking) {
                     if (!pickable) return;
-                    updateSmmPost(picking.id, { status: 'scheduled', day: cell.key });
+                    void updatePost(picking, postDraft(picking, { status: 'scheduled', day: cell.key })).catch(() => undefined);
                     endPick();
-                    // The post now has a date, which is the end of the
-                    // loop the demo set out to show.
-                    if (demoStep === 3) onDemoNext?.(4);
                     return;
                   }
                   if (filled) setOpenDay(cell.key === openDay ? null : cell.key);
@@ -350,13 +330,13 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
               {openPosts.map((p) => (
                 <div key={p.id} className={styles.dayItem}>
                   <span className={styles.dayThumb}>
-                    {p.photos[0] ? <img src={p.photos[0]} alt="" /> : <PlatformIcon platform={p.platform} size={14} />}
+                    {p.photos[0] ? <img src={p.photos[0].url} alt="" /> : <PlatformIcon platform={p.platform} size={14} />}
                   </span>
                   <span className={styles.dayTitle}>{p.title || 'Untitled'}</span>
                   <button
                     type="button"
                     className={styles.dayRemove}
-                    onClick={() => updateSmmPost(p.id, { status: 'draft', day: null })}
+                    onClick={() => void updatePost(p, postDraft(p, { status: 'draft', day: null })).catch(() => undefined)}
                     title="Back to the queue"
                   >
                     <MaterialIcon name="undo" size={13} />
@@ -366,7 +346,7 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
             </div>
 
             <p className={styles.sideNote}>
-              {openPosts.length} of {MAX_PER_DAY} slots used
+              {openPosts.length} scheduled
             </p>
           </>
         ) : (
@@ -384,7 +364,6 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
                   {tray.map((p, i) => (
                     <div
                       key={p.id}
-                      ref={i === 0 ? trayRef : undefined}
                       className={cx(styles.trayItem, dragging === p.id && styles.trayItemDragging)}
                       draggable
                       onDragStart={() => setDragging(p.id)}
@@ -397,18 +376,16 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
                       title="Pick a day for this post"
                       onClick={() => {
                         setLocalPick(p.id);
-                        if (demoStep === 2) onDemoNext?.(3);
                       }}
                       onKeyDown={(e) => {
                         if (e.key !== 'Enter' && e.key !== ' ') return;
                         e.preventDefault();
                         setLocalPick(p.id);
-                        if (demoStep === 2) onDemoNext?.(3);
                       }}
                     >
                       <span className={styles.dayThumb}>
                         {p.photos[0] ? (
-                          <img src={p.photos[0]} alt="" />
+                          <img src={p.photos[0].url} alt="" />
                         ) : (
                           <PlatformIcon platform={p.platform} size={14} />
                         )}
@@ -428,17 +405,6 @@ export function PlanTab({ pickingFor = null, onPickDone, demoStep = null, onDemo
         )}
       </aside>
 
-      {(demoStep === 2 || demoStep === 3) && containerRef && (
-        <FocusTour
-          containerRef={containerRef}
-          activeIndex={demoStep - 2}
-          steps={[
-            { ref: trayRef, text: 'It landed here, with no date on it. Pick it up.' },
-            { ref: gridRef, text: 'Now give it a day. Any one from today on.' },
-          ]}
-          onSkip={() => onDemoNext?.(null)}
-        />
-      )}
     </div>
   );
 }

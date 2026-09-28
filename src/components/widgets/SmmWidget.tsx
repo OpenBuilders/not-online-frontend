@@ -4,6 +4,7 @@ import { WidgetShell } from '@/components/widgets/WidgetShell';
 import { dayKey, shortDay, todayKey } from '@/components/windows/smm/dates';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
+import { useMediaKit } from '@/hooks/useMediaKit';
 import { useWindowManager } from '@/state/WindowManagerContext';
 import type { SmmPost } from '@/types';
 import styles from './SmmWidget.module.css';
@@ -40,8 +41,8 @@ const STRIP_DAYS = 7;
  */
 export function SmmWidget({ desktopRef }: SmmWidgetProps) {
   const { state } = useAppState();
+  const { posts } = useMediaKit();
   const { openWindow } = useWindowManager();
-  const posts = state.smm.posts;
   const today = todayKey();
 
   const { drafts, scheduled, byDay } = useMemo(() => {

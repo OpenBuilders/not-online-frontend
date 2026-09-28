@@ -58,7 +58,7 @@ export function PostCard({ post, view, onOpen, onTogglePosted, onPickDate, onDel
       <button type="button" className={styles.hit} onClick={onOpen}>
         {showThumb && (
           <span className={cx(styles.thumb, !cover && styles.thumbEmpty)}>
-            {cover ? <img src={cover} alt="" /> : <MaterialIcon name="image" size={22} />}
+            {cover ? <img src={cover.url} alt="" /> : <MaterialIcon name="image" size={22} />}
             {post.photos.length > 1 && <span className={styles.count}>{post.photos.length}</span>}
           </span>
         )}

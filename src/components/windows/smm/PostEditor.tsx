@@ -1,14 +1,12 @@
-import { useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { PlatformIcon } from '@/components/shared/PlatformIcon';
 import { LabelPill, toneForLabel } from '@/components/shared/LabelPill';
 import { PLATFORMS, PLATFORM_BY_ID } from '@/data/smmHints';
 import { cx } from '@/lib/cx';
-import type { SmmPlatform, SmmPost } from '@/types';
+import type { SmmPlatform, SmmPost, SmmPostDraft } from '@/types';
 import styles from './PostEditor.module.css';
-
-type PostDraft = Omit<SmmPost, 'id' | 'createdAt'>;
 
 interface PostEditorProps {
   /** null while creating — the editor seeds its own blank post in that case. */
@@ -17,22 +15,13 @@ interface PostEditorProps {
    *  hands over a finished post rather than an empty form — this is still
    *  the create case, so saving adds rather than updates. */
   seed?: { title: string; body: string; platform: SmmPlatform; labels: string[] };
-  /** Lets the demo's spotlight find the save button. */
-  saveRef?: RefObject<HTMLButtonElement | null>;
-  onSave: (draft: PostDraft) => void;
-  /** Persists work already entered when the user leaves a field. */
-  onAutoSave: (draft: PostDraft) => void;
-  onDelete?: () => void;
+  onSave: (draft: SmmPostDraft) => Promise<void>;
+  /** Sends one best-effort backup when the browser tab is leaving. */
+  onBackup: (draft: SmmPostDraft) => void;
+  onUploadPhotos: (draft: SmmPostDraft, files: File[]) => Promise<SmmPost | null>;
+  onRemovePhoto: (photoId: string) => Promise<SmmPost | null>;
+  onDelete?: () => Promise<void>;
   onClose: () => void;
-}
-
-function readAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
 }
 
 /**
@@ -45,30 +34,40 @@ function readAsDataUrl(file: File): Promise<string> {
  * advice is worth reading and what the body should look like, so it is the
  * first decision here, the same way it is the first decision in reality.
  */
-export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, onClose }: PostEditorProps) {
+export function PostEditor({
+  post,
+  seed,
+  onSave,
+  onBackup,
+  onUploadPhotos,
+  onRemovePhoto,
+  onDelete,
+  onClose,
+}: PostEditorProps) {
   const [title, setTitle] = useState(post?.title ?? seed?.title ?? '');
   const [body, setBody] = useState(post?.body ?? seed?.body ?? '');
   const [platform, setPlatform] = useState<SmmPlatform>(post?.platform ?? seed?.platform ?? 'instagram');
   const [labels, setLabels] = useState<string[]>(post?.labels ?? seed?.labels ?? []);
-  const [photos, setPhotos] = useState<string[]>(post?.photos ?? []);
+  const [photos, setPhotos] = useState(post?.photos ?? []);
   const [labelDraft, setLabelDraft] = useState('');
   // Only meaningful once the post has a slot. Plan owns *putting* it in the
   // calendar; this is for nudging one that is already there. The same edit
   // is on the card in the archive, which is where it usually gets made.
   const [day, setDay] = useState(post?.day ?? '');
   const fileRef = useRef<HTMLInputElement>(null);
+  const draftRef = useRef<SmmPostDraft | null>(null);
+  const dirtyRef = useRef(false);
   const scheduled = post?.status === 'scheduled';
 
   const info = PLATFORM_BY_ID[platform];
   const over = body.length > info.limit;
 
-  function currentDraft(overrides: Partial<PostDraft> = {}): PostDraft {
+  function currentDraft(overrides: Partial<SmmPostDraft> = {}): SmmPostDraft {
     return {
       title: title.trim(),
       body,
       platform,
       labels,
-      photos,
       // A post that already has a slot keeps it, with whatever the two
       // fields below were changed to. Clearing the date is how you send it
       // back to the tray — the status has to follow, or a draft would sit
@@ -79,34 +78,39 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
     };
   }
 
-  function autoSave(overrides: Partial<PostDraft> = {}) {
-    onAutoSave(currentDraft(overrides));
-  }
-
-  function addLabel(saveAfter = false) {
+  function addLabel() {
     const t = labelDraft.trim().replace(/^#/, '').toLowerCase();
     if (!t || labels.includes(t)) {
       setLabelDraft('');
-      if (saveAfter) autoSave();
       return;
     }
     const nextLabels = [...labels, t];
+    dirtyRef.current = true;
     setLabels(nextLabels);
     setLabelDraft('');
-    if (saveAfter) autoSave({ labels: nextLabels });
   }
 
   async function addPhotos(files: FileList | null) {
     if (!files?.length) return;
-    const urls = await Promise.all(Array.from(files).map(readAsDataUrl));
-    const nextPhotos = [...photos, ...urls];
-    setPhotos(nextPhotos);
-    autoSave({ photos: nextPhotos });
+    const saved = await onUploadPhotos(currentDraft(), Array.from(files));
+    if (saved) setPhotos(saved.photos);
   }
 
   function save() {
-    onSave(currentDraft());
+    void onSave(currentDraft());
   }
+
+  draftRef.current = currentDraft();
+
+  useEffect(() => {
+    const backup = () => {
+      const draft = draftRef.current;
+      if (!dirtyRef.current || !draft || (!draft.title && !draft.body && draft.labels.length === 0)) return;
+      onBackup(draft);
+    };
+    window.addEventListener('pagehide', backup);
+    return () => window.removeEventListener('pagehide', backup);
+  }, [onBackup]);
 
   return (
     <div className={styles.editor}>
@@ -117,12 +121,12 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
         </button>
         <div className={styles.headActions}>
           {onDelete && (
-            <button type="button" className={styles.delete} onClick={onDelete}>
+            <button type="button" className={styles.delete} onClick={() => void onDelete()}>
               <MaterialIcon name="delete" size={15} />
               Delete
             </button>
           )}
-          <AeroButton ref={saveRef} variant="lime" size="sm" onClick={save}>
+          <AeroButton variant="lime" size="sm" onClick={save}>
             {post ? 'Save' : 'Add to archive'}
           </AeroButton>
         </div>
@@ -137,8 +141,8 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
                 type="button"
                 className={cx(styles.platform, platform === p.id && styles.platformOn)}
                 onClick={() => {
+                  dirtyRef.current = true;
                   setPlatform(p.id);
-                  autoSave({ platform: p.id });
                 }}
                 aria-pressed={platform === p.id}
               >
@@ -153,8 +157,10 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
             <input
               className={styles.input}
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={() => autoSave()}
+              onChange={(e) => {
+                dirtyRef.current = true;
+                setTitle(e.target.value);
+              }}
               placeholder="what is this post, in four words"
             />
           </label>
@@ -169,8 +175,10 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
             <textarea
               className={styles.textarea}
               value={body}
-              onChange={(e) => setBody(e.target.value)}
-              onBlur={() => autoSave()}
+              onChange={(e) => {
+                dirtyRef.current = true;
+                setBody(e.target.value);
+              }}
               placeholder="write it, or start from a template on the right"
               rows={9}
             />
@@ -184,16 +192,18 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
                   className={styles.date}
                   type="date"
                   value={day}
-                  onChange={(e) => setDay(e.target.value)}
-                  onBlur={() => autoSave()}
+                  onChange={(e) => {
+                    dirtyRef.current = true;
+                    setDay(e.target.value);
+                  }}
                 />
                 {day && (
                   <button
                     type="button"
                     className={styles.unschedule}
                     onClick={() => {
+                      dirtyRef.current = true;
                       setDay('');
-                      autoSave({ status: 'draft', day: null });
                     }}
                   >
                     <MaterialIcon name="close" size={13} />
@@ -217,8 +227,8 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
                     className={styles.labelX}
                     onClick={() => {
                       const nextLabels = labels.filter((x) => x !== t);
+                      dirtyRef.current = true;
                       setLabels(nextLabels);
-                      autoSave({ labels: nextLabels });
                     }}
                     aria-label={`Remove ${t}`}
                   >
@@ -236,7 +246,7 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
                     addLabel();
                   }
                 }}
-                onBlur={() => addLabel(true)}
+                onBlur={addLabel}
                 placeholder="add a label"
               />
             </div>
@@ -245,15 +255,15 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
           <div className={styles.field}>
             <span className={styles.label}>Photos</span>
             <div className={styles.photos}>
-              {photos.map((src, i) => (
-                <span key={src.slice(-40) + i} className={styles.photo}>
-                  <img src={src} alt="" />
+              {photos.map((photo) => (
+                <span key={photo.id} className={styles.photo}>
+                  <img src={photo.url} alt="" />
                   <button
                     type="button"
                     onClick={() => {
-                      const nextPhotos = photos.filter((_, j) => j !== i);
-                      setPhotos(nextPhotos);
-                      autoSave({ photos: nextPhotos });
+                      void onRemovePhoto(photo.id).then((saved) => {
+                        if (saved) setPhotos(saved.photos);
+                      });
                     }}
                     aria-label="Remove photo"
                   >
@@ -305,7 +315,10 @@ export function PostEditor({ post, seed, saveRef, onSave, onAutoSave, onDelete, 
                 // loss, so a non-empty body has to be cleared deliberately
                 // before one can be dropped in.
                 disabled={body.trim().length > 0}
-                onClick={() => setBody(t.body)}
+                onClick={() => {
+                  dirtyRef.current = true;
+                  setBody(t.body);
+                }}
                 title={body.trim().length > 0 ? 'Clear the post first' : undefined}
               >
                 {t.label}

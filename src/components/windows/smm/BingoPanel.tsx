@@ -3,7 +3,7 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { LabelPill } from '@/components/shared/LabelPill';
 import { BINGO_FREE_INDEX, BINGO_SIZE, BINGO_SQUARES, BINGO_TOPICS, TOPIC_TONE } from '@/data/smmBingo';
 import { cx } from '@/lib/cx';
-import { useAppState } from '@/state/AppStateContext';
+import { useMediaKit } from '@/hooks/useMediaKit';
 import { blankPost } from './newPost';
 import styles from './BingoPanel.module.css';
 
@@ -37,12 +37,11 @@ const LINES: number[][] = (() => {
  * fun of.
  */
 export function BingoPanel() {
-  const { state, toggleSmmBingo, addSmmPost } = useAppState();
-  const crossed = state.smm.bingoCrossed;
+  const { posts, bingoCrossed: crossed, createPost, setBingo } = useMediaKit();
 
   // A square that has already been sent to the archive, matched on the text
   // that was copied into the draft's title.
-  const sent = useMemo(() => new Set(state.smm.posts.map((p) => p.title)), [state.smm.posts]);
+  const sent = useMemo(() => new Set(posts.map((p) => p.title)), [posts]);
 
   const { lines, inLine } = useMemo(() => {
     const done = LINES.filter((line) =>
@@ -97,8 +96,8 @@ export function BingoPanel() {
                 if (free) return;
                 // First click sends it; second (and any later) crosses or
                 // un-crosses it.
-                if (queued || on) toggleSmmBingo(square.id);
-                else addSmmPost(blankPost(square.text, ['bingo', BINGO_TOPICS[square.topic].replace(/\s+/g, '-')]));
+                if (queued || on) void setBingo(square.id, !on);
+                else void createPost(blankPost(square.text, ['bingo', BINGO_TOPICS[square.topic].replace(/\s+/g, '-')]));
               }}
               disabled={free}
               aria-pressed={on}

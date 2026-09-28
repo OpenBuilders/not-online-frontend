@@ -176,7 +176,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setAppIcon,
       markExploredCatalog,
     }),
-    [state, login, logout, completeTour, setSite, setCursor, setWallpaper, setAppIcon, markExploredCatalog]
+    [
+      state,
+      login,
+      logout,
+      completeTour,
+      setSite,
+      setCursor,
+      setWallpaper,
+      setAppIcon,
+      markExploredCatalog,
+    ]
   );
 
   return <AppStateCtx.Provider value={value}>{children}</AppStateCtx.Provider>;

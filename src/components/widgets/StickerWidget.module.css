@@ -114,6 +114,19 @@
   background: var(--c-accent);
   color: #0d1a00;
 }
+/* The bespoke middle (see `body` in StickerWidget). Takes exactly the room
+   between the kicker and the button, so a widget that draws its own
+   content still sits on the same rhythm as one that does not. */
+.body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 6px 0 8px;
+}
+
 /* Fills the space `.sub` would have taken so the button stays pinned to the
    bottom edge on a widget that has no supporting line. */
 .spacer {
@@ -183,6 +196,12 @@
   background: var(--c-accent-2);
   color: var(--c-white);
 }
+/* Explicit, for a frame whose shell colour would otherwise leave the
+   badge lime-on-lime. */
+.badgePink {
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
 
 /* Icon rides in a knocked-out disc pinned to the top-right corner, the way
    a die-cut sticker usually carries its mark. */
@@ -240,6 +259,21 @@
 }
 .button:focus-visible {
   outline: 2px solid var(--c-white);
+  outline-offset: 3px;
+}
+
+/* The whole face as one button. Resets what a button brings with it and
+   keeps the grab cursor, since this element is also what gets dragged. */
+.faceHit {
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+.faceHit:focus-visible {
+  outline: 3px solid var(--c-select);
   outline-offset: 3px;
 }
 

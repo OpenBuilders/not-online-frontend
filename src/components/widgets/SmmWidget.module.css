@@ -1,0 +1,239 @@
+/*
+  The second sticker format, tested here before it goes anywhere else.
+  No action button: the face is the button (StickerWidget's `.faceHit`),
+  so the ~40px the old one took — height plus its margin — goes back to
+  the content. StickerFrame supplies the shell, the cut-line, the tilt and
+  the 14px/15px face padding; nothing here sets an outer edge.
+
+  All three faces share one spine: a `.grow` spacer pushes their content
+  to the bottom, or the calendar face fills top to bottom on its own. The
+  card is a fixed 176px, so every size below is tuned against that and
+  nothing is relative to the viewport.
+*/
+
+.face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+.grow {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Artwork hangs in from the top-right and is clipped by the die-cut, the
+   same construction StickerWidget uses — the crop is the point. */
+.art {
+  position: absolute;
+  top: -16%;
+  right: -18%;
+  height: 74%;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+/* The drafts illustration sits under a number rather than beside a
+   headline, so it rides higher and further out of the corner — and half
+   again as large, because the number below it is the only other thing on
+   this face and the picture was losing the card to it. */
+.artDrafts {
+  top: -14%;
+  right: -22%;
+  height: 99%;
+}
+
+/* ---- state 1: nothing written ---- */
+
+/*
+  Along the bottom, which is what deleting the button paid for. At 30px
+  this is nearly twice the old headline: the card has one thing to say and
+  now has the room to say it at poster size.
+*/
+.lead {
+  position: relative;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -1.2px;
+  text-transform: uppercase;
+}
+.lead b {
+  font-weight: 800;
+  background: #0d0d0f;
+  color: var(--c-white);
+  padding: 0 5px 2px;
+  margin: 0 -2px;
+  border-radius: 5px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* The small line under the headline, in both of the bottom-set faces. */
+.kicker {
+  position: relative;
+  margin-top: 7px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+/* ---- state 2: drafts with no date ---- */
+
+/* Number and word share a baseline — "3 drafts" has to read as one phrase,
+   not as a figure with a caption. */
+.countRow {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.number {
+  font-size: 66px;
+  font-weight: 800;
+  line-height: 0.78;
+  letter-spacing: -4px;
+  /* The negative tracking pulls the glyph off its left edge; this puts the
+     digit back in line with the kicker underneath it. */
+  margin-left: 2px;
+}
+.numberWord {
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+}
+
+/* ---- state 3: the schedule ---- */
+
+/* Pushed to the right edge: the featured date directly below it is the
+   thing that should be read first, and two numbers stacked hard against
+   the same left margin fought over that. */
+.todayRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+/* The one solid black thing on a lime card — today should be findable
+   before anything else on the face is read. */
+.todayPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 15px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #0d0d0f;
+  color: var(--c-accent);
+  font-size: 9px;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  The next post, at roughly two thirds of the card. Drawn as an oversized
+  version of the squares below it — same fill, same radius family — so the
+  run reads as a continuation of this one day rather than as a second,
+  unrelated widget.
+*/
+.feature {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+  padding: 8px 10px 9px;
+  border-radius: 12px;
+  background: #0d0d0f;
+  overflow: hidden;
+}
+/* Names what the box is. Without it the big number read as today's date,
+   which is the one thing it is not. */
+.featureLabel {
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+.featureBody {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  min-height: 0;
+  flex: 1;
+}
+.featureDate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 0.82;
+  letter-spacing: -2px;
+  color: var(--c-accent);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.featureMonth {
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.featureTitle {
+  min-width: 0;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.24;
+  color: var(--c-white);
+  /* Three lines is what fits beside the date now that the box carries a
+     label above it; past that the block would grow and eat the run of
+     squares underneath. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The week after the featured day. Booked days fill in; the rest are
+   barely there, because the information is the pattern, not the numbers. */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  flex-shrink: 0;
+}
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.08);
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.32);
+  font-variant-numeric: tabular-nums;
+}
+.dayOn {
+  background: #0d0d0f;
+  color: var(--c-accent);
+}

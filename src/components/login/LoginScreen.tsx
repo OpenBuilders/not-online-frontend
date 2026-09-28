@@ -199,7 +199,7 @@ export function LoginScreen({ backgroundImage, onClose }: LoginScreenProps) {
       {notInCircle && (
         <CircleJoinCta
           title="Probably not in circle"
-          sub="Join us. Move the light, pick your role \u2014 or close this and try another email."
+          sub="Join us. Move the light, pick your role — or close this and try another email."
           onClose={() => setNotInCircle(false)}
         />
       )}

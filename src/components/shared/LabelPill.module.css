@@ -1,0 +1,57 @@
+/* The die-cut sticker at label size — same pill/cut-line/shadow as
+   shared/Sticker.module.css, shrunk to sit inline in a row of metadata. */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.sm {
+  font-size: 9px;
+  padding: 3px 8px;
+}
+.md {
+  font-size: 10.5px;
+  padding: 5px 11px;
+}
+
+/*
+  The cut-line is what turns a coloured pill into a sticker. It is optional
+  because a row of eight of them at once is noise — the tags on a card get
+  it, the quieter metadata next to them does not.
+*/
+.sticker {
+  border: 1.5px solid var(--c-white);
+  box-shadow: 1.5px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+.lime {
+  background: var(--c-accent);
+  color: #102400;
+}
+.pink {
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
+.ink {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.paper {
+  background: var(--c-paper-3);
+  color: var(--c-dim);
+}
+/* On a light card a white cut-line around a light pill disappears, so the
+   paper tone draws its edge in ink instead. */
+.paper.sticker {
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 1.5px 2px 0 rgba(0, 0, 0, 0.12);
+}

@@ -1,0 +1,201 @@
+/*
+  The one editorial surface in the tool — everything else here is a
+  workspace, this is something to read. Hence the wider measure, the
+  numbered section head, and the hairline rule between entries rather than
+  the card treatment the rest of the window uses.
+*/
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+}
+
+.masthead {
+  margin-bottom: 18px;
+}
+.title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1.2px;
+  color: var(--c-ink);
+}
+.standfirst {
+  margin: 8px 0 0;
+  max-width: 52ch;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--c-muted);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+.navItem {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 999px;
+  background: none;
+  padding: 7px 15px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-dim);
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    border-color 0.14s,
+    color 0.14s;
+}
+.navItem:hover {
+  border-color: var(--c-ink);
+  color: var(--c-ink);
+}
+/*
+  Each section owns a colourway, and it moves as a set: the selected tab,
+  the rule under the section heading, and the emphasis inside the
+  definitions. The point is that the colour, not the tab you last clicked,
+  is what tells you where you are — so four sections that would otherwise
+  be four identical ink-on-white pages stay distinguishable at a glance.
+
+  Compound selectors: `.navItem:hover` outranks a bare `.navOn` and would
+  paint the selected tab's text back to ink on its own ink ground.
+*/
+.navItem.navOn {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+.navItem.lime.navOn {
+  background: var(--c-accent);
+  border-color: var(--c-ink);
+  color: #102400;
+}
+.navItem.pink.navOn {
+  background: var(--c-accent-2);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+.navItem:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  /* The section's own colour, at full weight — this rule is the one place
+     the colourway is stated large enough to register. */
+  border-top: 3px solid var(--c-ink);
+  padding-top: 14px;
+  margin-bottom: 8px;
+}
+.sectionHead.lime {
+  border-top-color: var(--c-accent);
+}
+.sectionHead.pink {
+  border-top-color: var(--c-accent-2);
+}
+.num {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-faint, #9a9aa0);
+  font-variant-numeric: tabular-nums;
+}
+.sectionTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--c-ink);
+}
+.kicker {
+  margin-left: auto;
+  text-align: right;
+  font-size: 12px;
+  color: var(--c-faint, #9a9aa0);
+}
+
+.terms {
+  margin: 0;
+}
+
+/*
+  Term left, definition right. The columns are fixed rather than fluid so
+  every definition in the section starts on the same line — the thing that
+  makes a list like this scannable instead of merely tidy.
+*/
+.row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 32px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+.row:last-child {
+  border-bottom: none;
+}
+
+.term {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--c-ink);
+  /* Long entries like "source / medium / campaign" wrap inside the column
+     rather than widening it and pushing every definition out of line. */
+  overflow-wrap: break-word;
+}
+.def {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--c-dim);
+}
+/* The emphasised phrase is knocked out on the section's colour, the same
+   highlighter treatment the widgets use on their headlines. */
+.def b {
+  font-weight: 700;
+  color: var(--c-ink);
+  background: var(--c-paper-3);
+  padding: 0 4px 1px;
+  margin: 0 -2px;
+  border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.terms.lime .def b {
+  background: var(--c-accent);
+}
+.terms.pink .def b {
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
+.terms.ink .def b {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+@media (max-width: 760px) {
+  .title {
+    font-size: 24px;
+  }
+  /* Stacked: at this width a 180px term column leaves the definition about
+     twenty characters wide. */
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    padding: 14px 0;
+  }
+  .term {
+    font-size: 14px;
+  }
+  .kicker {
+    display: none;
+  }
+}

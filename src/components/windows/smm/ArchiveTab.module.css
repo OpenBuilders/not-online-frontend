@@ -1,0 +1,276 @@
+/* The toolbar stays put and only the list under it moves. Letting the
+   whole tab scroll pushed New post and the view switchers off the top the
+   moment there were more than about six drafts. */
+.tab {
+  /* The foot button on a phone anchors to this. */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+}
+
+.scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* Room for the cards' hover shadow, which a flush overflow box clips. */
+  padding: 2px;
+  margin: -2px;
+}
+
+.toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.spacer {
+  flex: 1;
+}
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 8px 13px;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.ghost:hover {
+  border-color: rgba(0, 0, 0, 0.32);
+  color: var(--c-ink);
+}
+/* Compound selector on purpose: `.x:hover` outranks a bare `.xOn`, so the
+   hover colour was painting ink text onto the selected chip's ink
+   background and the label vanished under the cursor that had just
+   selected it. Same convention MarketWindow's `.railItem.on` uses. */
+.ghost.ghostOn {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+
+.viewToggle {
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.viewBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 30px;
+  border: none;
+  background: var(--c-white);
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.viewBtn + .viewBtn {
+  border-left: 1px solid rgba(0, 0, 0, 0.14);
+}
+.viewBtn:hover {
+  color: var(--c-ink);
+}
+.viewBtn.viewOn {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+/* ---- brainstorm questions ---- */
+
+.questions {
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 14px;
+  background: var(--c-paper-2);
+  padding: 13px;
+}
+.questionsHead {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-dim);
+}
+
+/*
+  Two columns of questions, not one long list: twelve stacked lines read as
+  a form to work through, and the point is to skim until one of them
+  catches.
+*/
+.questionList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 6px;
+}
+.question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: var(--c-white);
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--c-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.question:hover {
+  border-color: var(--c-ink);
+  background: var(--smm, #c6f432);
+}
+.question span,
+.question :global(.material-symbols-outlined) {
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+.question:hover :global(.material-symbols-outlined) {
+  opacity: 1;
+}
+
+/* ---- the list itself ---- */
+
+.posts {
+  display: grid;
+  gap: 9px;
+}
+.list {
+  grid-template-columns: minmax(0, 1fr);
+}
+.grid {
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 46px 20px;
+  border: 1px dashed rgba(0, 0, 0, 0.16);
+  border-radius: 16px;
+  color: var(--c-muted);
+}
+.emptyTitle {
+  margin: 6px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+.emptyBody {
+  margin: 0;
+  max-width: 320px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 12px;
+  background: var(--c-white);
+  padding: 11px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.next:hover {
+  border-color: var(--c-ink);
+  background: var(--smm, #c6f432);
+  color: var(--smm-ink, #0d1a00);
+}
+
+/* ---- posted shelf ---- */
+
+.shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border-top: 1px solid rgba(0, 0, 0, 0.09);
+  padding-top: 12px;
+}
+.shelfHead {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.shelfHead:hover {
+  color: var(--c-ink);
+}
+.shelfCount {
+  border-radius: 999px;
+  background: var(--c-ink);
+  color: var(--c-white);
+  padding: 1px 7px;
+  font-size: 9.5px;
+  letter-spacing: 0.4px;
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .questionList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Icons only. The two panel toggles and the view switcher then fit on
+     one row with room to spare, which is what the row is for. */
+  .ghostLabel {
+    display: none;
+  }
+  .ghost {
+    padding: 8px;
+  }
+  .spacer {
+    display: none;
+  }
+
+  /* New post leaves the row and lands at the foot, centred — the one
+     control here that starts something, put where a thumb rests. */
+  .newWrap {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+  /* So the last card can be scrolled clear of it. */
+  .scroll {
+    padding-bottom: 50px;
+  }
+}

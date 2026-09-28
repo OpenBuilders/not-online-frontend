@@ -1,0 +1,180 @@
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.trigger:hover:not(:disabled) {
+  background: var(--c-accent-2);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+.trigger:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Covers the window it was opened from, not the whole desktop — this
+   belongs to Plan, and a full-screen scrim would imply otherwise. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(12, 12, 14, 0.58);
+  backdrop-filter: blur(6px);
+}
+
+/* Holds the card and the close button, which sits outside it. */
+.frame {
+  position: relative;
+  max-width: 620px;
+  width: 100%;
+  max-height: 100%;
+}
+
+.card {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  width: 100%;
+  max-height: 100%;
+  border-radius: 20px;
+  background: var(--c-white);
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.close {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--c-white);
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: var(--c-white);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+.close:hover {
+  background: var(--c-accent-2);
+}
+.close:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+.copy {
+  flex: 1;
+  min-width: 0;
+}
+.title {
+  margin: 0 28px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.6px;
+  color: var(--c-ink);
+}
+.sub {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 16px;
+}
+.meta {
+  margin: 10px 0 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--c-faint);
+}
+
+/*
+  A phone-shaped frame, so the preview is judged the way it will be seen —
+  the aspect ratio is the whole reason the composition leaves the top
+  third empty, and a square preview hides that.
+*/
+.phone {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 176px;
+  aspect-ratio: 1290 / 2796;
+  border-radius: 22px;
+  background: var(--c-paper-3);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 5px var(--c-ink),
+    0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.phone img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.drawing {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--c-faint);
+}
+
+@media (max-width: 760px) {
+  .card {
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+  .phone {
+    width: 132px;
+  }
+}
+
+/* No preview to sit beside, so the card stops being a two-column layout
+   and shrinks to what it holds. */
+.lockCard {
+  display: block;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* Icon only, and round, so the header fits on one line beside the month. */
+@media (max-width: 760px) {
+  .trigger {
+    gap: 0;
+    padding: 8px;
+  }
+  .label {
+    display: none;
+  }
+}

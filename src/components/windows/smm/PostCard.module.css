@@ -1,0 +1,380 @@
+.card {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 14px;
+  background: var(--c-white);
+  overflow: hidden;
+  transition:
+    border-color 0.14s,
+    box-shadow 0.14s;
+}
+.card:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+/* A posted card is still readable, just clearly finished — greying it out
+   entirely made the shelf look broken rather than done. */
+.done {
+  background: var(--c-paper-2);
+}
+.done .title {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  color: var(--c-muted);
+}
+
+/*
+  The date, on one line and cropped by the card. `.card` already clips, so
+  a number taller than the row loses its top and bottom — which is the
+  point: it reads as a stamp the card was cut from rather than as a field.
+
+  It is a button: clicking it takes the post to Plan and asks for a cell,
+  rather than opening a native picker that would make you choose a date
+  with no idea what is already on it.
+*/
+.date {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  color: var(--c-ink);
+  opacity: 0.17;
+  transition: opacity 0.14s;
+}
+.date:hover {
+  opacity: 0.42;
+}
+.date:focus-visible {
+  opacity: 0.55;
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* Day and month at the same size, on one line — the row has the width for
+   it, and a stacked month read as a caption on a number rather than as
+   part of the date. */
+.dateDay,
+.dateMonth {
+  font-size: 54px;
+  font-weight: 800;
+  line-height: 0.72;
+  letter-spacing: -3px;
+  font-variant-numeric: tabular-nums;
+}
+.dateMonth {
+  text-transform: uppercase;
+  letter-spacing: -2px;
+}
+
+/* The whole card is the button. Padding-right leaves the tick its corner. */
+.hit {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  padding: 11px 44px 11px 11px;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.hit:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: -2px;
+}
+
+.thumb {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  background: var(--c-paper-3);
+  color: var(--c-muted);
+  overflow: hidden;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Grid view keeps a tile even with no photo, because a grid of cards with
+   holes in it stops being a grid. List view renders no thumb at all. */
+.thumbEmpty {
+  color: rgba(0, 0, 0, 0.16);
+}
+/* Says "there are more behind this one" without a second thumbnail. */
+.count {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  color: var(--c-white);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.excerpt {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--c-dim);
+  /* One line. Two was already a paragraph at this width, and a column of
+     them read as a wall of text — the title is what identifies a post in
+     a list, and the body is only there to jog the memory. The full text
+     is one click away in the editor. */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+}
+.platform,
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.platform {
+  background: var(--c-paper-3);
+  color: var(--c-dim);
+}
+.status.draft {
+  background: var(--c-paper-3);
+  color: var(--c-muted);
+}
+.status.scheduled {
+  background: var(--smm, #c6f432);
+  color: var(--smm-ink, #0d1a00);
+}
+.status.posted {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+
+/* Stacked in the corner so a second control can join the tick without
+   either of them moving. */
+.actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
+  background: var(--c-white);
+  color: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.tick:hover {
+  color: var(--c-ink);
+  border-color: rgba(0, 0, 0, 0.35);
+}
+/* Compound selector on purpose: `.x:hover` outranks a bare `.xOn`, so the
+   hover colour was painting ink text onto the selected chip's ink
+   background and the label vanished under the cursor that had just
+   selected it. Same convention MarketWindow's `.railItem.on` uses. */
+.tick.tickOn {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+.tick:focus-visible,
+.trash:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* Only on the posted shelf, where the post is done and removing it is the
+   remaining action. Everywhere else deleting lives in the editor, behind
+   opening the post. */
+.trash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
+  background: var(--c-white);
+  color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.trash:hover {
+  border-color: var(--c-danger);
+  background: var(--c-danger);
+  color: var(--c-white);
+}
+
+/* A dated card leaves the number its column. */
+.list.dated .hit {
+  padding-right: 120px;
+}
+
+/* ---- grid view: the photo leads and the text sits under it ---- */
+
+.grid .hit {
+  flex-direction: column;
+  gap: 9px;
+  padding: 9px 9px 11px;
+}
+.grid .thumb {
+  width: 100%;
+  /* Square. The 4:5 crop belongs in Compose, where the point is what a
+     profile grid will look like; here the tile is just a way to recognise
+     a post, and squares tile evenly at any card width. */
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 9px;
+}
+.grid .excerpt {
+  -webkit-line-clamp: 1;
+}
+/*
+  Inside the preview rather than beside the text. Same grey as the list
+  rather than the white-on-photo treatment it had: on a pale placeholder
+  white type vanished completely, and the placeholder is what most cards
+  show until a photo is added.
+
+  Anchored to the tile's own top-left corner. The tile starts under the
+  card's 9px padding, so those two numbers place it without measuring
+  anything at runtime.
+*/
+.grid .date {
+  top: 9px;
+  bottom: auto;
+  right: auto;
+  left: 18px;
+  padding-top: 8px;
+  align-items: flex-start;
+  opacity: 0.26;
+}
+.grid .dateDay,
+.grid .dateMonth {
+  font-size: 38px;
+  letter-spacing: -1.8px;
+}
+.grid .date:hover {
+  opacity: 0.6;
+}
+
+.grid .actions {
+  top: 16px;
+  right: 16px;
+}
+.grid .tick {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 760px) {
+  /*
+    The oversized figure needs about 150px of row to itself, which a
+    375px window does not have — it ran under the title. At this width it
+    becomes what it is on the rest of the phone: a chip, sized and spaced
+    like the platform and status ones beside it.
+  */
+  .list .date {
+    top: 50%;
+    bottom: auto;
+    right: 42px;
+    transform: translateY(-50%);
+    gap: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 999px;
+    background: var(--c-white);
+    padding: 3px 8px;
+    opacity: 1;
+    color: var(--c-dim);
+  }
+  .list .dateDay,
+  .list .dateMonth {
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.4px;
+  }
+  .list.dated .hit {
+    padding-right: 108px;
+  }
+
+  /* Grid view keeps the figure — it has a whole thumbnail to sit on — but
+     at two columns on a phone that thumbnail is ~125px wide, and "24 SEP"
+     at 38px ran off the end of it and under the tick. */
+  .grid .date {
+    left: 12px;
+  }
+  .grid .dateDay,
+  .grid .dateMonth {
+    font-size: 28px;
+    letter-spacing: -1.2px;
+  }
+}

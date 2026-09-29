@@ -38,6 +38,5 @@ so no Cloudflare variables are needed for Plausible.
 Every click on a user-configured link sends the `Link Click` custom event with
 `page_handle` and `link_title` properties. Add a
 custom-event goal named `Link Click` in Plausible to report those clicks. The
-private editor reads all-time views and clicks back through its backend; set
-`PLAUSIBLE_URL`, `PLAUSIBLE_SITE_ID`, and `PLAUSIBLE_STATS_API_KEY` in
-`notportal-backend` for those owner-only widget metrics.
+private editor reads all-time views and clicks back through its backend for
+those owner-only widget metrics.

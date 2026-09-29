@@ -3,6 +3,12 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { cx } from '@/lib/cx';
 import { StickerFrame } from '@/components/widgets/StickerWidget';
 import { WidgetShell } from '@/components/widgets/WidgetShell';
+import {
+  getMyLinkPage,
+  getMyLinkPageAnalytics,
+  toSiteConfig,
+  type LinkPageAnalytics,
+} from '@/api/linkPages';
 import { siteUrl } from '@/data/siteTemplates';
 import { useAppState } from '@/state/AppStateContext';
 import { useWindowManager } from '@/state/WindowManagerContext';
@@ -29,11 +35,56 @@ interface WebsiteBuilderWidgetProps {
  * from here — swaps this face with no wiring between the two components.
  */
 export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) {
-  const { state } = useAppState();
+  const { state, setSite } = useAppState();
   const { openWindow } = useWindowManager();
   const site = state.site;
+  const [analytics, setAnalytics] = useState<LinkPageAnalytics | null>(null);
   const [copied, setCopied] = useState(false);
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const viewCount = analytics?.views ?? site?.views ?? 0;
+  const clickCount = analytics?.clicks ?? site?.clicks ?? 0;
+
+  // A saved page can be absent from this browser's local cache (new device,
+  // cleared storage). Load it once when the authenticated desktop appears so
+  // the live widget has a handle to ask Plausible about.
+  useEffect(() => {
+    if (!state.logged) return;
+    let cancelled = false;
+
+    void getMyLinkPage()
+      .then((page) => {
+        if (!cancelled && page) setSite(toSiteConfig(page));
+      })
+      // The editable page still works from its local state if this refresh
+      // fails; do not turn a temporary network failure into a blank widget.
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.logged, setSite]);
+
+  // Pageviews and Link Click events are already written by the public page.
+  // This is only the private read path back to the owner. The API has the
+  // Plausible key server-side, so this costs neither a browser-visible key
+  // nor a request per render.
+  useEffect(() => {
+    if (!state.logged || !site?.handle) {
+      setAnalytics(null);
+      return;
+    }
+    let cancelled = false;
+
+    void getMyLinkPageAnalytics()
+      .then((next) => {
+        if (!cancelled) setAnalytics(next);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.logged, site?.handle]);
 
   // Clears on unmount so a widget dragged away mid-flash doesn't leave a
   // timer setting state on something that is gone.
@@ -108,12 +159,16 @@ export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) 
                   to say it twice. */}
               <div className={styles.stats}>
                 <span className={styles.stat}>
-                  <b>{site.views}</b>
-                  <span className={styles.statLabel}>{site.views === 1 ? 'view' : 'views'}</span>
+                  <b>{viewCount}</b>
+                  <span className={styles.statLabel}>
+                    {viewCount === 1 ? 'view' : 'views'}
+                  </span>
                 </span>
                 <span className={styles.stat}>
-                  <b>{site.clicks}</b>
-                  <span className={styles.statLabel}>{site.clicks === 1 ? 'click' : 'clicks'}</span>
+                  <b>{clickCount}</b>
+                  <span className={styles.statLabel}>
+                    {clickCount === 1 ? 'click' : 'clicks'}
+                  </span>
                 </span>
               </div>
 

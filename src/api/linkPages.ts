@@ -36,6 +36,11 @@ export interface LinkPageResponse {
   links: LinkPageLinkResponse[];
 }
 
+export interface LinkPageAnalytics {
+  views: number;
+  clicks: number;
+}
+
 interface ErrorResponse {
   message?: string | string[];
 }
@@ -135,6 +140,24 @@ export async function getMyLinkPage(): Promise<LinkPageResponse | null> {
   return responseJson<LinkPageResponse | null>(response);
 }
 
+/** Private, all-time Plausible aggregates for the authenticated owner's page. */
+export async function getMyLinkPageAnalytics(): Promise<LinkPageAnalytics | null> {
+  const response = await fetch(`${API_URL}/link-pages/me/analytics`, {
+    credentials: 'include',
+  });
+  if (response.status === 401) return null;
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as ErrorResponse | null;
+    throw new ApiError(errorMessage(body, response.status), response.status);
+  }
+
+  const analytics = await responseJson<Partial<LinkPageAnalytics>>(response);
+  return {
+    views: nonNegativeInteger(analytics.views),
+    clicks: nonNegativeInteger(analytics.clicks),
+  };
+}
+
 export async function saveLinkPage(site: SiteConfig): Promise<LinkPageResponse> {
   const body = new FormData();
   body.set('config', JSON.stringify(toSaveConfig(site)));
@@ -156,4 +179,10 @@ export async function saveLinkPage(site: SiteConfig): Promise<LinkPageResponse> 
     throw new ApiError(errorMessage(errorBody, response.status), response.status);
   }
   return responseJson<LinkPageResponse>(response);
+}
+
+function nonNegativeInteger(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+    ? Math.floor(value)
+    : 0;
 }

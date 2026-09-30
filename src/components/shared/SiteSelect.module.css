@@ -1,0 +1,119 @@
+/*
+  Built to match the page builder's icon picker (IconPicker.module.css):
+  same 9px trigger, same accent-bordered open state, same white 13px card
+  with a real shadow for the menu. Two controls that behave alike should
+  look alike.
+*/
+.root {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  background: var(--c-white);
+  padding: 8px 9px 8px 11px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-ink);
+  cursor: pointer;
+  transition:
+    border-color 0.14s,
+    box-shadow 0.14s,
+    background 0.14s,
+    color 0.14s;
+}
+.trigger:hover {
+  border-color: var(--c-accent-shade-2);
+}
+.trigger[aria-expanded='true'] {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.3);
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* A filter that is currently narrowing the list says so. Both selectors:
+   `.trigger:hover` outranks a bare `.active`, which would otherwise drop
+   the fill the moment the cursor was on it. */
+.trigger.active,
+.trigger.active:hover {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+.trigger.active .chevron {
+  color: var(--c-white);
+}
+
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chevron {
+  flex-shrink: 0;
+  color: var(--c-dim);
+}
+
+.menu {
+  position: absolute;
+  z-index: 6000;
+  top: calc(100% + 5px);
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 13px;
+  background: var(--c-white);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  padding: 6px;
+  overflow: hidden;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  padding: 8px 9px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-dim);
+  text-align: left;
+  cursor: pointer;
+}
+.option:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--c-ink);
+}
+.option.optionOn,
+.option.optionOn:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.option:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: -2px;
+}
+.tick {
+  margin-left: auto;
+  flex-shrink: 0;
+}

@@ -411,6 +411,41 @@
 
 /* ---- the panel ---- */
 
+/* With nothing in the tray the panel holds one sentence and one button,
+   and 288px of it would be mostly empty. The calendar takes the width
+   back, which is the thing anyone is actually looking at. */
+.tabSlim {
+  grid-template-columns: minmax(0, 1fr) 176px;
+}
+.sideEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.sideNew {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 7px 13px;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.sideNew:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.sideNew:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
 .side {
   display: flex;
   flex-direction: column;

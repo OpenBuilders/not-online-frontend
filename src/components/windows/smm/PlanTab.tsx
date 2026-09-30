@@ -35,6 +35,8 @@ interface PlanTabProps {
   /** Opens the join CTA over the whole window, for the wallpaper lock. */
   onJoin: (title: string, sub: string) => void;
   onPickDone?: () => void;
+  /** Takes you straight to a blank post, from the empty tray. */
+  onNewPost: () => void;
 }
 
 /**
@@ -59,7 +61,7 @@ interface PlanTabProps {
  * to choose a day with no idea what is already on it, which is the single
  * thing this grid exists to show.
  */
-export function PlanTab({ pickingFor = null, onPickDone, onJoin }: PlanTabProps) {
+export function PlanTab({ pickingFor = null, onPickDone, onJoin, onNewPost }: PlanTabProps) {
   const { state } = useAppState();
   const { posts, updatePost } = useMediaKit();
   const [offset, setOffset] = useState(0);
@@ -150,7 +152,7 @@ export function PlanTab({ pickingFor = null, onPickDone, onJoin }: PlanTabProps)
   const showDay = openDay !== null && openPosts.length > 0;
 
   return (
-    <div className={styles.tab}>
+    <div className={cx(styles.tab, !openDay && tray.length === 0 && styles.tabSlim)}>
       <div className={styles.main}>
         <div className={styles.head}>
           <button
@@ -357,7 +359,16 @@ export function PlanTab({ pickingFor = null, onPickDone, onJoin }: PlanTabProps)
             </div>
 
             {tray.length === 0 ? (
-              <p className={styles.sideNote}>Add a post in the archive and it shows up here.</p>
+              /* Nothing to place, so the panel earns none of its width —
+                 see `.tabEmpty`. What it does earn is a way out of the
+                 dead end it is announcing. */
+              <div className={styles.sideEmpty}>
+                <p className={styles.sideNote}>Nothing waiting for a day.</p>
+                <button type="button" className={styles.sideNew} onClick={onNewPost}>
+                  <MaterialIcon name="add" size={15} />
+                  New post
+                </button>
+              </div>
             ) : (
               <>
                 <div className={styles.trayList}>

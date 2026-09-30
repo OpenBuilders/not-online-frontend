@@ -15,6 +15,11 @@ import { LinkIcon } from './LinkIcon';
  * that folder rather than replacing it. An earlier version let an icon
  * stand in for the folder entirely, which made a page of folders and a
  * page of loose icons look like the same setting.
+ *
+ * The icon is printed on the face rather than placed over it: multiplied
+ * into the artwork at half strength, with no chip, no ring and no shadow
+ * of its own. A mark with its own background would be a second object
+ * lying on the folder; multiplied, it is something the folder has on it.
  */
 export function FoldersTemplate({ cfg, content }: TemplateProps) {
   const { name, bio, links, avatar } = content;
@@ -22,8 +27,14 @@ export function FoldersTemplate({ cfg, content }: TemplateProps) {
 
   return (
     <div className={styles.root}>
+      {/* The avatar reads as part of who this page is, so it goes inside
+          the name's own outline rather than beside it — one object that
+          says who this is, not a thumbnail parked next to a caption. */}
       <div className={styles.head}>
-        <h1 className={styles.name}>{name}</h1>
+        <h1 className={styles.name}>
+          {avatar && <img className={styles.avatar} src={avatar} alt="" />}
+          <span className={styles.nameText}>{name}</span>
+        </h1>
       </div>
 
       <div className={styles.shelf}>
@@ -38,7 +49,7 @@ export function FoldersTemplate({ cfg, content }: TemplateProps) {
           >
             <span className={styles.art}>
               <img className={styles.folderImg} src={folder.src} alt="" />
-              <LinkIcon icon={l.icon} size={16} className={styles.badge} />
+              <LinkIcon icon={l.icon} size={32} className={styles.badge} />
             </span>
             <span className={styles.label}>{l.title}</span>
           </a>
@@ -46,7 +57,6 @@ export function FoldersTemplate({ cfg, content }: TemplateProps) {
       </div>
 
       <div className={styles.about}>
-        {avatar && <img className={styles.avatar} src={avatar} alt="" />}
         <p className={styles.bio}>{bio}</p>
       </div>
 

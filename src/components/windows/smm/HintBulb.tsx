@@ -8,6 +8,13 @@ interface HintBulbProps {
   children: ReactNode;
   /** Which edge the panel hangs from — the default opens to the left. */
   align?: 'left' | 'right';
+  /** The glyph on the trigger when it is closed. */
+  icon?: string;
+  /** `sticker` is the pink peel-off used where the trigger adds something
+   *  rather than explains something. */
+  variant?: 'bulb' | 'sticker';
+  /** Sticker variant only: the word beside the glyph. */
+  stickerLabel?: string;
 }
 
 /**
@@ -23,7 +30,7 @@ interface HintBulbProps {
  * Closing on Escape and on an outside click is what makes it feel like a
  * popover instead of a second, competing layout.
  */
-export function HintBulb({ title, children, align = 'right' }: HintBulbProps) {
+export function HintBulb({ title, children, align = 'right', icon = 'lightbulb', variant = 'bulb', stickerLabel }: HintBulbProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -49,12 +56,17 @@ export function HintBulb({ title, children, align = 'right' }: HintBulbProps) {
     <div className={styles.wrap} ref={wrapRef}>
       <button
         type="button"
-        className={cx(styles.bulb, open && styles.bulbOn)}
+        className={cx(
+          variant === 'sticker' ? styles.sticker : styles.bulb,
+          open && (variant === 'sticker' ? styles.stickerOn : styles.bulbOn),
+        )}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         title={title}
+        aria-label={title}
       >
-        <MaterialIcon name={open ? 'close' : 'lightbulb'} size={16} />
+        <MaterialIcon name={open ? 'close' : icon} size={16} />
+        {variant === 'sticker' && stickerLabel && <span>{stickerLabel}</span>}
       </button>
 
       {open && (

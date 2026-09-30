@@ -75,7 +75,9 @@ export function SmmWidget({ desktopRef }: SmmWidgetProps) {
     <WidgetShell id="widgetSMM" desktopRef={desktopRef} x={1140} y={100} dragAnywhere>
       {(hasMoved) => (
         <StickerFrame
-          color="lime"
+          /* Black in every state. What changes between them is which one
+             thing on the card is lit. */
+          color="dark"
           rotate={-2}
           badge="Plan"
           badgeColor="pink"
@@ -91,18 +93,20 @@ export function SmmWidget({ desktopRef }: SmmWidgetProps) {
           }}
         >
           {face === 'empty' && (
-            <div className={styles.face}>
+            <div className={cx(styles.face, styles.faceEmpty)}>
               <img className={styles.art} src={ART_EMPTY} alt="" onError={hideArt} />
               <div className={styles.grow} />
               <div className={styles.lead}>
-                post <b>nothing</b>
+                {/* The white box is on "post" now, so that word needs an
+                    element of its own to carry it. */}
+                <span className={styles.plain}>post</span> <b>nothing</b>
               </div>
               <div className={styles.kicker}>not media kit</div>
             </div>
           )}
 
           {face === 'count' && (
-            <div className={styles.face}>
+            <div className={cx(styles.face, styles.faceCount)}>
               <img className={cx(styles.art, styles.artDrafts)} src={ART_DRAFTS} alt="" onError={hideArt} />
               <div className={styles.grow} />
               <div className={styles.countRow}>
@@ -114,7 +118,7 @@ export function SmmWidget({ desktopRef }: SmmWidgetProps) {
           )}
 
           {face === 'calendar' && next && (
-            <div className={styles.face}>
+            <div className={cx(styles.face, styles.faceCalendar)}>
               <div className={styles.todayRow}>
                 today is
                 <span className={styles.todayPill}>{shortDay(today)}</span>

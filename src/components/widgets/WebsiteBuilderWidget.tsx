@@ -61,7 +61,9 @@ export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) 
     <WidgetShell id="widgetWeb" desktopRef={desktopRef} x={1140} y={330} dragAnywhere>
       {(hasMoved) => (
         <StickerFrame
-          color="pink"
+          /* Black, like the media kit's card. The two widgets sit on the
+             same desktop and were reading as two different systems. */
+          color="dark"
           rotate={3}
           badge={site ? undefined : 'Click me'}
           // Drawn over the face, not inside it: the face is a button, and

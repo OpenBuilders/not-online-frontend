@@ -13,6 +13,9 @@
   position: relative;
   display: flex;
   height: 100%;
+  /* Nothing leaves this box: the body inside it is the scroller now, so
+     the rail beside it never moves. */
+  overflow: hidden;
 }
 
 /*
@@ -89,10 +92,18 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* The window frame owns scrolling. Keeping an overflow box here clipped
-     calendar hover cards at the body's left edge, before they could reach
-     the navigation rail. */
-  overflow: visible;
+  /*
+    The body scrolls, not the window frame. With the frame scrolling, the
+    rail scrolled away with the content and a long tab — the glossary —
+    left bare frame under it; pinning the rail is only possible if the
+    thing beside it is the scrollport.
+
+    The cost is that a calendar hover card can no longer spill past this
+    box's left edge into the rail. It is the right trade: the card is a
+    preview, the rail is navigation.
+  */
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px;
   background: var(--c-paper);
   color: var(--c-ink);

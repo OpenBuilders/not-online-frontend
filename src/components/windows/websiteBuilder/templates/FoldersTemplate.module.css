@@ -12,12 +12,17 @@
 .head {
   flex-shrink: 0;
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 14px;
 }
 
 /* The name sits in an outlined lozenge, set in a book serif — the one
    typographic gesture on an otherwise plain page, straight from the ref. */
 .name {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
   margin: 0;
   padding: 10px 30px;
   border: 1.5px solid currentColor;
@@ -27,9 +32,18 @@
   font-weight: 400;
   letter-spacing: -0.4px;
   line-height: 1.25;
-  text-wrap: balance;
   text-align: center;
   max-width: 100%;
+}
+/* With a portrait inside, the left padding drops to match the top and
+   bottom, so the avatar is ringed by an even margin instead of floating
+   in the wide one the text needs. */
+.name:has(.avatar) {
+  padding-left: 10px;
+}
+.nameText {
+  min-width: 0;
+  text-wrap: balance;
 }
 
 .shelf {
@@ -71,16 +85,40 @@
   height: auto;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.24));
 }
+/*
+  Printed into the folder, not placed on it: multiply blends the mark with
+  the artwork underneath instead of covering it, and half opacity keeps it
+  from reading as a second object. No shadow, no chip, no ring — those all
+  belong to something lying on top.
+
+  Twice the size it used to be. At 46% it was a small badge on a large
+  folder; at 92% it is what the folder is labelled with.
+*/
 .badge {
   position: absolute;
   left: 50%;
   top: 56%;
-  width: 46%;
-  height: auto;
-  max-height: 46%;
   transform: translate(-50%, -50%);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+/*
+  Only an illustration is sized here. A symbol is a font glyph, and a
+  percentage width stretches its box without touching the glyph — that
+  size comes from the `size` the template passes, which is why it is 32
+  rather than 16 now.
+
+  An illustration sits at roughly half the face, well inside a symbol's
+  share of it. It arrives from LinkIcon at double size and carries its
+  own detail out to its edges, where a symbol is a shape with air around
+  it — matched percentages left the drawings overflowing the folder, and
+  even fitting they read far heavier at the same width.
+*/
+.badge[data-image='true'] {
+  width: 48%;
+  height: auto;
+  max-height: 48%;
   object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 /* A symbol has no artwork of its own, so it needs a disc to sit on. */
 span.badge {
@@ -114,15 +152,14 @@ span.badge {
 
 .about {
   margin-top: 34px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
 }
+/* Round, because it now lives inside a pill — a 10px-cornered square in
+   a 999px outline reads as two different shapes stacked. */
 .avatar {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 50%;
   object-fit: cover;
 }
 .bio {

@@ -58,6 +58,12 @@ export function SmmWindow() {
    * finishes it, and the window is the only thing that sees both.
    */
   const [pickingFor, setPickingFor] = useState<string | null>(null);
+  /**
+   * Bumped when Plan asks for a new post. A counter rather than a boolean
+   * because the request can be made again after the editor has been
+   * closed, and a boolean would have to be reset by the tab it was sent to.
+   */
+  const [newPostSignal, setNewPostSignal] = useState(0);
 
   return (
     <div className={styles.window}>
@@ -102,6 +108,7 @@ export function SmmWindow() {
               setTab('plan');
             }}
             onJoin={(title, sub) => setCta({ title, sub })}
+            newPostSignal={newPostSignal}
           />
         )}
         {tab === 'plan' && (
@@ -109,6 +116,11 @@ export function SmmWindow() {
             pickingFor={pickingFor}
             onPickDone={() => setPickingFor(null)}
             onJoin={(title, sub) => setCta({ title, sub })}
+            onNewPost={() => {
+              setPickingFor(null);
+              setTab('archive');
+              setNewPostSignal((n) => n + 1);
+            }}
           />
         )}
         {tab === 'glossary' && <GlossaryTab />}

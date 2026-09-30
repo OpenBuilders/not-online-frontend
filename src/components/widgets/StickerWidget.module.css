@@ -4,6 +4,26 @@
   resting tilt, with the widget's real content living on its face.
 */
 
+/*
+  The cut line: 2px, and deliberately imperfect. `rough-edge` (index.html)
+  displaces it with fractal noise, so the ring wanders a pixel or two the
+  way a blade does rather than tracing a perfect radius — which is what
+  made these read as printed rectangles rather than as stickers.
+
+  It has to be its own element. A filter on the sticker would distort the
+  artwork and type inside it too, and a box-shadow ring is not a shape a
+  filter can touch at all.
+*/
+.shell::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--c-white);
+  border-radius: 28px;
+  filter: url(#rough-edge);
+  pointer-events: none;
+}
+
 .shell {
   position: relative;
   width: 100%;
@@ -34,12 +54,15 @@
   border-radius: 26px;
   padding: 12px 13px;
   overflow: hidden;
-  /* The cut-line and the shadow that lifts it off the wallpaper. Both are
-     drawn with box-shadow rather than a border so the white ring hugs the
-     radius exactly and never double-strokes at the corners. */
+  /* Only the shadow that lifts the sticker off the wallpaper. The white
+     cut line moved to `.shell::after`, where a filter can get at it — a
+     box-shadow ring is not a shape anything can distort.
+
+     The offset shadow carries a little blur rather than none: at zero it
+     was a hard black duplicate of the card, which reads as a sticker
+     pasted flat on glass instead of one curling slightly off it. */
   box-shadow:
-    0 0 0 4px var(--c-white),
-    5px 6px 0 4px rgba(0, 0, 0, 0.55),
+    5px 6px 9px 2px rgba(0, 0, 0, 0.5),
     0 18px 32px rgba(0, 0, 0, 0.45);
 }
 
@@ -54,6 +77,10 @@
 .dark .face {
   background: #16161a;
   color: var(--c-white);
+}
+.white .face {
+  background: var(--c-white);
+  color: var(--c-ink);
 }
 
 /* Content typography. Colors inherit from the face so each colourway stays

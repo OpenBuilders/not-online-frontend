@@ -3,7 +3,7 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { cx } from '@/lib/cx';
 import styles from './StickerWidget.module.css';
 
-export type StickerColor = 'lime' | 'pink' | 'dark';
+export type StickerColor = 'lime' | 'pink' | 'dark' | 'white';
 
 interface StickerWidgetProps {
   color: StickerColor;

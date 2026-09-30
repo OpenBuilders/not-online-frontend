@@ -19,8 +19,9 @@ export interface PlatformInfo {
   label: string;
   /** Material Symbols glyph. There are no brand marks in this app. */
   icon: string;
-  /** The practical ceiling, shown as a soft counter rather than enforced. */
-  limit: number;
+  /** The practical ceiling, shown as a soft counter rather than enforced.
+   *  Absent where there is no ceiling to speak of. */
+  limit?: number;
   hints: string[];
   templates: PlatformTemplate[];
 }
@@ -112,6 +113,28 @@ export const PLATFORMS: PlatformInfo[] = [
       {
         label: 'Drop / announcement',
         body: 'What: \nWhen: \nWhere: \nHow many: \n\nOne line on why you made it.',
+      },
+    ],
+  },
+  {
+    /*
+      Kept last in the list on purpose: it is the answer you arrive at, not
+      the one you start from. A post filed here still goes in the archive and
+      can still take a day in the calendar — the only thing it does not do is
+      leave. Which is the whole point of writing some of them down.
+    */
+    id: 'nowhere',
+    label: 'nowhere',
+    icon: 'block',
+    hints: [
+      'Not everything has to go out. Written down beats remembered.',
+      'Park it here while it is still wrong. Move it to a platform when it is not.',
+      'A note with a date on it is a plan. Without one it is a maybe, which is also fine.',
+    ],
+    templates: [
+      {
+        label: 'Note to self',
+        body: 'The thought:\n\nWhy it is not ready:\n\nWhat would make it ready:',
       },
     ],
   },

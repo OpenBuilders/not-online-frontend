@@ -46,9 +46,9 @@ export function PosterTemplate({ content }: TemplateProps) {
         ))}
       </div>
 
-      <div className={styles.foot}>
+      {/* <div className={styles.foot}>
         <span className={styles.footMark}>Probably nothing</span>
-      </div>
+      </div> */}
     </div>
   );
 }

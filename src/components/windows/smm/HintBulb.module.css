@@ -81,3 +81,43 @@
   text-transform: uppercase;
   color: var(--c-ink);
 }
+
+/*
+  The other trigger: a pink peel-off, for a popover that adds something
+  instead of explaining something. Rotated a couple of degrees so it reads
+  as stuck on rather than drawn in, the same way Sticker does it.
+*/
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--c-ink);
+  border-radius: 8px;
+  background: var(--c-accent-2, #ff1a91);
+  padding: 7px 11px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--c-white);
+  cursor: pointer;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2px 0 var(--c-ink);
+  transition: transform 0.14s, box-shadow 0.14s;
+}
+.sticker:hover {
+  transform: rotate(-2deg) translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--c-ink);
+}
+/* Pressed in rather than lifted: the popover it opens is the raised thing
+   now, so the button that opened it should sit back down. */
+.sticker.stickerOn {
+  background: var(--c-ink);
+  transform: rotate(0deg);
+  box-shadow: none;
+}
+.sticker:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}

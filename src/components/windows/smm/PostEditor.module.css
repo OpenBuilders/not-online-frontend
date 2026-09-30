@@ -1,7 +1,15 @@
 .editor {
+  /*
+    Fits the window rather than scrolling it. Everything above the body
+    field is fixed height, so the textarea is the one thing that takes the
+    slack — which is also the right thing to grow when someone drags the
+    window taller.
+  */
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
 }
 
 .head {
@@ -31,83 +39,45 @@
   align-items: center;
   gap: 10px;
 }
-.delete {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 999px;
-  background: none;
-  padding: 6px 11px;
-  font: inherit;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--c-muted);
-  cursor: pointer;
-}
-.delete:hover {
-  border-color: var(--c-danger, #e5484d);
-  color: var(--c-danger, #e5484d);
-}
-
 /*
-  Form and hints side by side. The hints column is fixed and narrow: it is
-  read once per post and then ignored, so it should never take width from
-  the textarea, which is the thing actually being used.
+  One column. The hints used to sit in a fixed 208px rail beside the form,
+  which took width from the textarea — the thing actually being used —
+  to hold advice that is read once per post and then ignored. They open
+  from a button now, and the form has the whole width back.
 */
 .cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 208px;
-  gap: 16px;
-  align-items: start;
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .form {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
   min-width: 0;
+  min-height: 0;
 }
 
-.platforms {
+/* One line: the sentence, the choice, the two helpers. It wraps rather
+   than scrolls, because on a narrow window the helpers dropping to their
+   own line is fine and a cut-off select is not. */
+.where {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.platform {
-  display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.helpers {
+  display: inline-flex;
   gap: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 999px;
-  background: var(--c-white);
-  padding: 7px 12px;
-  font: inherit;
-  font-size: 11.5px;
-  font-weight: 600;
+  margin-left: auto;
+}
+
+.whereLabel {
+  font-size: 12px;
   color: var(--c-dim);
-  cursor: pointer;
-  transition:
-    background 0.14s,
-    border-color 0.14s,
-    color 0.14s;
-}
-.platform:hover {
-  border-color: rgba(0, 0, 0, 0.3);
-  color: var(--c-ink);
-}
-/* Compound selector on purpose: `.x:hover` outranks a bare `.xOn`, so the
-   hover colour was painting ink text onto the selected chip's ink
-   background and the label vanished under the cursor that had just
-   selected it. Same convention MarketWindow's `.railItem.on` uses. */
-.platform.platformOn {
-  background: var(--c-ink);
-  border-color: var(--c-ink);
-  color: var(--c-white);
-}
-.platform:focus-visible {
-  outline: 2px solid var(--c-select);
-  outline-offset: 2px;
 }
 
 .field {
@@ -138,7 +108,36 @@
 }
 
 .input,
+/* The post field, and only it, takes the leftover height. */
+.form > .field:has(> .textarea) {
+  flex: 1;
+  min-height: 0;
+}
+/* Same text control as everywhere else in the app — see the page
+   builder's `.input`. It had no rule of its own and was rendering as the
+   browser's default field. */
+.input {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  background: var(--c-white);
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--c-ink);
+  outline: none;
+}
+.input::placeholder {
+  color: var(--c-faint, #9a9aa0);
+}
+.input:focus,
+.textarea:focus {
+  border-color: var(--c-accent-shade-2);
+  box-shadow: 0 0 0 3px rgba(168, 255, 26, 0.3);
+}
+
 .textarea {
+  flex: 1;
+  min-height: 96px;
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.14);
   border-radius: 10px;
@@ -147,9 +146,16 @@
   font-family: inherit;
   font-size: 13px;
   color: var(--c-ink);
-  resize: vertical;
+  resize: none;
+}
+/* The post field, and only it, takes the leftover height. */
+.form > .field:has(> .textarea) {
+  flex: 1;
+  min-height: 0;
 }
 .textarea {
+  flex: 1;
+  min-height: 96px;
   line-height: 1.55;
   min-height: 150px;
   white-space: pre-wrap;
@@ -164,14 +170,15 @@
   color: var(--c-faint, #9a9aa0);
 }
 
+/* Just the pills. The dashed box that used to hold these also held the
+   input, which made the whole thing read as one field you could type
+   anywhere in — and it could not show an Add button without looking like
+   a field with a button inside it. */
 .labelRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  border: 1px dashed rgba(0, 0, 0, 0.18);
-  border-radius: 10px;
-  padding-left: 10px;
-  min-height: 44px;
+  gap: 12px;
 }
 /* The remove control rides on the sticker's corner rather than inside it —
    a LabelPill is one solid shape and cutting a button into it would break
@@ -179,10 +186,6 @@
 .labelWrap {
   position: relative;
   display: inline-flex;
-}
-
-.labelWrap + .labelWrap {
-  margin-left: 10px;
 }
 
 .labelX {
@@ -203,9 +206,20 @@
   opacity: 0;
   transition: opacity 0.12s;
 }
-.labelWrap:hover .labelX,
+/* Pointer devices reveal it on hover. Touch has no hover, so there the
+   pill is tapped once to arm it and the X appears — a second tap on the X
+   removes the label. */
+@media (hover: hover) {
+  .labelWrap:hover .labelX {
+    opacity: 1;
+  }
+}
+.labelPicked .labelX,
 .labelX:focus-visible {
   opacity: 1;
+}
+.labelWrap {
+  cursor: pointer;
 }
 
 /* ---- the slot, for a post that already has one ---- */
@@ -245,22 +259,51 @@
 .unschedule:hover {
   color: var(--c-ink);
 }
+.labelAdd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 232px;
+}
 .labelInput {
-  /* This field owns all otherwise-empty space in the tag box. It is a
-     layout solution rather than a parent click handler, so every visible
-     input area is a real native focus target. */
-  flex: 1 1 90px;
-  min-width: 90px;
-  min-height: 42px;
-  border: none;
-  background: none;
-  padding: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 10px;
+  background: var(--c-white);
+  padding: 10px 12px;
   font: inherit;
   font-size: 12px;
   color: var(--c-ink);
 }
 .labelInput:focus {
-  outline: none;
+  outline: 2px solid var(--c-select);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+.addLabel {
+  flex-shrink: 0;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 9px 16px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.addLabel:hover:not(:disabled) {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.addLabel:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.addLabel:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
 }
 .labelInput::placeholder {
   color: var(--c-faint, #9a9aa0);
@@ -318,30 +361,12 @@
 
 /* ---- hints column ---- */
 
-.side {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.09);
-  border-radius: 14px;
-  background: var(--c-paper-2);
-  padding: 13px;
-  position: sticky;
-  top: 0;
-}
-.sideHead {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--c-ink);
-}
-.sideHead:not(:first-child) {
-  margin-top: 6px;
-}
+/* Opened from the round buttons above, full width, closing again on the
+   same button. It sits between the row and the title field rather than
+   over them: a popover here would cover the field the advice is about. */
+/* No card of its own: HintBulb's panel is already the card, and the
+   border and padding left here from when this was a rail were drawing a
+   second box inside the first. */
 .hints {
   display: flex;
   flex-direction: column;

@@ -157,7 +157,14 @@
   grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
 }
 
+/* A button now, so it needs the reset a <div> did not. */
 .empty {
+  position: relative;
+  width: 100%;
+  border: 1px dashed rgba(0, 0, 0, 0.16);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.14s, background 0.14s;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -272,5 +279,35 @@
   /* So the last card can be scrolled clear of it. */
   .scroll {
     padding-bottom: 50px;
+  }
+}
+
+.empty:hover {
+  border-color: var(--c-ink);
+  background: rgba(0, 0, 0, 0.02);
+}
+.empty:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+/*
+  The cursor is the affordance. A big plus, drawn with a white keyline so
+  it survives both the paper here and anything darker later, and
+  `!important` because the desktop sets its own cursor the same way
+  (styles/base.css).
+*/
+@media (hover: hover) {
+  /* The children as well as the panel. The desktop's cursor rule is a
+     universal selector carrying `!important` (styles/base.css), so it
+     lands on every span and paragraph in here — matching only `.empty`
+     left the pointer flicking back to the hand over the text. */
+  .empty,
+  .empty *,
+  .empty *::before,
+  .empty *::after {
+    cursor:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 9V39M9 24H39' stroke='%23fff' stroke-width='11' stroke-linecap='round'/%3E%3Cpath d='M24 9V39M9 24H39' stroke='%23101014' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E")
+        24 24,
+      pointer !important;
   }
 }

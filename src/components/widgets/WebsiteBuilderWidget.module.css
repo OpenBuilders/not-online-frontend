@@ -42,10 +42,12 @@
   text-transform: uppercase;
   padding-right: 20px;
 }
+/* Same inversion as the stat labels, and the same treatment the media
+   kit's first face gives its emphasised word. */
 .lead b {
   font-weight: 800;
-  background: #0d0d0f;
-  color: var(--c-white);
+  background: var(--c-white);
+  color: #0d0d0f;
   padding: 0 5px 2px;
   margin: 0 -2px;
   border-radius: 5px;
@@ -105,19 +107,21 @@
   font-weight: 800;
   line-height: 0.76;
   letter-spacing: -2.4px;
-  /* Solid ink, not the face's colour at partial opacity — a figure you
+  /* The accent, and the only thing on the card wearing it — a figure you
      have to squint at is not worth the space it takes. */
-  color: #0d0d0f;
+  color: var(--c-accent);
   font-variant-numeric: tabular-nums;
   /* The negative tracking pulls the glyph off its left edge; this puts the
      digit back in line with the block under it. */
   margin-left: 2px;
   margin-bottom: 4px;
 }
+/* Inverted with the card: black type on a white plate, so the label
+   reads as a printed tag rather than as more text. */
 .statLabel {
   border-radius: 5px;
-  background: #0d0d0f;
-  color: var(--c-white);
+  background: var(--c-white);
+  color: #0d0d0f;
   padding: 3px 7px 4px;
   font-size: 11px;
   font-weight: 800;

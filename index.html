@@ -26,6 +26,18 @@
     />
     <!-- Wide mono for the links page's "Bold" template and terminal button. -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <!--
+      The wobble on every sticker's cut line. Defined once, here, rather
+      than inside the component: an SVG filter is referenced by id, and a
+      component that rendered its own would put the same id in the
+      document as many times as there are widgets.
+    -->
+    <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+      <filter id="rough-edge" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
   </head>
   <body>
     <div id="root"></div>

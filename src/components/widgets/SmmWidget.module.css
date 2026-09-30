@@ -237,3 +237,83 @@
   background: #0d0d0f;
   color: var(--c-accent);
 }
+
+/* ---- per-face colour ----------------------------------------------------
+
+  All three faces sit on black. What separates them is which single thing
+  carries the accent, and the third face adds one white panel because a
+  schedule reads as a page rather than as a sign.
+*/
+
+/* State 1. The black box that used to sit behind "nothing" moves to
+   "post", turns white, and takes black text with it — on a black card the
+   original box was invisible, and the emphasis was landing on the wrong
+   half of the phrase. */
+.faceEmpty .lead {
+  color: var(--c-accent);
+}
+.faceEmpty .lead .plain {
+  display: inline-block;
+  background: var(--c-white);
+  color: #0d0d0f;
+  padding: 0 5px 2px;
+  margin: 0 -2px;
+  border-radius: 5px;
+}
+.faceEmpty .lead b {
+  background: none;
+  color: var(--c-accent);
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* State 2. The figure carries the accent; the word beside it and the line
+   under it stay white, the kicker keeping the opacity it already had. */
+.faceCount .number {
+  color: var(--c-accent);
+}
+/* On a plate, because the illustration runs behind this line and the
+   word was reading straight through it. The plate is the card's own
+   black, so it separates the two without adding a shape. */
+.faceCount .numberWord {
+  color: var(--c-white);
+  background: #0d0d0f;
+  padding: 3px 7px 4px;
+  border-radius: 5px;
+}
+
+/*
+  State 3. One white panel on the black card, so its contents come off
+  white: the date was lime and the title white, which on this ground would
+  be about 1.3:1 and invisible respectively. Today stays the lit thing,
+  and the run of days below becomes white at low alpha so it reads as a
+  strip on the card rather than as more panels.
+*/
+.faceCalendar .feature {
+  background: var(--c-white);
+}
+.faceCalendar .featureLabel {
+  color: var(--c-dim);
+}
+.faceCalendar .featureDate,
+.faceCalendar .featureTitle {
+  color: var(--c-ink);
+}
+.faceCalendar .todayPill {
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+/* Semi-transparent white squares with black figures. The alpha is high
+   enough for the figures to survive on it — at the 0.15 a "faint tile"
+   would want, black on this ground is unreadable. */
+.faceCalendar .day {
+  background: rgba(255, 255, 255, 0.55);
+  color: #0d0d0f;
+}
+/* A day that has something on it keeps the accent, like every other lit
+   thing on these cards. */
+.faceCalendar .dayOn {
+  background: var(--c-accent);
+  color: #0d1a00;
+}

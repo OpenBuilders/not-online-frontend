@@ -69,7 +69,14 @@ export type TourId = 'market' | 'settings' | 'page';
 // ---- not media kit (the SMM tool) ----
 
 /** The four places a post can go. Each one gets its own hints and templates. */
-export type SmmPlatform = 'instagram' | 'x' | 'youtube' | 'telegram';
+/**
+ * Where a post is going. `nowhere` is a real answer, not an empty one: a
+ * note worth keeping that is not meant to be published anywhere.
+ *
+ * NOTE: the API validates this field against its own enum. `nowhere` has to
+ * exist there too, or saving a post marked that way will be rejected.
+ */
+export type SmmPlatform = 'instagram' | 'x' | 'youtube' | 'telegram' | 'nowhere';
 
 /**
  * Where a post is in the loop. `posted` is the end of it — those drop out

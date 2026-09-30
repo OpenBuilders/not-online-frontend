@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { FocusTour, type FocusTourStep } from '@/components/shared/FocusTour';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { getMyLinkPage, saveLinkPage, toSiteConfig } from '@/api/linkPages';
+import {
+  getMyLinkPage,
+  getMyLinkPageAnalytics,
+  saveLinkPage,
+  toSiteConfig,
+} from '@/api/linkPages';
 import { blankSite } from '@/data/siteTemplates';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
@@ -69,15 +74,21 @@ export function WebsiteBuilderWindow() {
     if (!state.logged) return;
     let cancelled = false;
 
-    void getMyLinkPage()
-      .then((page) => {
+    void Promise.all([
+      getMyLinkPage(),
+      // Analytics must not prevent the owner from editing the page when the
+      // Stats API is temporarily unavailable.
+      getMyLinkPageAnalytics().catch(() => null),
+    ])
+      .then(([page, analytics]) => {
         if (cancelled) return;
         if (!page) {
           setLive(false);
           setDirty(true);
           return;
         }
-        const saved = toSiteConfig(page, presentationRef.current);
+        const saved = toSiteConfig(page, analytics ?? presentationRef.current);
+        presentationRef.current = { views: saved.views, clicks: saved.clicks };
         setCfg(saved);
         setSite(saved);
         setLive(true);

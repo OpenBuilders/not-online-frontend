@@ -1,7 +1,9 @@
 import type { RefObject } from 'react';
 import { DesktopIcon } from '@/components/desktop/DesktopIcon';
 import { MarketCta } from '@/components/desktop/MarketCta';
+import { ADMIN_EMAIL } from '@/api/admin';
 import { APP_ICON_PATHS } from '@/data/iconOverrides';
+import { useAppState } from '@/state/AppStateContext';
 import { useWindowManager } from '@/state/WindowManagerContext';
 
 interface DesktopIconLayerProps {
@@ -20,7 +22,9 @@ interface DesktopIconLayerProps {
  * progression still lives inside Settings > Backgrounds itself.
  */
 export function DesktopIconLayer({ desktopRef }: DesktopIconLayerProps) {
+  const { state } = useAppState();
   const { openWindow } = useWindowManager();
+  const isAdmin = state.email?.toLowerCase() === ADMIN_EMAIL;
 
   return (
     <>
@@ -49,6 +53,17 @@ export function DesktopIconLayer({ desktopRef }: DesktopIconLayerProps) {
         desktopRef={desktopRef}
         onOpen={() => openWindow({ kind: 'settings', title: 'Settings', width: 700, height: 520, singleton: true })}
       />
+      {isAdmin && (
+        <DesktopIcon
+          type="app"
+          app="admin"
+          name="admin"
+          x={44}
+          y={460}
+          desktopRef={desktopRef}
+          onOpen={() => openWindow({ kind: 'admin', title: 'admin', width: 560, height: 400, singleton: true })}
+        />
+      )}
     </>
   );
 }

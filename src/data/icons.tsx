@@ -91,6 +91,22 @@ export function MarketIcon() {
   );
 }
 
+export function AdminIcon() {
+  return (
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M50 12 82 25v23c0 20-13.7 32.8-32 40C31.7 80.8 18 68 18 48V25l32-13Z"
+        fill="rgba(255,255,255,0.08)"
+        stroke="rgba(255,255,255,0.9)"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <circle cx="50" cy="42" r="10" fill="var(--c-accent)" />
+      <path d="M32 68c3.8-9.2 11-14 18-14s14.2 4.8 18 14" stroke="var(--c-accent)" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function FileIcon() {
   return (
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,7 +124,7 @@ export function FileIcon() {
 }
 
 export type DesktopIconType = 'folder' | 'file' | 'app';
-export type AppIconName = 'notfound' | 'market' | 'settings';
+export type AppIconName = 'notfound' | 'market' | 'settings' | 'admin';
 
 /** Ported from defaultArt() (Tools.html:1845-1856). */
 export function defaultIcon(type: DesktopIconType, app?: AppIconName | null): JSX.Element {
@@ -118,6 +134,7 @@ export function defaultIcon(type: DesktopIconType, app?: AppIconName | null): JS
     if (app === 'notfound') return <NotFoundIcon />;
     if (app === 'market') return <MarketIcon />;
     if (app === 'settings') return <SettingsIcon />;
+    if (app === 'admin') return <AdminIcon />;
     return <AppIcon />;
   }
   return <AppIcon />;

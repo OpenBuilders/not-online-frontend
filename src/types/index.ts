@@ -134,7 +134,7 @@ export interface AppState {
 /** One entry per openable app/window. The remaining widget-backed windows
  *  (radar/tools/orgs/smm) are parked with the widgets themselves — add them
  *  back here when they come back. */
-export type WindowKind = 'market' | 'settings' | 'websiteBuilder' | 'smm' | 'artistApply' | 'notFound' | 'blank';
+export type WindowKind = 'admin' | 'market' | 'settings' | 'websiteBuilder' | 'smm' | 'artistApply' | 'notFound' | 'blank';
 
 export interface WindowInstance {
   id: string;

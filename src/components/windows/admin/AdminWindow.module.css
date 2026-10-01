@@ -1,0 +1,151 @@
+.window {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  color: var(--c-ink);
+  background:
+    radial-gradient(circle at top right, rgba(174, 255, 49, 0.26), transparent 42%),
+    var(--c-paper);
+}
+
+.card {
+  width: min(100%, 460px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: var(--c-ink);
+  color: var(--c-accent);
+}
+
+.eyebrow {
+  margin-bottom: 3px;
+  color: var(--c-dim);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.card h1 {
+  font-size: 23px;
+  line-height: 1.1;
+}
+
+.description {
+  grid-column: 1 / -1;
+  color: var(--c-dim);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.form,
+.feedback {
+  grid-column: 1 / -1;
+}
+
+.form label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--c-dim);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.actionRow {
+  display: flex;
+  gap: 8px;
+}
+
+.actionRow input {
+  min-width: 0;
+  flex: 1;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 9px;
+  padding: 0 11px;
+  color: var(--c-ink);
+  background: var(--c-white);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  user-select: text;
+}
+
+.actionRow input:focus {
+  border-color: var(--c-ink);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.actionRow button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 40px;
+  border: 0;
+  border-radius: 9px;
+  padding: 0 13px;
+  color: var(--c-ink);
+  background: var(--c-accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.actionRow button:disabled,
+.actionRow input:disabled {
+  opacity: 0.58;
+}
+
+.feedback {
+  min-height: 22px;
+}
+
+.feedback p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.success {
+  color: #267129;
+}
+
+.error {
+  color: #b02c21;
+}
+
+@media (max-width: 520px) {
+  .window {
+    align-items: start;
+    padding: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .actionRow {
+    flex-direction: column;
+  }
+
+  .actionRow button {
+    width: 100%;
+  }
+}

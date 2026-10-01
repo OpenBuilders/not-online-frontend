@@ -1,4 +1,5 @@
 import { ArtistApplyWindow } from '@/components/windows/ArtistApplyWindow';
+import { AdminWindow } from '@/components/windows/admin/AdminWindow';
 import { BlankWindow } from '@/components/windows/BlankWindow';
 import { NotFoundWindow } from '@/components/windows/NotFoundWindow';
 import { WindowFrame } from '@/components/windows/WindowFrame';
@@ -15,6 +16,7 @@ import type { JSX } from 'react';
 // "Become a partner" everywhere now opens https://probablynothing.xyz/patrons?utm_campaign=notonline&utm_source=not-online-cta
 // in a new tab instead of an in-app window — see src/data/links.ts.
 const CONTENT_BY_KIND: Record<WindowKind, () => JSX.Element> = {
+  admin: AdminWindow,
   market: MarketWindow,
   settings: SettingsWindow,
   websiteBuilder: WebsiteBuilderWindow,

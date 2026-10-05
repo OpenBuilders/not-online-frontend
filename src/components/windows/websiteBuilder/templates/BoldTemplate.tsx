@@ -15,11 +15,6 @@ export function BoldTemplate({ cfg, content }: TemplateProps) {
       <div className={styles.frame}>
         <div className={styles.top}>
           <div className={styles.head}>
-
-            {!avatar && (
-              <p style={{marginBottom: "16px"}} className={styles.mark} aria-hidden="true">{handle}</p>
-            )}
-
             <div className={styles.name}>{name}</div>
             <div className={styles.url}>{siteUrl(cfg.handle)}</div>
           </div>

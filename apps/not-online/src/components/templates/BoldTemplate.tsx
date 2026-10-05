@@ -8,7 +8,7 @@ import styles from './BoldTemplate.module.css';
  * decoration: they are what a reader uses to refer to a row out loud.
  */
 export function BoldTemplate({ cfg, content }: TemplateProps) {
-  const { name, handle, bio, links } = content;
+  const { name, bio, links, avatar } = content;
 
   return (
     <div className={styles.root}>
@@ -18,9 +18,11 @@ export function BoldTemplate({ cfg, content }: TemplateProps) {
             <div className={styles.name}>{name}</div>
             <div className={styles.url}>{siteUrl(cfg.handle)}</div>
           </div>
-          <span className={styles.mark} aria-hidden="true">
-            {handle.slice(0, 3)}
-          </span>
+          {avatar && (
+            <span className={styles.mark} aria-hidden="true">
+              <img src={avatar} alt="" />
+            </span>
+          )}
         </div>
 
         <ol className={styles.list}>

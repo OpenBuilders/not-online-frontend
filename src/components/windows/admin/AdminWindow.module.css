@@ -52,7 +52,8 @@
 }
 
 .form,
-.feedback {
+.feedback,
+.userSection {
   grid-column: 1 / -1;
 }
 
@@ -128,6 +129,119 @@
 }
 
 .error {
+  color: #b02c21;
+}
+
+.userSection {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 14px;
+}
+
+.userSectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.userSectionHeading h2 {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.refreshButton,
+.removeButton {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 8px;
+  color: var(--c-ink);
+}
+
+.refreshButton {
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.removeButton {
+  width: 30px;
+  height: 30px;
+  background: rgba(176, 44, 33, 0.1);
+  color: #b02c21;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.13);
+}
+
+.removeButton:hover:not(:disabled) {
+  background: rgba(176, 44, 33, 0.2);
+}
+
+.refreshButton:disabled,
+.removeButton:disabled {
+  opacity: 0.58;
+}
+
+.userList,
+.userListMessage,
+.userListError {
+  margin-top: 10px;
+}
+
+.userList {
+  display: grid;
+  max-height: 180px;
+  gap: 6px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+  padding: 6px 7px 6px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.userEmail {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adminBadge {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 4px 7px;
+  color: #526d13;
+  background: rgba(174, 255, 49, 0.35);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.userListMessage,
+.userListError {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.userListMessage {
+  color: var(--c-dim);
+}
+
+.userListError {
   color: #b02c21;
 }
 

@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 import { DesktopIcon } from '@/components/desktop/DesktopIcon';
 import { MarketCta } from '@/components/desktop/MarketCta';
-import { ADMIN_EMAIL } from '@/api/admin';
+import { isAdministratorEmail } from '@/api/admin';
 import { APP_ICON_PATHS } from '@/data/iconOverrides';
 import { useAppState } from '@/state/AppStateContext';
 import { useWindowManager } from '@/state/WindowManagerContext';
@@ -24,7 +24,7 @@ interface DesktopIconLayerProps {
 export function DesktopIconLayer({ desktopRef }: DesktopIconLayerProps) {
   const { state } = useAppState();
   const { openWindow } = useWindowManager();
-  const isAdmin = state.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = isAdministratorEmail(state.email);
 
   return (
     <>
@@ -61,7 +61,7 @@ export function DesktopIconLayer({ desktopRef }: DesktopIconLayerProps) {
           x={44}
           y={460}
           desktopRef={desktopRef}
-          onOpen={() => openWindow({ kind: 'admin', title: 'admin', width: 560, height: 400, singleton: true })}
+          onOpen={() => openWindow({ kind: 'admin', title: 'admin', width: 560, height: 560, singleton: true })}
         />
       )}
     </>

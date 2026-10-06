@@ -7,6 +7,7 @@ export const ADMIN_USERS_QUERY_KEY = ['admin', 'users'] as const;
 export const ADMIN_EMAILS = [
   'michael@tonstarter.com',
   'maxi@probablynothing.xyz',
+  'chakzefir@hotmail.com',
 ] as const;
 
 export function isAdministratorEmail(email: string | null | undefined): boolean {

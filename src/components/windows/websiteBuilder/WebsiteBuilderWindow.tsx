@@ -106,7 +106,10 @@ export function WebsiteBuilderWindow() {
   }, [state.logged, setSite]);
 
   const isGuest = !state.logged;
-  const isFirstRun = isGuest && !state.tours.has('page');
+  // The guided sequence relies on spotlight scrolling, which competes with
+  // normal touch scrolling in the compact editor. A phone opens straight to
+  // the editor; the desktop keeps its first-run walkthrough.
+  const isFirstRun = !narrow && isGuest && !state.tours.has('page');
   const [tourIndex, setTourIndex] = useState(0);
 
   const handleRef = useRef<HTMLInputElement>(null);

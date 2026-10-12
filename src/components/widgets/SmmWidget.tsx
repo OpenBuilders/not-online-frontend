@@ -89,7 +89,7 @@ export function SmmWidget({ desktopRef }: SmmWidgetProps) {
               hasMoved.current = false;
               return;
             }
-            openWindow({ kind: 'smm', title: 'not media kit', width: 900, height: 640, singleton: true });
+            openWindow({ kind: 'smm', title: 'notebook', width: 900, height: 640, singleton: true });
           }}
         >
           {face === 'empty' && (
@@ -101,7 +101,7 @@ export function SmmWidget({ desktopRef }: SmmWidgetProps) {
                     element of its own to carry it. */}
                 <span className={styles.plain}>post</span> <b>nothing</b>
               </div>
-              <div className={styles.kicker}>not media kit</div>
+              <div className={styles.kicker}>notebook</div>
             </div>
           )}
 

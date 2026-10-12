@@ -8,10 +8,9 @@ import { cx } from '@/lib/cx';
 import styles from './PagePublished.module.css';
 
 const JOKES = [
-  'Estimated visitors so far: one. It was you.',
-  'Somewhere, a linktree just felt a chill.',
-  'You now own a corner of the internet roughly the size of a sticker.',
-  'This is the part where you send the link to four people and refresh.',
+  'Put it in your bio and let everyone see how cool you are',
+  'Somewhere, a linktree just felt a chill',
+  'Congrats, you’re a website now',
 ];
 
 interface PagePublishedProps {

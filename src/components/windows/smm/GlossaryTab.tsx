@@ -38,7 +38,7 @@ export function GlossaryTab() {
   return (
     <div className={styles.tab}>
       <header className={styles.masthead}>
-        <h2 className={styles.title}>smm glossary</h2>
+        <h2 className={styles.title}>glossary</h2>
         <p className={styles.standfirst}>worth knowing before you plan a month of content</p>
       </header>
 

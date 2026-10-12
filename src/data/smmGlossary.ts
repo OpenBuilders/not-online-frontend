@@ -36,24 +36,24 @@ export const GLOSSARY: GlossarySection[] = [
         body: 'how many **different people** saw the post — not views, not impressions. one person scrolling past it three times still counts once.',
       },
       {
+        term: 'impressions',
+        body: 'how many times your post was seen, **repeats included**. if it’s much higher than reach, people came back to it',
+      },
+      {
         term: 'engagement rate',
-        body: 'the share of people who **reacted** — liked, commented, saved — out of everyone who saw it. a post with modest reach and high engagement usually beats a viral one nobody acted on.',
+        body: 'how many **reactions** your post got (likes, comments, saves, shares) compared to how many people saw it. a small post people react to beats a big one nobody touches',
       },
       {
         term: 'saves',
-        body: 'the most honest signal there is: someone wants to **come back** to this later. weighs more than a like in how Instagram reads a post.',
+        body: 'someone wants to **come back** to your post later. a save counts for more than a like',
       },
       {
         term: 'utm tag',
-        body: 'the tail on a link that says exactly where a click came from — without it, a click from a story and a click from a bio link look **identical** in your stats.',
+        body: 'a tag added to a link that shows where a **click** came from, like your bio or a story',
       },
       {
         term: 'source / medium / campaign',
-        body: 'the three fields that make a utm link readable: **source** — instagram; **medium** — bio / stories / post; **campaign** — the drop or event name. pick one structure and reuse it everywhere, or the numbers never add up.',
-      },
-      {
-        term: 'impressions',
-        body: 'every time the post appeared on a screen, **including repeats**. always higher than reach. useful only next to reach — the gap between them is how often people came back.',
+        body: 'the three parts of a utm tag. source is where **instagram**, medium is how **bio, story, post**, campaign is what **your drop or event**. name them the same way every time',
       },
     ],
   },
@@ -65,27 +65,27 @@ export const GLOSSARY: GlossarySection[] = [
     terms: [
       {
         term: 'link in bio',
-        body: 'the only clickable link most platforms give a normal account. treat it as **one decision**, not a list — a page with seven equal links sends people nowhere.',
+        body: 'the link on your profile. pick one main place to send people. a page with seven equal links sends them nowhere',
       },
       {
         term: 'handle',
-        body: 'the @name. it is your address, so it should be **typeable from memory** after hearing it once. changing it later breaks every link anyone ever saved.',
+        body: 'your @name. it’s your address, so make it easy to type after hearing it once. change it later and every saved link breaks',
       },
       {
         term: 'bio',
-        body: 'roughly 150 characters to answer "what is this and why should I stay". name what you **make**, not what you are — "posters, weekly" reads better than "creative soul".',
+        body: 'the short text under your name. say what you make in a few words, so a stranger knows why to follow',
       },
       {
         term: 'highlights',
-        body: 'stories pinned under the bio. the only part of an account you fully control the order of — so it works as a **menu**: prices, process, past work, how to reach you.',
+        body: 'saved stories that stay under your bio. use them like a menu, so people find what they need without scrolling',
       },
       {
         term: 'pinned posts',
-        body: 'the top three slots on the grid, frozen. use them for the posts that **explain you** to a stranger, not the most recent ones.',
+        body: 'posts fixed at the top of your profile. use them for the ones that explain you to a stranger, not the newest ones',
       },
       {
         term: 'close friends',
-        body: 'a second, smaller audience inside the same account. the honest use is **work in progress** — the stuff not finished enough for everyone.',
+        body: 'stories only a chosen few can see. a good place for drafts and things you’re still figuring out',
       },
     ],
   },
@@ -97,27 +97,27 @@ export const GLOSSARY: GlossarySection[] = [
     terms: [
       {
         term: 'collab post',
-        body: 'one post published to **two profiles at once**, with both sets of followers seeing it and one shared counter. the cheapest reach there is, and it costs nothing but asking.',
+        body: 'one post shared by two accounts at once. both audiences see it, so you reach twice as many people for free',
       },
       {
         term: 'brief',
-        body: 'the written version of what was agreed: deliverables, dates, who approves. if it was only ever said out loud, **it was not agreed** — it was discussed.',
+        body: 'a short doc with everything you need to know before you start: what’s needed, who it’s for and by when',
       },
       {
         term: 'deliverables',
-        body: 'the countable list — "3 photos, 1 reel, 2 stories". vague scope is where collaborations die, because **everyone remembers it differently** a month later.',
+        body: 'what you’ll actually deliver, counted out: "3 photos, 1 reel, 2 stories". clear numbers mean no arguments later',
       },
       {
         term: 'barter',
-        body: 'paid in product instead of money. fine when you wanted the product anyway. worth pricing out loud regardless, so **both sides know** what the trade was worth.',
+        body: 'getting paid in product instead of money. fine if you wanted the thing anyway, but still say what it’s worth, so both sides know the deal',
       },
       {
         term: 'ugc',
-        body: 'content made for a brand to post on its own channels, not on yours. different job, different price — you are selling **the files**, not your audience.',
+        body: 'posts and clips made by regular people, not by you or a brand. brands also pay creators to make this kind of content for their own channels',
       },
       {
         term: 'rate card',
-        body: 'your prices, written down before anyone asks. its real function is to stop you **inventing a number** in a DM at midnight.',
+        body: 'your prices, written down before anyone asks. it stops you from making up a number in a DM at midnight',
       },
     ],
   },
@@ -129,27 +129,27 @@ export const GLOSSARY: GlossarySection[] = [
     terms: [
       {
         term: 'hook',
-        body: 'the first line or first second. it has one job — **buy the next three seconds**. everything you planned to say depends on it and it is usually written last.',
+        body: 'the first line of a post or the first second of a video. it has one job: make people stop scrolling',
       },
       {
         term: 'carousel',
-        body: 'a multi-slide post. swipes count as engagement, so a carousel that earns its second slide **outperforms** the same idea as one image.',
+        body: 'a post with several images people swipe through. good for steps, before and after, or a story in parts',
       },
       {
         term: 'cta',
-        body: 'the sentence that says what to do now. one per post. "save this" and "tell me yours" are **different asks** — pick the one you actually want.',
+        body: 'call to action: the line that tells people what to do next. ask for one thing per post.',
       },
       {
         term: 'batching',
-        body: 'making a month of content in one sitting instead of one post a day. the point is not speed, it is **not deciding** what to post every morning.',
+        body: 'making several posts at once instead of one every day, so you don’t have to think about what to post each morning',
       },
       {
         term: 'shadowban',
-        body: 'the folk name for a sudden reach collapse. usually **not a ban** — more often a format the feed stopped favouring, or a post that read as spam. worth checking before panicking.',
+        body: 'when your posts suddenly get far fewer views and it feels like you’ve been hidden. usually it’s not a real ban, just a format that stopped working',
       },
       {
         term: 'evergreen',
-        body: 'a post that still makes sense in six months. worth keeping a handful, because they are what a **new follower** scrolls back into.',
+        body: 'a post that still makes sense months later. keep a few, because new followers scroll back and find them',
       },
     ],
   },

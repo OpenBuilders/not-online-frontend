@@ -307,7 +307,7 @@ export function ArchiveTab({ onPlan, onPickDate, onJoin, newPostSignal = 0 }: Ar
               <p className={styles.emptyBody}>
                 {labelFilter
                   ? 'Every post with this label is in the posted shelf, or there are none left.'
-                  : 'Ideas do not survive the walk home. Put one here as a draft — it does not have to be finished, or good.'}
+                  : 'Ideas don’t survive the walk home. Drop one here. It doesn’t have to be finished, or good.'}
               </p>
             </button>
           ) : (

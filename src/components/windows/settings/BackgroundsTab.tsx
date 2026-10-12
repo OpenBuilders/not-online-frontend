@@ -54,7 +54,7 @@ export function BackgroundsTab() {
                 that need to stay fully legible. */}
             <span className={styles.photo} style={{ backgroundImage: `url('${opt.src}')` }} />
             {patronLocked ? (
-              <Sticker text="Patrons" icon="lock" color="pink" rotate={-6} className={styles.callout} />
+              <Sticker text="For Patrons" icon="lock" color="pink" rotate={-6} className={styles.callout} />
             ) : !unlocked ? (
               <span className={styles.lockBadge}>
                 <MaterialIcon name="lock" size={15} />

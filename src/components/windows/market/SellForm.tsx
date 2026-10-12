@@ -107,12 +107,12 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
   }
 
   const tourSteps: FocusTourStep[] = [
-    { ref: dropRef, text: "Nothing to sell yet? Click here — we'll fake it for you." },
-    { ref: titleRef, text: "Naming is important, bro, don't screw this up.", onNext: completeTitle },
-    { ref: descRef, text: 'Tell people how much sweat and blood went into this.', onNext: completeDesc },
-    { ref: priceRef, text: 'I know this item is priceless, but... a number, please.', onNext: completePrice },
+    { ref: dropRef, text: "Nothing to sell yet? Try it with a sample" },
+    { ref: titleRef, text: "Naming is important, bro, don't screw this up", onNext: completeTitle },
+    { ref: descRef, text: 'What it’s made of, and how long it took', onNext: completeDesc },
+    { ref: priceRef, text: 'I know this item is priceless, but... a number, please', onNext: completePrice },
     { ref: contactRef, text: 'How should a buyer actually reach you?', onNext: completeContact },
-    { ref: publishRef, text: 'Smash that Submit button.' },
+    { ref: publishRef, text: 'That’s it' },
   ];
   const tourActive = isFirstRun && tourIndex < tourSteps.length;
 
@@ -231,7 +231,7 @@ export function SellForm({ onSubmitted, windowRef }: SellFormProps) {
         <p>
           {state.logged
             ? `You can have up to ${MAX_ITEMS} market applications under review.`
-            : `A guest can have ${GUEST_MAX_ITEMS} real market application${GUEST_MAX_ITEMS === 1 ? '' : 's'} under review in this browser.`}
+            : 'Guests can have 1 item in review at a time. Log in to submit up to 3'}
         </p>
       </div>
     );

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
 import { blankSite } from '@/data/siteTemplates';
 import type { AppState, SiteConfig, SiteTemplateId, TourId } from '@/types';
 
@@ -116,6 +116,10 @@ function reducer(state: AppState, action: Action): AppState {
 
 interface AppStateContextValue {
   state: AppState;
+  /** The real session lives in the API; this only controls the login screen. */
+  loginOpen: boolean;
+  requestLogin: () => void;
+  dismissLogin: () => void;
   login: (email: string) => void;
   logout: () => void;
   completeTour: (tour: TourId) => void;
@@ -130,6 +134,7 @@ const AppStateCtx = createContext<AppStateContextValue | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, buildInitialState);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -157,6 +162,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback((email: string) => dispatch({ type: 'LOGIN', email }), []);
   const logout = useCallback(() => dispatch({ type: 'LOGOUT' }), []);
+  const requestLogin = useCallback(() => setLoginOpen(true), []);
+  const dismissLogin = useCallback(() => setLoginOpen(false), []);
   const completeTour = useCallback((tour: TourId) => dispatch({ type: 'COMPLETE_TOUR', tour }), []);
   const setSite = useCallback((site: SiteConfig) => dispatch({ type: 'SET_SITE', site }), []);
   const setCursor = useCallback((cursor: string) => dispatch({ type: 'SET_CURSOR', cursor }), []);
@@ -167,6 +174,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AppStateContextValue>(
     () => ({
       state,
+      loginOpen,
+      requestLogin,
+      dismissLogin,
       login,
       logout,
       completeTour,
@@ -178,6 +188,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      loginOpen,
+      requestLogin,
+      dismissLogin,
       login,
       logout,
       completeTour,

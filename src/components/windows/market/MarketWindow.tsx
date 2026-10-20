@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
+import { CircleJoinCta } from '@/components/cta/CircleJoinCta';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
+import { FeatureIntroModal } from '@/components/shared/FeatureIntroModal';
 import { cx } from '@/lib/cx';
 import { useAppState } from '@/state/AppStateContext';
 import { BrowseTab } from './BrowseTab';
@@ -23,9 +25,12 @@ type Tab = 'sell' | 'browse' | 'stats';
  * Tools.html:1174) rather than a top bar.
  */
 export function MarketWindow() {
-  const { state } = useAppState();
+  const { state, requestLogin } = useAppState();
   const isFirstRun = !state.logged && !state.tours.has('market');
   const [tab, setTab] = useState<Tab>(isFirstRun ? 'sell' : 'browse');
+  const [bodyElement, setBodyElement] = useState<HTMLDivElement | null>(null);
+  const [statsIntroOpen, setStatsIntroOpen] = useState(false);
+  const [joinOpen, setJoinOpen] = useState(false);
   // Passed down to SellForm so its FocusTour can darken the whole window
   // (rail included) instead of just its own tab content — see FocusTour.tsx.
   const windowRef = useRef<HTMLDivElement>(null);
@@ -41,16 +46,48 @@ export function MarketWindow() {
           <MaterialIcon name="storefront" size={17} />
           Browse
         </button>
-        <button type="button" className={cx(styles.railItem, tab === 'stats' && styles.on)} onClick={() => setTab('stats')}>
+        <button
+          type="button"
+          className={cx(styles.railItem, tab === 'stats' && styles.on)}
+          onClick={() => {
+            setTab('stats');
+            setStatsIntroOpen(!state.logged);
+          }}
+        >
           <MaterialIcon name="bar_chart" size={17} />
           Stats
         </button>
       </div>
-      <div className={styles.body}>
+      <div className={styles.body} ref={setBodyElement}>
         {tab === 'sell' && <SellForm onSubmitted={() => setTab('browse')} windowRef={windowRef} />}
         {tab === 'browse' && <BrowseTab onPublish={() => setTab('sell')} />}
         {tab === 'stats' && <StatsLocked />}
+        {!state.logged && statsIntroOpen && (
+          <FeatureIntroModal
+            container={bodyElement}
+            icon="bar_chart"
+            eyebrow="Your market at a glance"
+            title="What are Stats?"
+            copy="Stats show how your market listings are doing: approved or not, how many sold, how much earned."
+            note="Join the circle or log in to see yours."
+            onDismiss={() => {
+              setStatsIntroOpen(false);
+              setTab('sell');
+            }}
+            onJoin={() => {
+              setStatsIntroOpen(false);
+              setTab('sell');
+              setJoinOpen(true);
+            }}
+            onLogin={() => {
+              setStatsIntroOpen(false);
+              setTab('sell');
+              requestLogin();
+            }}
+          />
+        )}
       </div>
+      {joinOpen && <CircleJoinCta onClose={() => setJoinOpen(false)} />}
     </div>
   );
 }

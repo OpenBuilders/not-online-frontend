@@ -3,6 +3,7 @@ import { AeroButton } from '@/components/shared/AeroButton';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { BRAINSTORM_QUESTIONS } from '@/data/smmHints';
 import { SiteSelect } from '@/components/shared/SiteSelect';
+import { FeatureIntroModal } from '@/components/shared/FeatureIntroModal';
 import { cx } from '@/lib/cx';
 import { useMediaKit } from '@/hooks/useMediaKit';
 import { backupMediaKitPost } from '@/api/mediaKit';
@@ -18,6 +19,8 @@ interface ArchiveTabProps {
   onPlan: () => void;
   onPickDate: (postId: string) => void;
   onJoin: (title: string, sub: string) => void;
+  /** Overlay host for the guest Bingo introduction. */
+  overlayContainer: HTMLDivElement | null;
   /** Incremented by the window when another tab asks for a blank post. */
   newPostSignal?: number;
 }
@@ -25,13 +28,14 @@ interface ArchiveTabProps {
 type Editing = SmmPost | 'new' | null;
 type Panel = 'questions' | 'bingo' | null;
 
-export function ArchiveTab({ onPlan, onPickDate, onJoin, newPostSignal = 0 }: ArchiveTabProps) {
-  const { state } = useAppState();
+export function ArchiveTab({ onPlan, onPickDate, onJoin, overlayContainer, newPostSignal = 0 }: ArchiveTabProps) {
+  const { state, requestLogin } = useAppState();
   const { posts, createPost, updatePost, removePost, addPhotos, removePhoto } = useMediaKit();
   const guest = !state.logged;
   const [view, setView] = useState<'list' | 'grid'>('list');
   const [editing, setEditing] = useState<Editing>(null);
   const [panel, setPanel] = useState<Panel>(null);
+  const [bingoIntroOpen, setBingoIntroOpen] = useState(false);
   const [showPosted, setShowPosted] = useState(false);
   /** Null is "everything". Kept as a plain string so a label that stops
    *  existing simply stops matching, instead of hiding the whole list. */
@@ -169,11 +173,8 @@ export function ArchiveTab({ onPlan, onPickDate, onJoin, newPostSignal = 0 }: Ar
   }
 
   function openPanel(which: Exclude<Panel, null>) {
-    if (guest && which === 'bingo') {
-      onJoin('Bingo is a patron thing', 'Nine prompts, two clicks each. Move the light, pick your role.');
-      return;
-    }
     setPanel(which);
+    setBingoIntroOpen(guest && which === 'bingo');
   }
 
   return (
@@ -261,7 +262,35 @@ export function ArchiveTab({ onPlan, onPickDate, onJoin, newPostSignal = 0 }: Ar
         </div>
       </div>
 
-      {panel === 'bingo' && <BingoPanel />}
+      {panel === 'bingo' && (
+        <>
+          <BingoPanel />
+          {guest && bingoIntroOpen && (
+            <FeatureIntroModal
+              container={overlayContainer}
+              icon="apps"
+              eyebrow="A prompt board for stuck days"
+              title="What is Bingo?"
+              copy="It's a batch of ideas to inspire you to tell more and increase your presence. Each square is a small idea for a post."
+              note="Three in a row wins nothing. Having something to post is the prize."
+              onDismiss={() => {
+                setBingoIntroOpen(false);
+                setPanel(null);
+              }}
+              onJoin={() => {
+                setBingoIntroOpen(false);
+                setPanel(null);
+                onJoin('Join the circle', 'Move the light, pick your role.');
+              }}
+              onLogin={() => {
+                setBingoIntroOpen(false);
+                setPanel(null);
+                requestLogin();
+              }}
+            />
+          )}
+        </>
+      )}
 
       {panel === 'questions' && !guest && (
         <div className={cx(styles.questions, styles.scroll)}>

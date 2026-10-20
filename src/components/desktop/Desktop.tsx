@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { DesktopIconLayer } from '@/components/desktop/DesktopIconLayer';
 import { HomeBar } from '@/components/desktop/HomeBar';
 import { TopRow } from '@/components/desktop/TopRow';
@@ -21,8 +21,7 @@ const DEFAULT_WALLPAPER = '/images/screen_1.jpg';
  */
 export function Desktop() {
   const desktopRef = useRef<HTMLDivElement>(null);
-  const { state } = useAppState();
-  const [loginOpen, setLoginOpen] = useState(false);
+  const { state, loginOpen, requestLogin, dismissLogin } = useAppState();
   const { checkingSession } = useSessionSync();
   const wallpaperSrc = BACKGROUND_OPTIONS.find((o) => o.id === state.wallpaper)?.src ?? DEFAULT_WALLPAPER;
 
@@ -54,7 +53,7 @@ export function Desktop() {
     <div className="desktop" id="desktop" ref={desktopRef} style={{ backgroundImage: `url('${wallpaperSrc}')` }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
 
-      <TopRow onRequestLogin={() => setLoginOpen(true)} />
+      <TopRow onRequestLogin={requestLogin} />
 
       {/* Radar, Toolbox and Orgs are still parked — their tools don't exist
           here yet. The links page and the media kit do. */}
@@ -74,7 +73,7 @@ export function Desktop() {
       <WindowManager />
       <HomeBar />
 
-      {loginOpen && <LoginScreen backgroundImage={DEFAULT_WALLPAPER} onClose={() => setLoginOpen(false)} />}
+      {loginOpen && <LoginScreen backgroundImage={DEFAULT_WALLPAPER} onClose={dismissLogin} />}
     </div>
   );
 }

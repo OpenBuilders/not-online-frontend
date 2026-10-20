@@ -47,6 +47,7 @@ export function SmmWindow() {
   const { state } = useAppState();
   const guest = !state.logged;
   const [tab, setTab] = useState<Tab>('archive');
+  const [bodyElement, setBodyElement] = useState<HTMLDivElement | null>(null);
 
   /** The join CTA, when something asked for it. One instance, mounted at
    *  the window so its scrim covers the whole thing. */
@@ -85,7 +86,7 @@ export function SmmWindow() {
           </button>
         ))}
       </div>
-      <div className={styles.body}>
+      <div className={styles.body} ref={setBodyElement}>
         {/* The guest sees the tool but cannot create browser-only drafts:
             every real post now belongs to the authenticated account. */}
         {guest && (
@@ -108,6 +109,7 @@ export function SmmWindow() {
               setTab('plan');
             }}
             onJoin={(title, sub) => setCta({ title, sub })}
+            overlayContainer={bodyElement}
             newPostSignal={newPostSignal}
           />
         )}

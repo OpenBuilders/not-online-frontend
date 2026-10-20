@@ -1,6 +1,8 @@
+import type { CSSProperties } from 'react';
 import { getFolderColor } from '@/data/siteAssets';
-import { siteUrl } from '@/data/siteTemplates';
+import { getPalette, siteUrl } from '@/data/siteTemplates';
 import type { TemplateProps } from './SitePage';
+import { scopeCustomCss } from './customCss';
 import styles from './FoldersTemplate.module.css';
 import { LinkIcon } from './LinkIcon';
 
@@ -24,53 +26,68 @@ import { LinkIcon } from './LinkIcon';
 export function FoldersTemplate({ cfg, content }: TemplateProps) {
   const { name, bio, links, avatar } = content;
   const folder = getFolderColor(cfg.folderColor);
+  const p = getPalette(cfg.palette);
+  const vars = {
+    '--pg-bg': p.bg,
+    '--pg-ink': p.ink,
+    '--pg-accent': p.accent,
+    '--pg-accent-ink': p.accentInk,
+    '--pg-accent-2': p.accent2,
+  } as CSSProperties;
+  const { css: customCss } = scopeCustomCss(cfg.customCss);
 
   return (
-    <div className={styles.root}>
-      {/* The avatar reads as part of who this page is, so it goes inside
+    <div className={styles.page} data-site-page data-page-handle={cfg.handle} style={vars}>
+      {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
+      <div className={styles.root}>
+          {/* The avatar reads as part of who this page is, so it goes inside
           the name's own outline rather than beside it — one object that
           says who this is, not a thumbnail parked next to a caption. */}
-      <div className={styles.head}>
-        <h1 className={styles.name}>
-          {avatar && <img className={styles.avatar} src={avatar} alt="" />}
-          <span className={styles.nameText}>{name}</span>
-        </h1>
-      </div>
+          <div className={styles.head}>
+            <h1 className={styles.name}>
+              {avatar && <img className={styles.avatar} src={avatar} alt="" />}
+              <span className={styles.nameText}>{name}</span>
+            </h1>
+          </div>
 
-      <div className={styles.shelf}>
-        {links.map((l) => (
-          <a
-            key={l.id}
-            className={styles.folder}
-            href={l.url || '#'}
-            target="_blank"
-            rel="noreferrer"
-            data-link-title={l.title}
-          >
-            <span className={styles.art}>
-              <img className={styles.folderImg} src={folder.src} alt="" />
-              <LinkIcon icon={l.icon} size={32} className={styles.badge} />
-            </span>
-            <span className={styles.label}>{l.title}</span>
-          </a>
-        ))}
-      </div>
+          <div className={styles.shelf}>
+            {links.map((l) => (
+              <a
+                key={l.id}
+                className={styles.folder}
+                href={l.url || '#'}
+                target="_blank"
+                rel="noreferrer"
+                data-link-title={l.title}
+              >
+                <span className={styles.art}>
+                  <img className={styles.folderImg} src={folder.src} alt="" />
+                  <LinkIcon icon={l.icon} size={32} className={styles.badge} />
+                </span>
+                <span className={styles.label}>{l.title}</span>
+              </a>
+            ))}
+          </div>
 
-      <div className={styles.about}>
-        <p className={styles.bio}>{bio}</p>
-      </div>
+          <div className={styles.about}>
+            <p className={styles.bio}>{bio}</p>
+          </div>
 
-      <div className={styles.path}>
-        {siteUrl(cfg.handle)
-          .split('/')
-          .map((part, i, all) => (
-            <span key={part} className={styles.crumb}>
-              <img className={styles.crumbIcon} src={folder.src} alt="" />
-              {part}
-              {i < all.length - 1 && <i className={styles.sep}>›</i>}
-            </span>
-          ))}
+          <div className={styles.path}>
+            {siteUrl(cfg.handle)
+              .split('/')
+              .map((part, i, all) => (
+                <span key={part} className={styles.crumb}>
+                  <img className={styles.crumbIcon} src={folder.src} alt="" />
+                  {part}
+                  {i < all.length - 1 && <i className={styles.sep}>›</i>}
+                </span>
+              ))}
+          </div>
       </div>
+      <a href="https://instagram.com/cultofnot" target="_blank" rel="noreferrer" className={styles.mark}>
+        cultofnot
+      </a>
     </div>
   );
 }

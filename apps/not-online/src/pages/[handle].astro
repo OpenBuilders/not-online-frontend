@@ -1,5 +1,6 @@
 ---
 import { SitePage } from '../components/templates/SitePage';
+import { getPalette } from '../data/siteTemplates';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublicLinkPage } from '../lib/linkPage';
 
@@ -27,21 +28,30 @@ const cfg = page
   : null;
 
 if (!page) Astro.response.status = 404;
+const palette = cfg ? getPalette(cfg.palette) : null;
+const backdrop = cfg?.backdrop === 'photo' && !cfg.backdropImage ? 'flat' : cfg?.backdrop;
+const bodyStyle = palette
+  ? [
+      `--page-bg: ${palette.bg}`,
+      `--page-ink: ${palette.ink}`,
+      `--page-accent: ${palette.accent}`,
+      cfg?.backdropImage ? `--page-photo: url(${JSON.stringify(cfg.backdropImage)})` : '',
+    ]
+      .filter(Boolean)
+      .join('; ')
+  : undefined;
 ---
 
 <BaseLayout
   title={page ? `${page.name} — not.online` : 'Page not found — not.online'}
   description={page?.bio}
   favicon={page?.avatar ?? undefined}
+  backdrop={backdrop}
+  bodyStyle={bodyStyle}
 >
   {
     cfg ? (
-      <div
-        class="page"
-        data-page-handle={cfg.handle}
-      >
-        <SitePage cfg={cfg} />
-      </div>
+      <SitePage cfg={cfg} />
     ) : (
       <main class="not-found">
         <h1>404</h1>
@@ -84,7 +94,6 @@ if (!page) Astro.response.status = 404;
 </script>
 
 <style>
-  .page { width: 100%; height: 100svh; }
   .not-found { min-height: 100svh; display: grid; place-content: center; padding: 24px; text-align: center; background: #0b0b0c; color: white; font-family: Arial, sans-serif; }
   .not-found h1 { margin: 0; color: #a8ff1a; font-size: 72px; }
 </style>

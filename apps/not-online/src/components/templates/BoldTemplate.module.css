@@ -1,4 +1,43 @@
+.page {
+  position: relative;
+  width: 100%;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  height: 100%;
+}
+
+
+.page *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.page * {
+  scrollbar-width: none;
+}
+
+.pageMark {
+  display: block;
+  padding-bottom: 16px;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  opacity: 0.14;
+}
+.pageMark:hover {
+  opacity: 0.22;
+}
+
 .root {
+  position: relative;
+  z-index: 1;
   height: 100%;
   padding: 14px;
   font-family: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -7,13 +46,9 @@
 /* The hairline frame is what makes the page read as a terminal rather than
    as a document that happens to be dark. */
 .frame {
-  height: 100%;
   border: 3px solid var(--pg-ink);
   border-radius: 10px;
   padding: 16px 18px 18px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 .top {

@@ -3,9 +3,11 @@ interface Props {
   title: string;
   description?: string;
   favicon?: string;
+  backdrop?: string;
+  bodyStyle?: string;
 }
 
-const { title, description = 'A page on not.online', favicon } = Astro.props;
+const { title, description = 'A page on not.online', favicon, backdrop, bodyStyle } = Astro.props;
 ---
 
 <!doctype html>
@@ -36,10 +38,49 @@ const { title, description = 'A page on not.online', favicon } = Astro.props;
       body {
         margin: 0;
         padding: 0;
+        background-color: var(--page-bg);
+      }
+      body[data-backdrop='grid'] {
+        background-image:
+          linear-gradient(to right, color-mix(in srgb, var(--page-ink) 14%, transparent) 1px, transparent 1px),
+          linear-gradient(to bottom, color-mix(in srgb, var(--page-ink) 14%, transparent) 1px, transparent 1px);
+        background-size: 32px 32px;
+      }
+      body[data-backdrop='dots'] {
+        background-image: radial-gradient(color-mix(in srgb, var(--page-ink) 22%, transparent) 1.6px, transparent 1.7px);
+        background-size: 18px 18px;
+      }
+      body[data-backdrop='rays'] {
+        background-image: repeating-conic-gradient(
+          from 0deg at 50% 32%,
+          color-mix(in srgb, var(--page-accent) 22%, transparent) 0deg 9deg,
+          transparent 9deg 18deg
+        );
+      }
+      body[data-backdrop='checker'] {
+        background-image:
+          linear-gradient(45deg, color-mix(in srgb, var(--page-ink) 10%, transparent) 25%, transparent 25% 75%, color-mix(in srgb, var(--page-ink) 10%, transparent) 75%),
+          linear-gradient(45deg, color-mix(in srgb, var(--page-ink) 10%, transparent) 25%, transparent 25% 75%, color-mix(in srgb, var(--page-ink) 10%, transparent) 75%);
+        background-size: 56px 56px;
+        background-position: 0 0, 28px 28px;
+      }
+      body[data-backdrop='stripes'] {
+        background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--page-accent) 20%, transparent) 0 14px, transparent 14px 34px);
+      }
+      body[data-backdrop='photo'] {
+        background-image:
+          linear-gradient(
+            color-mix(in srgb, var(--page-bg) 55%, transparent),
+            color-mix(in srgb, var(--page-bg) 55%, transparent)
+          ),
+          var(--page-photo);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
       }
     </style>
   </head>
-  <body>
+  <body data-backdrop={backdrop} style={bodyStyle}>
     <slot />
   </body>
 </html>

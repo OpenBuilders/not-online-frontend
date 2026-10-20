@@ -9,10 +9,45 @@
   wearing a costume.
 */
 
-.root {
+.page {
+  position: relative;
+  width: 100%;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  overflow: auto;
-  padding: 34px 22px 40px;
+}
+.page *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.page * {
+  scrollbar-width: none;
+}
+
+.mark {
+  display: block;
+  padding-bottom: 16px;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  opacity: 0.14;
+}
+.mark:hover {
+  opacity: 0.22;
+}
+
+.root {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  /* padding: 34px 22px 40px; */
   font-family: 'Times New Roman', Times, serif;
   text-align: center;
 }
@@ -20,6 +55,7 @@
 .sheet {
   max-width: 560px;
   margin: 0 auto;
+  padding: 34px 22px 40px;
 }
 
 .welcome {

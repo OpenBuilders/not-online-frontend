@@ -1,12 +1,55 @@
 /* Deliberately the system stack — the reference is a Finder window, and any
    webfont here would break the illusion immediately. */
-.root {
+html, body {
   height: 100%;
-  overflow: auto;
-  padding: 34px max(26px, calc((100% - 760px) / 2)) 24px;
+}
+
+.page {
+  position: relative;
+  width: 100%;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  justify-content: space-between;
+
+  max-width: 800px;
+  margin: 0 auto;
+}
+.page *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.page * {
+  scrollbar-width: none;
+}
+
+.mark {
+  display: block;
+  padding-bottom: 16px;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  opacity: 0.14;
+}
+.mark:hover {
+  opacity: 0.22;
+}
+
+.root {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   font-family: Helvetica, Arial, 'Helvetica Neue', sans-serif;
+  padding: 16px;
 }
 
 .head {
@@ -35,12 +78,14 @@
   text-align: center;
   max-width: 100%;
 }
+
 /* With a portrait inside, the left padding drops to match the top and
    bottom, so the avatar is ringed by an even margin instead of floating
    in the wide one the text needs. */
 .name:has(.avatar) {
   padding-left: 10px;
 }
+
 .nameText {
   min-width: 0;
   text-wrap: balance;
@@ -66,6 +111,7 @@
   text-decoration: none;
   transition: background 0.12s;
 }
+
 .folder:hover,
 .folder:focus-visible {
   background: color-mix(in srgb, var(--pg-ink) 10%, transparent);
@@ -79,12 +125,14 @@
   display: block;
   width: 108px;
 }
+
 .folderImg {
   display: block;
   width: 100%;
   height: auto;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.24));
 }
+
 /*
   Printed into the folder, not placed on it: multiply blends the mark with
   the artwork underneath instead of covering it, and half opacity keeps it
@@ -102,6 +150,7 @@
   mix-blend-mode: multiply;
   opacity: 0.5;
 }
+
 /*
   Only an illustration is sized here. A symbol is a font glyph, and a
   percentage width stretches its box without touching the glyph — that
@@ -120,6 +169,7 @@
   max-height: 48%;
   object-fit: contain;
 }
+
 /* A symbol has no artwork of its own, so it needs a disc to sit on. */
 span.badge {
   display: flex;
@@ -144,6 +194,7 @@ span.badge {
   padding: 2px 7px;
   border-radius: 5px;
 }
+
 .folder:hover .label,
 .folder:focus-visible .label {
   background: var(--pg-accent);
@@ -153,6 +204,7 @@ span.badge {
 .about {
   margin-top: 34px;
 }
+
 /* Round, because it now lives inside a pill — a 10px-cornered square in
    a 999px outline reads as two different shapes stacked. */
 .avatar {
@@ -162,6 +214,7 @@ span.badge {
   border-radius: 50%;
   object-fit: cover;
 }
+
 .bio {
   margin: 0;
   max-width: 46ch;
@@ -180,28 +233,37 @@ span.badge {
   font-size: 14px;
   opacity: 0.4;
 }
+
 .crumb {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
+
 .crumbIcon {
   width: 19px;
   height: auto;
 }
+
 .sep {
   font-style: normal;
   margin: 0 9px;
 }
 
 @media (max-width: 520px) {
+  /* html, body {
+    height: initial;
+  } */
+
   .name {
     font-size: 27px;
     padding: 8px 22px;
   }
+
   .shelf {
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   }
+
   .art {
     width: 86px;
   }

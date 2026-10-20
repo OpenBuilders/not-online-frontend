@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react';
+import { getPalette } from '@/data/siteTemplates';
 import { LinkIcon } from './LinkIcon';
+import { scopeCustomCss } from './customCss';
 import type { TemplateProps } from './SitePage';
 import styles from './StickerTemplate.module.css';
 import { noise } from './pageContent';
@@ -17,49 +19,64 @@ const TONES = ['a', 'b', 'c'] as const;
  */
 export function StickerTemplate({ cfg, content }: TemplateProps) {
   const { name, bio, links, initials, avatar } = content;
+  const p = getPalette(cfg.palette);
+  const vars = {
+    '--pg-bg': p.bg,
+    '--pg-ink': p.ink,
+    '--pg-accent': p.accent,
+    '--pg-accent-ink': p.accentInk,
+    '--pg-accent-2': p.accent2,
+  } as CSSProperties;
+  const { css: customCss } = scopeCustomCss(cfg.customCss);
 
   return (
-    <div className={styles.root}>
-      <div className={styles.head}>
-        <div className={styles.avatar}>
-          {avatar ? <img src={avatar} alt="" /> : <span className={styles.initials}>{initials}</span>}
-        </div>
-        <div className={styles.ribbon}>{name}</div>
-        <p className={styles.bio}>{bio}</p>
-      </div>
+    <div className={styles.page} data-site-page data-page-handle={cfg.handle} style={vars}>
+      {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
+      <div className={styles.root}>
+          <div className={styles.head}>
+            <div className={styles.avatar}>
+              {avatar ? <img src={avatar} alt="" /> : <span className={styles.initials}>{initials}</span>}
+            </div>
+            <div className={styles.ribbon}>{name}</div>
+            <p className={styles.bio}>{bio}</p>
+          </div>
 
-      <div className={styles.board}>
-        {links.map((l, i) => {
-          const shape = STICKER_SHAPES[Math.floor(noise(cfg.seed, i, 1) * STICKER_SHAPES.length)];
-          const tone = TONES[i % TONES.length];
-          const vars = {
-            '--tilt': `${(noise(cfg.seed, i, 2) * 18 - 9).toFixed(2)}deg`,
-            '--nudge-x': `${(noise(cfg.seed, i, 3) * 14 - 7).toFixed(1)}px`,
-            '--nudge-y': `${(noise(cfg.seed, i, 4) * 14 - 7).toFixed(1)}px`,
-          } as CSSProperties;
-          return (
-            <a
-              key={l.id}
-              className={styles.sticker}
-              data-tone={tone}
-              data-shape={shape}
-              data-link-title={l.title}
-              style={vars}
-              href={l.url || '#'}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <svg className={styles.shape} viewBox="0 0 100 100" aria-hidden="true">
-                <path d={SHAPE_PATHS[shape]} />
-              </svg>
-              <span className={styles.face}>
-                <LinkIcon icon={l.icon} size={30} className={styles.icon} />
-                <span className={styles.label}>{l.title}</span>
-              </span>
-            </a>
-          );
-        })}
+          <div className={styles.board}>
+            {links.map((l, i) => {
+              const shape = STICKER_SHAPES[Math.floor(noise(cfg.seed, i, 1) * STICKER_SHAPES.length)];
+              const tone = TONES[i % TONES.length];
+              const stickerVars = {
+                '--tilt': `${(noise(cfg.seed, i, 2) * 18 - 9).toFixed(2)}deg`,
+                '--nudge-x': `${(noise(cfg.seed, i, 3) * 14 - 7).toFixed(1)}px`,
+                '--nudge-y': `${(noise(cfg.seed, i, 4) * 14 - 7).toFixed(1)}px`,
+              } as CSSProperties;
+              return (
+                <a
+                  key={l.id}
+                  className={styles.sticker}
+                  data-tone={tone}
+                  data-shape={shape}
+                  data-link-title={l.title}
+                  style={stickerVars}
+                  href={l.url || '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <svg className={styles.shape} viewBox="0 0 100 100" aria-hidden="true">
+                    <path d={SHAPE_PATHS[shape]} />
+                  </svg>
+                  <span className={styles.face}>
+                    <LinkIcon icon={l.icon} size={30} className={styles.icon} />
+                    <span className={styles.label}>{l.title}</span>
+                  </span>
+                </a>
+              );
+            })}
+          </div>
       </div>
+      <a href="https://instagram.com/cultofnot" target="_blank" rel="noreferrer" className={styles.mark}>
+        cultofnot
+      </a>
     </div>
   );
 }

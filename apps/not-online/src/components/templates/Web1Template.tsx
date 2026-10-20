@@ -1,4 +1,7 @@
+import type { CSSProperties } from 'react';
+import { getPalette } from '@/data/siteTemplates';
 import type { TemplateProps } from './SitePage';
+import { scopeCustomCss } from './customCss';
 import styles from './Web1Template.module.css';
 import { LinkIcon } from './LinkIcon';
 
@@ -14,40 +17,55 @@ import { LinkIcon } from './LinkIcon';
  * one — a grey box with a symbol in it is a 2015 empty state, and it reads
  * as one.
  */
-export function Web1Template({ content }: TemplateProps) {
+export function Web1Template({ cfg, content }: TemplateProps) {
   const { name, bio, links, avatar } = content;
+  const p = getPalette(cfg.palette);
+  const vars = {
+    '--pg-bg': p.bg,
+    '--pg-ink': p.ink,
+    '--pg-accent': p.accent,
+    '--pg-accent-ink': p.accentInk,
+    '--pg-accent-2': p.accent2,
+  } as CSSProperties;
+  const { css: customCss } = scopeCustomCss(cfg.customCss);
 
   return (
-    <div className={styles.root}>
-      <div className={styles.sheet}>
-        <p className={styles.welcome}>· · · welcome to · · ·</p>
-        <h1 className={styles.h1}>{name}&apos;s home page</h1>
-        <hr className={styles.rule} />
+    <div className={styles.page} data-site-page data-page-handle={cfg.handle} style={vars}>
+      {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
+      <div className={styles.root}>
+          <div className={styles.sheet}>
+            <p className={styles.welcome}>· · · welcome to · · ·</p>
+            <h1 className={styles.h1}>{name}&apos;s home page</h1>
+            <hr className={styles.rule} />
 
-        {avatar && <img className={styles.portrait} src={avatar} alt="" />}
+            {avatar && <img className={styles.portrait} src={avatar} alt="" />}
 
-        <p className={styles.intro}>{bio}</p>
+            <p className={styles.intro}>{bio}</p>
 
-        <p className={styles.dingbat}>✦ ✦ ✦</p>
+            <p className={styles.dingbat}>✦ ✦ ✦</p>
 
-        <ul className={styles.list}>
-          {links.map((l) => (
-            <li key={l.id}>
-              <a
-                href={l.url || '#'}
-                target="_blank"
-                rel="noreferrer"
-                data-link-title={l.title}
-              >
-                <LinkIcon icon={l.icon} size={15} className={styles.icon} />
-                {l.title}
-              </a>
-            </li>
-          ))}
-        </ul>
+            <ul className={styles.list}>
+              {links.map((l) => (
+                <li key={l.id}>
+                  <a
+                    href={l.url || '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-link-title={l.title}
+                  >
+                    <LinkIcon icon={l.icon} size={15} className={styles.icon} />
+                    {l.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-        <hr className={styles.rule} />
+            <hr className={styles.rule} />
+          </div>
       </div>
+      <a href="https://instagram.com/cultofnot" target="_blank" rel="noreferrer" className={styles.mark}>
+        cultofnot
+      </a>
     </div>
   );
 }

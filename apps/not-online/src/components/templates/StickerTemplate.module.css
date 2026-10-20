@@ -1,6 +1,41 @@
-.root {
+.page {
+  position: relative;
+  width: 100%;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  overflow: auto;
+}
+.page *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.page * {
+  scrollbar-width: none;
+}
+
+.mark {
+  display: block;
+  padding-bottom: 16px;
+  color: var(--pg-ink);
+  font-family: 'Archivo', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  opacity: 0.14;
+}
+.mark:hover {
+  opacity: 0.22;
+}
+
+.root {
+  position: relative;
+  z-index: 1;
+  height: 100%;
   padding: 32px 26px 30px;
   display: flex;
   flex-direction: column;

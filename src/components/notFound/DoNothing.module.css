@@ -1,0 +1,105 @@
+/* The room dims as you stay still: --calm runs 0 to 1 over a minute and a
+   half. Text flips to light at the halfway point, where the ground is
+   dark enough for it; everything set small fades out before then, so no
+   small text ever sits on a mid-grey. */
+.room {
+  --ground: color-mix(in srgb, #0c0c0f calc(var(--calm) * 100%), #f4f4f6);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(16px, 3vw, 36px) clamp(16px, 3vw, 36px) 72px;
+  background: var(--ground);
+  color: var(--c-ink);
+  transition: background-color 0.25s linear;
+}
+.room.dark {
+  color: #f4f4f6;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  opacity: calc(1 - var(--calm) * 3);
+  transition: opacity 0.4s;
+}
+.code {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+.home {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.home:hover {
+  color: var(--c-accent-2);
+}
+.home:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 3px;
+}
+
+.centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+}
+.clock {
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(96px, 22vw, 280px);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.line {
+  margin: 0;
+  max-width: 24ch;
+  font-size: clamp(20px, 2.4vw, 30px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  text-wrap: balance;
+}
+.badge {
+  margin-top: 6px;
+  font-size: 15px;
+  padding: 9px 16px;
+  animation: slap 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes slap {
+  from {
+    transform: rotate(-5deg) scale(1.6);
+    opacity: 0;
+  }
+}
+
+.bottom {
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--c-muted);
+  opacity: calc(1 - var(--calm) * 3);
+  transition: opacity 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room,
+  .top,
+  .bottom {
+    transition: none;
+  }
+  .badge {
+    animation: none;
+  }
+}

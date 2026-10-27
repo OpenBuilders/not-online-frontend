@@ -1,0 +1,138 @@
+.page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(16px, 3vw, 36px) clamp(16px, 3vw, 36px) 72px;
+  background: #0c0c0f;
+  color: #f4f4f6;
+}
+/* Running: pure black, and the version switcher is covered too. */
+.page.black {
+  z-index: 60;
+  background: #000;
+  padding: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.code {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 13px;
+  color: #8e8e94;
+}
+.home {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f4f4f6;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.home:hover {
+  color: var(--c-accent);
+}
+
+.centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+}
+.title {
+  margin: 0;
+  max-width: 14ch;
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(48px, 8vw, 112px);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.body {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #b4b4ba;
+  text-wrap: pretty;
+}
+.go {
+  margin-top: 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--c-accent);
+  padding: 16px 30px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0d1a00;
+  cursor: pointer;
+}
+.go:hover {
+  background: var(--c-accent-tint);
+}
+
+/* While it runs: a small grey clock and a stop link that only shows when
+   you go looking for it. */
+.quiet {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+.clock {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 13px;
+  color: #6a6a70;
+  font-variant-numeric: tabular-nums;
+}
+.stop {
+  border: none;
+  background: none;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  color: #8e8e94;
+  text-decoration: underline;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+.quiet:hover .stop,
+.stop:focus-visible {
+  opacity: 1;
+}
+
+.home:focus-visible,
+.go:focus-visible,
+.stop:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 3px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stop {
+    transition: none;
+  }
+}

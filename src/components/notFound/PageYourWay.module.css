@@ -1,0 +1,417 @@
+/* Every colour on the page comes from the five palette variables the
+   component sets inline, so a palette switch repaints everything. */
+.page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--bg);
+  color: var(--ink);
+}
+
+/* ---- backdrops: drawn from the palette, the links-page builder's set --- */
+
+.grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+.dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 24%, transparent) 1.7px, transparent 2.2px);
+  background-size: 22px 22px;
+}
+.rays {
+  background-image: repeating-conic-gradient(
+    from 0deg at 50% 62%,
+    color-mix(in srgb, var(--accent) 24%, transparent) 0deg 7deg,
+    transparent 7deg 20deg
+  );
+}
+.checker {
+  background-image: conic-gradient(
+    color-mix(in srgb, var(--ink) 9%, transparent) 25%,
+    transparent 0 50%,
+    color-mix(in srgb, var(--ink) 9%, transparent) 0 75%,
+    transparent 0
+  );
+  background-size: 72px 72px;
+}
+.stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--accent) 20%, transparent) 0 16px,
+    transparent 16px 38px
+  );
+}
+
+/* ---- the stage ---------------------------------------------------------- */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: 40px clamp(20px, 6vw, 96px) 120px;
+}
+
+.code {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: var(--accent);
+}
+.headline {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  max-width: 14ch;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.body {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  max-width: 40ch;
+  font-size: clamp(15px, 1.4vw, 19px);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+/* Editable in place: a dashed outline says so on hover. */
+.headline,
+.body {
+  border-radius: 6px;
+  outline: 1.5px dashed transparent;
+  outline-offset: 6px;
+  cursor: text;
+}
+.headline:hover,
+.body:hover {
+  outline-color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.headline:focus,
+.body:focus {
+  outline: 2px solid var(--accent);
+}
+
+.cta {
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+  border-radius: 999px;
+  background: var(--accent);
+  padding: 13px 22px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent-ink);
+  text-decoration: none;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--ink) 80%, transparent);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--ink) 80%, transparent);
+}
+.cta:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 3px;
+}
+
+/* A die-cut sticker: a white edge traced around the cut-out, and a lift. */
+.sticker {
+  position: absolute;
+  z-index: 3;
+  width: clamp(110px, 16vw, 210px);
+  pointer-events: none;
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.3));
+}
+
+/* ---- layouts ------------------------------------------------------------ */
+
+/* Centred: a small 404 over a big headline, everything on the axis. */
+.centre .stage {
+  align-items: center;
+  text-align: center;
+}
+.centre .code {
+  font-size: clamp(56px, 9vw, 120px);
+}
+.centre .headline {
+  font-size: clamp(42px, 7vw, 104px);
+}
+.centre .cta {
+  align-self: center;
+}
+.centre .sticker {
+  top: 12%;
+  right: 10%;
+  transform: rotate(10deg);
+}
+
+/* Giant: the 404 is the ground everything else stands on. The words sit
+   above it, never on it: the 404 is sized by height as well as width so
+   it keeps to the lower half however wide the screen is. */
+.giant .stage {
+  justify-content: flex-start;
+  padding-top: clamp(32px, 9vh, 96px);
+}
+.giant .code {
+  position: absolute;
+  left: clamp(8px, 2vw, 24px);
+  bottom: 3%;
+  font-size: clamp(150px, min(40vw, 50vh), 620px);
+}
+.giant .headline {
+  font-size: clamp(40px, 6.4vw, 96px);
+}
+.giant .sticker {
+  top: 10%;
+  right: 8%;
+  width: clamp(130px, 20vw, 260px);
+  transform: rotate(-8deg);
+}
+
+/* Poster: the headline as large as it goes, the 404 running up the edge. */
+.poster .stage {
+  justify-content: flex-end;
+}
+.poster .code {
+  position: absolute;
+  top: 50%;
+  right: clamp(8px, 2vw, 28px);
+  font-size: clamp(64px, 10vw, 150px);
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
+}
+.poster .headline {
+  max-width: 11ch;
+  font-size: clamp(54px, 10vw, 168px);
+}
+.poster .sticker {
+  right: clamp(90px, 16vw, 260px);
+  bottom: 12%;
+  transform: rotate(8deg);
+}
+
+/* ---- the dock ----------------------------------------------------------- */
+
+.dock {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 40;
+  width: min(392px, calc(100vw - 28px));
+  max-height: calc(100dvh - 90px);
+  overflow-y: auto;
+  border-radius: 18px;
+  background: rgba(18, 18, 20, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--c-white);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+.dock.dockClosed {
+  width: auto;
+}
+.dockToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+.dockToggle:hover {
+  color: var(--c-white);
+}
+.dockBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 14px 14px;
+}
+.group {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+.group legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stickerGroup .row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.swatch {
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.swatch:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.swatch.on,
+.swatch.on:hover {
+  border-color: var(--c-white);
+  box-shadow: 0 0 0 2px var(--c-accent);
+}
+
+.chip {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: none;
+  padding: 6px 11px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.chip:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.chip.on,
+.chip.on:hover {
+  border-color: var(--c-accent);
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+
+.thumb {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.thumb.on,
+.thumb.on:hover {
+  border-color: var(--c-accent);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hint {
+  flex: 1;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.shuffle,
+.reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.shuffle {
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+.shuffle:hover {
+  background: var(--c-accent-tint);
+}
+.reset {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--c-white);
+}
+.reset:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.dockToggle:focus-visible,
+.swatch:focus-visible,
+.chip:focus-visible,
+.thumb:focus-visible,
+.shuffle:focus-visible,
+.reset:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta {
+    transition: none;
+  }
+}
+
+/* On a phone the dock sits above the version switcher and starts closed
+   enough to see the page: it scrolls inside itself. */
+@media (max-width: 640px) {
+  .dock {
+    bottom: 66px;
+    max-height: 46dvh;
+  }
+  .withDock .stage {
+    padding-bottom: 46dvh;
+  }
+  .poster .code {
+    display: none;
+  }
+  /* The words fill the bottom of a phone, so the sticker goes up top. */
+  .poster .sticker {
+    top: 8%;
+    right: 10%;
+    bottom: auto;
+  }
+}

@@ -3,6 +3,8 @@ import { DesktopIconLayer } from '@/components/desktop/DesktopIconLayer';
 import { HomeBar } from '@/components/desktop/HomeBar';
 import { TopRow } from '@/components/desktop/TopRow';
 import { LoginScreen } from '@/components/login/LoginScreen';
+import { RadarBeamWidget } from '@/components/widgets/RadarBeamWidget';
+import { RadarWidget } from '@/components/widgets/RadarWidget';
 import { SmmWidget } from '@/components/widgets/SmmWidget';
 import { WebsiteBuilderWidget } from '@/components/widgets/WebsiteBuilderWidget';
 import { WindowManager } from '@/components/windows/WindowManager';
@@ -55,8 +57,10 @@ export function Desktop() {
 
       <TopRow onRequestLogin={requestLogin} />
 
-      {/* Radar, Toolbox and Orgs are still parked — their tools don't exist
-          here yet. The links page and the media kit do. */}
+      {/* Toolbox and Orgs are still parked — their tools don't exist here
+          yet. Radar comes in two faces for now, so both can be compared. */}
+      <RadarWidget desktopRef={desktopRef} />
+      <RadarBeamWidget desktopRef={desktopRef} />
       <SmmWidget desktopRef={desktopRef} />
       <WebsiteBuilderWidget desktopRef={desktopRef} />
 

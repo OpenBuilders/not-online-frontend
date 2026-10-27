@@ -1,0 +1,225 @@
+.feed {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sticky, so you always know which month you are scrolling through. */
+.month {
+  position: sticky;
+  top: -16px;
+  z-index: 3;
+  margin: 0 -16px;
+  padding: 14px 16px 8px;
+  background: linear-gradient(var(--c-paper) 75%, rgba(0, 0, 0, 0));
+  font-family: 'Archivo', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  text-transform: uppercase;
+  color: var(--c-ink);
+}
+.month span {
+  color: var(--c-faint, #9a9aa0);
+}
+
+.entries {
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* The date hangs off the left of each entry, the way the Plan calendar's
+   numbers do — large, so the run of dates reads down the page by itself. */
+.entry {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 4px;
+}
+.day {
+  font-family: 'Archivo', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -1.5px;
+  color: var(--c-ink);
+  font-variant-numeric: tabular-nums;
+}
+.weekday {
+  margin-top: 3px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  background: var(--c-white);
+  padding: 8px;
+}
+.card:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+.card.pick {
+  border-color: var(--c-ink);
+}
+.art {
+  align-self: stretch;
+  min-height: 88px;
+  border-radius: 9px;
+}
+.sticker {
+  position: absolute;
+  top: -8px;
+  left: 72px;
+  z-index: 2;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.type,
+.soon,
+.vibe {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.type {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.soon {
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
+.vibe {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  color: var(--c-dim);
+}
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--c-ink);
+}
+.blurb {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--c-ink);
+}
+.meta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-muted);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding-right: 4px;
+}
+.save {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  background: var(--c-white);
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.save:hover {
+  color: var(--c-accent-2);
+}
+.save.saveOn,
+.save.saveOn:hover {
+  background: var(--c-accent-2);
+  border-color: var(--c-accent-2);
+  color: var(--c-white);
+}
+.save:focus-visible,
+.open:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.open:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .entry {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 8px;
+  }
+  .day {
+    font-size: 26px;
+  }
+  .card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .art {
+    min-height: 70px;
+  }
+  .actions {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+}

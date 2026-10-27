@@ -1,0 +1,40 @@
+/* OpenStreetMap on black: water-blue water, hairline green streets. */
+.city path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Lines keep their weight on screen however far the frame zooms in. */
+  vector-effect: non-scaling-stroke;
+}
+.city .sea,
+.city .water {
+  fill: #1b3158;
+  fill-rule: evenodd;
+}
+.city .rivers {
+  stroke: #1b3158;
+  stroke-width: 5px;
+}
+.city .canals {
+  stroke: #1b3158;
+  stroke-width: 1.5px;
+}
+.city .parks {
+  fill: url(#radar-park-dots);
+}
+.parkDot {
+  fill: var(--c-accent-2);
+  opacity: 0.45;
+}
+.city .minor {
+  stroke: rgba(168, 255, 26, 0.2);
+  stroke-width: 0.6px;
+}
+.city .roads {
+  stroke: rgba(168, 255, 26, 0.38);
+  stroke-width: 0.8px;
+}
+.city .major {
+  stroke: rgba(168, 255, 26, 0.75);
+  stroke-width: 1.3px;
+}

@@ -1,0 +1,321 @@
+/* Ported from Tools.html:189-321. */
+
+/* The card, its size and its drag all come from WidgetShell now, the same
+   as every other widget — this file only dresses the dial inside it. */
+.face {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.statusDot {
+  width: 5px;
+  height: 5px;
+  background: var(--c-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--c-accent);
+  animation: pulseDot 2.2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.6);
+  }
+}
+.headerRight {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Centred on the whole card rather than stacked in a row of three. The
+   dial runs a little past the padding on purpose — a radar that stops
+   politely inside a margin reads as a picture of one. */
+.radarContainer {
+  position: absolute;
+  inset: -6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.radar {
+  width: 100%;
+  height: 100%;
+  max-width: 172px;
+  max-height: 172px;
+  position: relative;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+/*
+  The grid is drawn by the same hand as the cut line and the sweep: one
+  filter, three elements. A perfect circle under a wobbling sweep read as
+  a printed dial someone had scribbled on.
+
+  Green rather than white, and 1.5px rather than 1: displacement eats a
+  hairline, so a line that is meant to look drawn has to be thick enough
+  to survive being pushed around.
+*/
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 255, 26, 0.32);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: url(#rough-line);
+}
+.ring1 {
+  width: 100%;
+  height: 100%;
+}
+.ring2 {
+  width: 66%;
+  height: 66%;
+  border-color: rgba(168, 255, 26, 0.22);
+}
+.ring3 {
+  width: 33%;
+  height: 33%;
+  border-color: rgba(168, 255, 26, 0.22);
+}
+.cross {
+  position: absolute;
+  background: rgba(168, 255, 26, 0.22);
+  filter: url(#rough-line);
+}
+.crossV {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-1px);
+}
+.crossH {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-1px);
+}
+.crossD1,
+.crossD2 {
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  transform-origin: center;
+}
+.crossD1 {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.crossD2 {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+.centerDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px var(--c-accent);
+}
+.sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    rgba(168, 255, 26, 0.28) 0deg,
+    rgba(168, 255, 26, 0.1) 18deg,
+    rgba(168, 255, 26, 0) 42deg,
+    rgba(168, 255, 26, 0) 360deg
+  );
+  -webkit-mask: radial-gradient(circle at center, transparent 0, var(--c-black) 2px);
+  mask: radial-gradient(circle at center, transparent 0, var(--c-black) 2px);
+  animation: sweep 3.4s linear infinite;
+}
+.sweepLine {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--c-accent), rgba(168, 255, 26, 0));
+  transform-origin: 0 50%;
+  transform: rotate(0deg);
+  /* Roughened first, then lit: filters apply in order, so the glow is
+     cast by the wobbling line rather than by a straight one underneath
+     it. `rough-line` is declared in index.html, beside the one the
+     sticker edges use. */
+  filter: url(#rough-line) drop-shadow(0 0 6px rgba(168, 255, 26, 0.5));
+  animation: sweepLine 3.4s linear infinite;
+}
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sweepLine {
+  from {
+    transform: translate(0, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(0, -50%) rotate(360deg);
+  }
+}
+
+.blip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+}
+.ping {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--c-accent);
+  opacity: 0;
+}
+.pink .ping {
+  border-color: var(--c-accent-2);
+}
+.blip.on .ping {
+  animation: ping 1.6s ease-out;
+}
+@keyframes ping {
+  0% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.6);
+  }
+}
+/*
+  A dot in one of the two brand colours, ringed in white so it reads on
+  the dial's own green grid as well as on the black behind it. Dim until
+  the sweep passes it, then lit — the state the loop toggles.
+*/
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-white);
+  background: var(--c-accent);
+  opacity: 0.22;
+  transform: scale(0.85);
+  transition:
+    opacity 0.35s,
+    filter 0.35s,
+    transform 0.35s;
+}
+.pink .dot {
+  background: var(--c-accent-2);
+}
+.blip.on .dot {
+  opacity: 1;
+  transform: scale(1);
+  filter: drop-shadow(0 0 7px rgba(168, 255, 26, 0.6));
+}
+.pink.on .dot {
+  filter: drop-shadow(0 0 7px rgba(255, 26, 145, 0.6));
+}
+
+.lbl {
+  font-size: 6.5px;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  text-transform: uppercase;
+  transition: color 0.35s;
+}
+/* The label lights with its dot. Half the point of the sweep passing is
+   reading what it just found, and a word that stays grey says nothing
+   happened. */
+.blip.on .lbl {
+  color: var(--c-white);
+  text-shadow: 0 0 8px rgba(168, 255, 26, 0.7);
+}
+.pink.on .lbl {
+  text-shadow: 0 0 8px rgba(255, 26, 145, 0.7);
+}
+
+/* Over the dial, bottom-left, with its own shade so the grid behind it
+   never runs through the figure. */
+.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-top: 14px;
+  background: linear-gradient(to top, #16161a 42%, rgba(22, 22, 26, 0));
+}
+.count {
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--c-white);
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.count .plus {
+  color: var(--c-accent);
+  font-size: 13px;
+  vertical-align: top;
+  margin-left: 1px;
+}
+.countLabel {
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+@media (max-width: 700px) {
+  .widget {
+    width: 170px;
+    height: 170px;
+  }
+  .radar {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep,
+  .sweepLine,
+  .statusDot,
+  .blip.on .ico {
+    animation: none !important;
+  }
+}

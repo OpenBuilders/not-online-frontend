@@ -1,0 +1,196 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  background: var(--c-white);
+  overflow: visible;
+  transition:
+    border-color 0.14s,
+    transform 0.14s,
+    box-shadow 0.14s;
+}
+.card:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+/* Ours wear an ink edge as well as the sticker: the sticker says it, the
+   edge lets a whole row of them be told apart at a glance. */
+.card.pick {
+  border-color: var(--c-ink);
+}
+
+.media {
+  position: relative;
+}
+.art {
+  aspect-ratio: 4 / 3;
+  border-radius: 13px 13px 0 0;
+}
+.pickSticker {
+  position: absolute;
+  top: -8px;
+  right: 10px;
+  z-index: 2;
+}
+
+.save {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--c-dim);
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.save:hover {
+  color: var(--c-accent-2);
+}
+/* Both, so the hover rule above cannot pale a saved heart under the
+   cursor that just saved it. */
+.save.saveOn,
+.save.saveOn:hover {
+  background: var(--c-accent-2);
+  border-color: var(--c-accent-2);
+  color: var(--c-white);
+}
+.save:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px 12px;
+  min-width: 0;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.type,
+.soon,
+.onNow,
+.est {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.type {
+  background: var(--c-paper-3);
+  color: var(--c-dim);
+}
+.soon {
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
+.onNow {
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+/* Estimated dates: said quietly, but said. */
+.est {
+  border: 1px dashed rgba(0, 0, 0, 0.3);
+  color: var(--c-dim);
+}
+
+.title {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+  color: var(--c-ink);
+}
+.when {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-ink);
+  font-variant-numeric: tabular-nums;
+}
+.offer {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-ink);
+}
+.note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--c-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.offer {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fee {
+  margin: 0;
+  font-size: 10.5px;
+  color: var(--c-muted);
+}
+.who {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-muted);
+}
+
+/* Pushed to the foot of the card so every card's link lines up across a
+   row, however long the titles above them run. */
+.open {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: auto;
+  padding: 6px 11px;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-ink);
+  text-decoration: none;
+  transform: translateY(4px);
+}
+.open:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.open:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,32 @@
+/* As many columns as fit at a card's minimum, never a stretched lone card. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px 14px;
+  padding-top: 8px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 46px 20px;
+  border: 1px dashed rgba(0, 0, 0, 0.16);
+  border-radius: 16px;
+  text-align: center;
+  color: var(--c-muted);
+}
+.emptyTitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-ink);
+}
+.emptyBody {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 12px;
+  line-height: 1.5;
+}

@@ -1,0 +1,386 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.title {
+  margin: 0;
+  font-family: 'Archivo', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+.sub {
+  margin: 0;
+  max-width: 68ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--c-dim);
+}
+.sample {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-muted);
+}
+
+/* ---- city tabs, then the two filters ---------------------------------- */
+
+.cities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.city {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  border: 1.5px solid var(--c-ink);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 7px 14px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  text-transform: uppercase;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.city span {
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--c-muted);
+}
+.city:hover {
+  background: var(--c-paper-2);
+}
+.city.on,
+.city.on:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.city.on span {
+  color: var(--c-accent);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: var(--c-white);
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-dim);
+  cursor: pointer;
+}
+.type:hover {
+  border-color: var(--c-ink);
+  color: var(--c-ink);
+}
+.type.on,
+.type.on:hover {
+  border-color: var(--c-ink);
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+
+/* ---- the feed beside the map ------------------------------------------ */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 12px;
+  align-items: start;
+}
+.feed {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  background: var(--c-white);
+  padding: 10px 12px 12px;
+  transition: border-color 0.15s;
+}
+.card.cardOn {
+  border-color: var(--c-ink);
+  box-shadow: inset 3px 0 0 var(--c-accent-2);
+}
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.typeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+.cardOn .typeIcon {
+  background: var(--c-accent-2);
+}
+.cardTitle {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.name {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+.meta {
+  font-size: 11px;
+  color: var(--c-muted);
+}
+.checked {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+  background: var(--c-accent);
+  padding: 2px 8px 2px 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #0d1a00;
+}
+.quote {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--c-ink);
+}
+.quote::before {
+  content: '\201C';
+}
+.quote::after {
+  content: '\201D';
+}
+.cardFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+}
+.by {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 11px;
+  text-align: left;
+  color: var(--c-dim);
+}
+.by img {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--c-paper-3);
+  box-shadow: 0 0 0 1.5px var(--c-ink);
+}
+.goodFor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.goodFor span {
+  border-radius: 999px;
+  background: var(--c-paper-3);
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--c-dim);
+}
+.empty {
+  padding: 30px 16px;
+  border: 1px dashed rgba(0, 0, 0, 0.16);
+  border-radius: 14px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--c-muted);
+}
+
+/* The map stays put while the feed scrolls past it. */
+.mapPanel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 460px;
+  border-radius: 16px;
+  background: #0b0b0c;
+  overflow: hidden;
+}
+.map {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.loading {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+}
+.credit {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 6px;
+  background: #0b0b0c;
+  padding: 2px 6px;
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+.pin {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.pinDim {
+  opacity: 0.4;
+}
+.pinDot {
+  fill: var(--c-white);
+  stroke: #0b0b0c;
+}
+.pinOn .pinDot {
+  fill: var(--c-accent-2);
+}
+.pinIcon {
+  font-family: 'Material Symbols Outlined';
+  text-anchor: middle;
+  fill: #0b0b0c;
+  pointer-events: none;
+}
+.pinOn .pinIcon {
+  fill: var(--c-white);
+}
+.pinLabel {
+  fill: var(--c-white);
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #0b0b0c;
+  pointer-events: none;
+}
+
+.city:focus-visible,
+.type:focus-visible,
+.cardHead:focus-visible,
+.save:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .pin {
+    transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mapPanel {
+    order: -1;
+    position: static;
+    height: 300px;
+  }
+}
+
+.count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-muted);
+}
+
+/* Save to Favourites: the same heart as the gallery's cards. */
+.save {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  background: var(--c-white);
+  color: var(--c-dim);
+}
+.save:hover {
+  color: var(--c-accent-2);
+}
+.save.saveOn,
+.save.saveOn:hover {
+  border-color: var(--c-accent-2);
+  background: var(--c-accent-2);
+  color: var(--c-white);
+}
+.cardHead {
+  padding-right: 34px;
+}

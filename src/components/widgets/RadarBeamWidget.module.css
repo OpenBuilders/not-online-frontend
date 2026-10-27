@@ -1,0 +1,123 @@
+/*
+  All sizes are taken off the approved mockup and resolved against the
+  card's real 176px — see the note at the top of RadarBeamWidget.tsx.
+*/
+
+/*
+  The whole sticker face, padding included. StickerFrame pads its face for
+  text, but this card is a picture that runs to its edges: sitting inside
+  the padding, the artwork stopped 14px short of every side and read as an
+  image placed on a card rather than as the card.
+*/
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/*
+  The artwork, fitted onto the mockup's own dish: 121% of the card wide and
+  pulled up and to the left until only the dish face, its horn and the top
+  of the mount are left in frame.
+
+  The white keyline is built, not painted in: four 1px drop shadows with
+  no blur, one per direction, trace the silhouette however ragged it is.
+  The mockup's line measures about 1.2px at this size and is crisp —
+  blurred shadows made a 3-4px glow instead of a line.
+*/
+.dish {
+  position: absolute;
+  left: -54%;
+  top: -29%;
+  width: 121%;
+  height: auto;
+  pointer-events: none;
+  filter:
+    drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff)
+    drop-shadow(0 -1px 0 #fff);
+}
+
+/* Above the dish, so a beam starts on the horn rather than behind it. */
+.beams {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/*
+  Each beam leaves the same point and is rotated into place. Long enough to
+  leave the card on every angle; the card clips the rest. `margin-top` puts
+  the line's centre, not its top edge, on the origin, which is what it
+  rotates around.
+*/
+.ray {
+  position: absolute;
+  width: 90%;
+  height: 2px;
+  margin-top: -1px;
+  transform-origin: 0 50%;
+  background: var(--c-white);
+  filter: url(#rough-line);
+}
+
+/*
+  A find: a solid disc on the beam, 4.3% of the card. Translucent until the
+  wave reaches it — which is also why the beam stays visible through the
+  ones it has not got to yet.
+*/
+.dot {
+  position: absolute;
+  width: 7.6px;
+  height: 7.6px;
+  margin: -3.8px 0 0 -3.8px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  opacity: 0.55;
+  transition: opacity 0.3s;
+}
+.pink {
+  background: var(--c-accent-2);
+}
+.dot.on {
+  opacity: 1;
+}
+
+/*
+  The figure on a white plate. The plate hugs the digits with an even 3.3%
+  margin all round, so the line box is cut to the cap height (Archivo's
+  caps are 0.699em) and the padding does the rest. Letter-spacing widens
+  the digits to the mockup's set — Archivo 800 is a touch narrower than
+  what it was drawn in — and the right padding gives back the trailing
+  space the spacing adds after the last digit.
+*/
+.count {
+  position: absolute;
+  left: 50.3%;
+  top: 58.1%;
+  border-radius: 9.7px;
+  background: var(--c-white);
+  padding: 5.8px 5.2px 5.8px 5.8px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 30.5px;
+  font-weight: 800;
+  line-height: 0.699;
+  letter-spacing: 0.6px;
+  color: #0d0d0f;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* What it counts, quietly, under the plate and in line with its digits. */
+.countLabel {
+  position: absolute;
+  left: 52.3%;
+  top: calc(79% - 1.5px);
+  font-family: 'Archivo', sans-serif;
+  font-size: 7.9px;
+  font-weight: 700;
+  line-height: 8.8px;
+  letter-spacing: -0.2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}

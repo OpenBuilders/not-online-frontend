@@ -1,0 +1,362 @@
+.page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #d6d6d8;
+}
+
+.wall,
+.paint {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* The can needs every pointer move, finger or mouse — no scrolling, no
+   pinch-zoom, no long-press menu on the wall. */
+.paint {
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+/* The nozzle's reach, following the pointer. Moved by transform from the
+   pointer handler, so it never re-renders anything. */
+.ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  border: 1.5px dashed;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  transition: opacity 0.15s;
+}
+
+.stickerLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.placed {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+    drop-shadow(0 8px 12px rgba(0, 0, 0, 0.3));
+  animation: slap 0.22s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.placed:focus-visible {
+  outline: 2px dashed var(--c-select);
+  outline-offset: 6px;
+}
+@keyframes slap {
+  from {
+    scale: 1.25;
+  }
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 74px;
+  z-index: 2;
+  margin: 0;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(28, 28, 30, 0.85);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-white);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- the can's controls ------------------------------------------------- */
+
+.toolbar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100vw - 28px);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(18, 18, 20, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+.colours,
+.nozzles {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.colour {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.colour:hover {
+  transform: scale(1.1);
+}
+.colour.on,
+.colour.on:hover {
+  border-color: var(--c-white);
+  box-shadow: 0 0 0 2px rgba(18, 18, 20, 0.9), 0 0 0 4px var(--c-white);
+}
+.nozzle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+.nozzle span {
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+.nozzle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.nozzle.on,
+.nozzle.on:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.nozzle.on span {
+  background: var(--c-white);
+}
+.sep {
+  flex-shrink: 0;
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  padding: 0 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+.tool:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--c-white);
+}
+.tool:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.tool.save {
+  background: var(--c-accent);
+  padding: 0 12px 0 9px;
+  color: #0d1a00;
+}
+.tool.save:hover {
+  background: var(--c-accent-tint);
+}
+
+/* ---- the sticker tray ----------------------------------------------------- */
+
+.tray {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-height: calc(100% - 160px);
+  transform: translateY(-50%);
+  border-radius: 18px;
+  background: rgba(18, 18, 20, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 10px 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+.trayLabel {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.trayList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.trayItem {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 5px;
+  cursor: grab;
+  touch-action: none;
+  transition: transform 0.12s;
+}
+.trayItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.trayItem:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: rotate(-6deg) scale(1.06);
+}
+
+.home {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 10;
+  border-radius: 999px;
+  background: rgba(18, 18, 20, 0.9);
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-white);
+  text-decoration: none;
+}
+.home:hover {
+  background: var(--c-ink);
+  color: var(--c-accent);
+}
+
+.colour:focus-visible,
+.nozzle:focus-visible,
+.tool:focus-visible,
+.trayItem:focus-visible,
+.home:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placed {
+    animation: none;
+  }
+  .colour,
+  .trayItem {
+    transition: none;
+  }
+}
+
+/* Phone: the toolbar scrolls sideways inside itself, and the tray becomes
+   a strip along the bottom, above the version switcher. */
+@media (max-width: 640px) {
+  .toolbar {
+    left: 14px;
+    right: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 4px;
+    border-radius: 20px;
+    transform: none;
+  }
+  .tray {
+    top: auto;
+    bottom: 64px;
+    left: 14px;
+    right: 14px;
+    flex-direction: row;
+    max-height: none;
+    transform: none;
+    padding: 6px 8px;
+  }
+  .trayLabel {
+    display: none;
+  }
+  .trayList {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .home {
+    top: 106px;
+    bottom: auto;
+  }
+  .hint {
+    bottom: 136px;
+    white-space: normal;
+    text-align: center;
+    width: max-content;
+    max-width: calc(100vw - 40px);
+  }
+}
+
+/* Shared wall: how many marks, by how many people. */
+.wallStats {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 14px;
+  background: rgba(18, 18, 20, 0.9);
+  padding: 9px 13px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+.wallStats b {
+  font-family: 'Archivo', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-white);
+}
+.wallStats span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+@media (max-width: 640px) {
+  .wallStats {
+    top: auto;
+    bottom: 136px;
+  }
+}

@@ -1,0 +1,58 @@
+/* The body is a centred flex box for the desktop; the 404 just takes the
+   whole viewport instead. */
+.root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.switcher {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: calc(100vw - 28px);
+  overflow-x: auto;
+  border-radius: 999px;
+  background: rgba(18, 18, 20, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 4px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+.switchLabel {
+  padding: 0 6px 0 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+.switchBtn {
+  border: none;
+  border-radius: 999px;
+  background: none;
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.switchBtn:hover {
+  color: var(--c-white);
+  background: rgba(255, 255, 255, 0.1);
+}
+.switchBtn.switchOn,
+.switchBtn.switchOn:hover {
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+.switchBtn:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 1px;
+}

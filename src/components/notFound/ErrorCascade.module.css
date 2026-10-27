@@ -1,0 +1,261 @@
+/* The desktop's own wallpaper, so it reads as the desktop gone wrong. */
+.desk {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0d0d10 url('/images/screen_1.jpg') center / cover no-repeat;
+}
+
+.counter {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 400;
+  border-radius: 999px;
+  background: rgba(18, 18, 20, 0.85);
+  padding: 7px 12px;
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--c-white);
+}
+
+/* The desktop's window chrome at dialog size (see WindowFrame.module.css). */
+.win {
+  position: absolute;
+  width: 340px;
+  max-width: calc(100vw - 16px);
+  border-radius: 12px;
+  background: var(--c-paper-2);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  animation: pop 0.16s cubic-bezier(0.3, 1.5, 0.5, 1);
+  transition:
+    transform 0.35s ease-in,
+    opacity 0.35s ease-in;
+}
+@keyframes pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+.leaving .win {
+  transform: scale(0.6);
+  opacity: 0;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  background: linear-gradient(var(--c-line-light), var(--c-line-light-2));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  touch-action: none;
+}
+.titlebar:active {
+  cursor: grabbing;
+}
+.dots {
+  display: flex;
+  gap: 7px;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+}
+.red {
+  position: relative;
+  background: var(--c-tl-red);
+  cursor: pointer;
+}
+.red::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+}
+.red:hover {
+  background: #ff4136;
+}
+.yellow {
+  background: var(--c-tl-yellow);
+}
+.green {
+  background: var(--c-tl-green);
+}
+.title {
+  flex: 1;
+  margin-right: 50px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-dim);
+}
+
+.body {
+  display: flex;
+  gap: 12px;
+  padding: 16px 16px 6px;
+}
+.icon {
+  flex-shrink: 0;
+  color: var(--c-accent-2);
+}
+.body p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--c-ink);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px 14px;
+}
+.ok,
+.cancel {
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ok {
+  min-width: 64px;
+  border: 1px solid #0a6fd6;
+  background: linear-gradient(#3d9bff, #1a7ff0);
+  color: var(--c-white);
+}
+.ok:hover {
+  background: linear-gradient(#56a8ff, #2b8cf7);
+}
+.ok:active {
+  background: #156ad0;
+}
+.cancel {
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: var(--c-white);
+  color: var(--c-ink);
+}
+.cancel:hover {
+  border-color: rgba(0, 0, 0, 0.4);
+}
+.ok:focus-visible,
+.cancel:focus-visible,
+.red:focus-visible,
+.home:focus-visible,
+.worse:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+
+/* ---- the finale ----------------------------------------------------------- */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 10, 12, 0.55);
+  animation: fade 0.2s ease-out;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+.finale {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(460px, 100%);
+  border-radius: 20px;
+  background: var(--c-accent);
+  padding: 28px;
+  color: #0d1a00;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  animation: pop 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.finaleCount {
+  font-family: 'Archivo', sans-serif;
+  font-size: 88px;
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -4px;
+  font-variant-numeric: tabular-nums;
+}
+.finale h2 {
+  margin: 0;
+  font-family: 'Archivo', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+}
+.finale p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.finaleActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.home,
+.worse {
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.home {
+  border: 2px solid #0d1a00;
+  background: #0d1a00;
+  color: var(--c-accent);
+}
+.home:hover {
+  background: var(--c-ink);
+}
+.worse {
+  border: 2px solid #0d1a00;
+  background: none;
+  color: #0d1a00;
+}
+.worse:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win,
+  .finale,
+  .scrim {
+    animation: none;
+    transition: none;
+  }
+}

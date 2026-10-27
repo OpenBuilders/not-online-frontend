@@ -1,0 +1,484 @@
+.split {
+  display: grid;
+  grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
+  gap: 12px;
+  flex: 1;
+  min-height: 420px;
+}
+
+/* ---- the list ---------------------------------------------------------- */
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: var(--c-white);
+  padding: 6px;
+  font-family: inherit;
+  text-align: left;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.row:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+.row.rowOn,
+.row.rowOn:hover {
+  border-color: var(--c-ink);
+  box-shadow: inset 3px 0 0 var(--c-ink);
+}
+.row:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 1px;
+}
+.thumb {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+.rowText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.rowTitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The NOT-pick mark at list size: a lime dot ringed in ink. */
+.rowPick {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  box-shadow: 0 0 0 1.5px var(--c-ink);
+}
+.rowMeta {
+  font-size: 10.5px;
+  color: var(--c-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rowSaved {
+  flex-shrink: 0;
+  color: var(--c-accent-2);
+}
+
+/* ---- the map ----------------------------------------------------------- */
+
+/* Black, like the radar widget it opens from. Everything on it is one of
+   Radar's four colours: black, acid green, white, pink. */
+.mapPanel {
+  --hub: var(--c-accent);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: #0b0b0c;
+  overflow: hidden;
+  min-height: 0;
+}
+/* Applying is the pink half of Radar: the world glows pink for it. */
+.mapPanel.callMode {
+  --hub: var(--c-accent-2);
+}
+.map {
+  width: 100%;
+  height: 100%;
+  /* The frame is fitted to the pins; the city carries on past it. */
+  overflow: visible;
+  animation: fadeIn 0.25s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---- world: a heat map in dots ---- */
+.world {
+  cursor: pointer;
+}
+.heat0 {
+  fill: rgba(255, 255, 255, 0.12);
+}
+.heat1 {
+  fill: color-mix(in srgb, var(--hub) 38%, transparent);
+}
+.heat2 {
+  fill: color-mix(in srgb, var(--hub) 72%, transparent);
+}
+.heat3 {
+  fill: var(--hub);
+}
+.hubName {
+  fill: rgba(255, 255, 255, 0.72);
+  font-weight: 700;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #0b0b0c;
+  pointer-events: none;
+}
+.hubOn {
+  pointer-events: none;
+}
+.hubRing {
+  fill: none;
+  stroke: var(--c-white);
+}
+.hubLabel {
+  fill: var(--c-white);
+  font-weight: 800;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #0b0b0c;
+}
+
+.legend {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.legend i.heat1 {
+  background: color-mix(in srgb, var(--hub) 38%, transparent);
+}
+.legend i.heat2 {
+  background: color-mix(in srgb, var(--hub) 72%, transparent);
+}
+.legend i.heat3 {
+  background: var(--hub);
+}
+
+/* Pins: white for going, pink for applying, ringed in black so they hold
+   on the green water and the black ground alike. */
+.pin {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.pinDim {
+  opacity: 0.35;
+}
+.pinDot {
+  fill: var(--c-white);
+  stroke: #0b0b0c;
+}
+.callMode .pinDot {
+  fill: var(--c-accent-2);
+}
+/* Ours: a green ring, the map's version of the NOT-pick sticker. */
+.pinDot.pinPick {
+  stroke: var(--c-accent);
+}
+/* Placed by district or city, not by door. */
+.pinDot.pinRough {
+  stroke-dasharray: 4 3;
+  fill-opacity: 0.7;
+}
+.pulse {
+  fill: none;
+  stroke: var(--c-white);
+  animation: pulse 1.4s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.callMode .pulse {
+  stroke: var(--c-accent-2);
+}
+@keyframes pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+.count {
+  fill: #0b0b0c;
+  font-weight: 800;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.label {
+  fill: var(--c-white);
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #0b0b0c;
+  pointer-events: none;
+}
+
+.zoom {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #0b0b0c;
+}
+.zoom button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--c-white);
+  cursor: pointer;
+}
+.zoom button + button {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+.zoom button:hover:not(:disabled) {
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+.zoom button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.zoom button:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: -2px;
+}
+
+.scopeTag {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  border-radius: 999px;
+  /* Solid, so it reads over the green water as well as the black ground. */
+  background: #0b0b0c;
+  padding: 4px 9px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.callout {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  background: var(--c-white);
+  padding: 9px 9px 9px 12px;
+  color: var(--c-ink);
+  animation: fadeIn 0.18s ease-out;
+}
+.calloutText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.calloutTitle {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.calloutMeta {
+  font-size: 11px;
+  color: var(--c-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.calloutOpen {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--c-ink);
+  padding: 6px 11px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-white);
+  text-decoration: none;
+}
+.calloutOpen:hover {
+  background: var(--c-accent);
+  color: #0d1a00;
+}
+.calloutClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--c-dim);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 760px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(260px, 1fr);
+  }
+  .mapPanel {
+    order: -1;
+  }
+  .list {
+    max-height: 260px;
+  }
+}
+
+.loading {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+}
+.credit {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 6px;
+  background: #0b0b0c;
+  padding: 2px 6px;
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+/* ---- region tabs and the cities outside them ---- */
+.regions {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: calc(100% - 60px);
+}
+.regionBtn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: #0b0b0c;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+.regionBtn span {
+  margin-left: 3px;
+  color: var(--hub);
+}
+.regionBtn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--c-white);
+}
+.regionBtn.regionOn,
+.regionBtn.regionOn:hover {
+  border-color: var(--hub);
+  background: var(--hub);
+  color: #0b0b0c;
+}
+.regionBtn.regionOn span {
+  color: #0b0b0c;
+}
+.regionBtn:focus-visible,
+.also button:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 2px;
+}
+.also {
+  position: absolute;
+  left: 12px;
+  right: 60px;
+  bottom: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+.also button {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.also button:hover {
+  color: var(--hub);
+}

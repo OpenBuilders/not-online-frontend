@@ -1,0 +1,33 @@
+.art {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+/* The type, set large and cut by the bottom edge, so the placeholder has
+   something to say about the card rather than being pure texture. */
+.word {
+  position: absolute;
+  left: 8px;
+  bottom: -6px;
+  font-family: 'Archivo', sans-serif;
+  /* As big as it goes up to 30px, but never wider than the card: long
+     words (fellowship, exhibition) shrink instead of being cut. --len is
+     the word's length, set inline. */
+  font-size: min(30px, calc((100cqw - 30px) / var(--len, 8) * 1.45));
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 1px 6px 6px;
+  border-radius: 6px 6px 0 0;
+}
+.onInk {
+  background: #0d0d0f;
+  color: #fff;
+}
+.onPaper {
+  background: #fff;
+  color: #0d0d0f;
+}

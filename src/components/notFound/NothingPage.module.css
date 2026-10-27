@@ -1,0 +1,140 @@
+.page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(16px, 3vw, 36px) clamp(16px, 3vw, 36px) 72px;
+  background: var(--c-paper);
+  color: var(--c-ink);
+  user-select: text;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.code {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-muted);
+}
+.home {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.home:hover {
+  color: var(--c-accent-2);
+}
+.home:focus-visible,
+.turn:focus-visible {
+  outline: 2px solid var(--c-select);
+  outline-offset: 3px;
+}
+
+/* The words take whatever height is left, and are fitted into it. */
+.words {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+}
+.h1 {
+  margin: 0;
+  width: 100%;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+}
+.line {
+  display: block;
+  line-height: 0.86;
+  white-space: nowrap;
+}
+.fit {
+  display: inline-block;
+}
+
+/* Loose type: a letter you point at lifts off the page a little. */
+.letter {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.letter:hover {
+  transform: translateY(-0.04em) rotate(-4deg);
+}
+
+/* "Turn into something": every letter falls off the page. */
+.falling .letter {
+  transform: translate(var(--dx), 110vh) rotate(var(--rot));
+  transition: transform 0.9s cubic-bezier(0.55, 0, 0.9, 0.45) var(--delay);
+}
+
+.bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+}
+.note {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--c-dim);
+  text-wrap: pretty;
+}
+.turn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--c-ink);
+  border-radius: 999px;
+  background: var(--c-accent);
+  padding: 16px 26px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: #0d1a00;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--c-ink);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.turn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--c-ink);
+}
+.turn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--c-ink);
+}
+.turn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter,
+  .turn {
+    transition: none;
+  }
+  .letter:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .turn {
+    width: 100%;
+    justify-content: center;
+  }
+}

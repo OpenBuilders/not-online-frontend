@@ -1,5 +1,5 @@
 import { Fragment, useState, type ReactNode } from 'react';
-import { GLOSSARY } from '@/data/smmGlossary';
+import { GLOSSARY, type GlossarySection } from '@/data/smmGlossary';
 import { cx } from '@/lib/cx';
 import styles from './GlossaryTab.module.css';
 
@@ -30,20 +30,31 @@ function renderEmphasis(text: string): ReactNode {
  * section you are in is legible from the colour alone rather than from
  * reading the tab you last clicked.
  */
-export function GlossaryTab() {
-  const [active, setActive] = useState(GLOSSARY[0].id);
-  const section = GLOSSARY.find((s) => s.id === active) ?? GLOSSARY[0];
-  const index = GLOSSARY.findIndex((s) => s.id === section.id);
+interface GlossaryTabProps {
+  /** Defaults to the media kit's own glossary; Radar passes its own. */
+  sections?: GlossarySection[];
+  title?: string;
+  standfirst?: string;
+}
+
+export function GlossaryTab({
+  sections = GLOSSARY,
+  title = 'glossary',
+  standfirst = 'worth knowing before you plan a month of content',
+}: GlossaryTabProps) {
+  const [active, setActive] = useState(sections[0].id);
+  const section = sections.find((s) => s.id === active) ?? sections[0];
+  const index = sections.findIndex((s) => s.id === section.id);
 
   return (
     <div className={styles.tab}>
       <header className={styles.masthead}>
-        <h2 className={styles.title}>glossary</h2>
-        <p className={styles.standfirst}>worth knowing before you plan a month of content</p>
+        <h2 className={styles.title}>{title}</h2>
+        <p className={styles.standfirst}>{standfirst}</p>
       </header>
 
       <nav className={styles.nav}>
-        {GLOSSARY.map((s) => (
+        {sections.map((s) => (
           <button
             key={s.id}
             type="button"

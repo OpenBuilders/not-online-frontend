@@ -65,9 +65,8 @@ export function WebsiteBuilderWidget({ desktopRef }: WebsiteBuilderWidgetProps) 
   }, [state.logged, setSite]);
 
   // Pageviews and Link Click events are already written by the public page.
-  // This is only the private read path back to the owner. The API has the
-  // Plausible key server-side, so this costs neither a browser-visible key
-  // nor a request per render.
+  // This is only the private read path back to the owner. Load it once when
+  // the desktop first has an authenticated page to report on.
   useEffect(() => {
     if (!state.logged || !site?.handle) {
       setAnalytics(null);

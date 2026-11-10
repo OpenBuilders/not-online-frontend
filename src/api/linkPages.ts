@@ -144,6 +144,9 @@ export async function getMyLinkPage(): Promise<LinkPageResponse | null> {
 export async function getMyLinkPageAnalytics(): Promise<LinkPageAnalytics | null> {
   const response = await fetch(`${API_URL}/link-pages/me/analytics`, {
     credentials: 'include',
+    // The widget requests this once per page load. Do not let a browser reuse
+    // an older aggregate instead of asking the API for the current snapshot.
+    cache: 'no-store',
   });
   if (response.status === 401) return null;
   if (!response.ok) {
